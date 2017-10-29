@@ -1,0 +1,17 @@
+{
+  "name": "MentalMathAlexaSkill",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "ttyle",
+  "contributors": [],
+  "dependencies": {
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  }
+}
