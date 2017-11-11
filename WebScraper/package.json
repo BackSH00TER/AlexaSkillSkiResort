@@ -1,0 +1,20 @@
+{
+  "name": "SkiReport",
+  "version": "1.0.0",
+  "description": "Alexa Ski Report skill- webscraper",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Tyler",
+  "contributors": [],
+  "dependencies": {
+    "aws-sdk": "^2.145.0",
+    "cheerio": "^1.0.0-rc.2",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  }
+}

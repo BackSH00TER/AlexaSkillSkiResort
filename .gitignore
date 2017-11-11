@@ -49,5 +49,7 @@ Temporary Items
 #Idea files
 .idea
 
-DynamoTests/
-LambdaLocal/
+*/node_modules/
+node_modules/
+TestStuff/
+*/*.zip
