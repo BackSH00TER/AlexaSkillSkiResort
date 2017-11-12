@@ -65,24 +65,34 @@ var handlers = {
         });
     },
     'temperatureToday': function () {
-        getWeather((response) => {
-            if(response == null) {
-                outputMsg = ERROR_MESSAGE;
-                this.emit(':ask', outputMsg);
-            }
-            else {
-                var responseData = JSON.parse(response);
-                var temperature = responseData.properties.periods[0].temperature;
-                var tempTrend = responseData.properties.periods[0].temperatureTrend;
+        var slotResort = this.event.request.intent.slots.Resort.value;
 
-                outputMsg = "The temperature is " + temperature + " degrees fahrenheit";
-
-                if(tempTrend != "null") {
-                    outputMsg += " and " + tempTrend;
+        if(!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            getWeather(slotResort, (response) => {
+                if (response == null) {
+                    outputMsg = ERROR_MESSAGE;
+                    this.emit(':ask', outputMsg);
                 }
-                this.emit(':tell', outputMsg);
-            }
-        })
+                else {
+                    var responseData = JSON.parse(response);
+                    var temperature = responseData.properties.periods[0].temperature;
+                    var tempTrend = responseData.properties.periods[0].temperatureTrend;
+
+                    outputMsg = "The temperature is " + temperature + " degrees fahrenheit";
+
+                    if (tempTrend != "null") {
+                        outputMsg += " and " + tempTrend;
+                    }
+                    this.emit(':tell', outputMsg);
+                }
+            })
+        }
     },
     'temperatureWeekDay': function() {
         var slotDay = this.event.request.intent.slots.Day.value;
@@ -113,7 +123,7 @@ var handlers = {
                         //day not found in response (either is asking for 7th day,
                         // or specially named holiday replaced day name IE: Veterans day instead of Saturday
                         console.log("Couldn't find weather data for day: " + slotDay);
-                        this.emit(':tell', "Sorry, I don't have the extended for " + slotDay); //todo: check error response is appropriate
+                        this.emit(':tell', "Sorry, I don't have the extended forecast for " + slotDay); //todo: check error response is appropriate
                     }
                     else {
                         outputMsg = slotDay + "'s temp will be a high of " + responseData.properties.periods[(periodsNum[0])].temperature;
@@ -155,10 +165,39 @@ var handlers = {
 
 //Makes a request to get the 7 day forecast for Stevens Pass
 //Returns a json object
-function getWeather(callback) {
+function getWeather(resort, callback) {
+    var urlPath = "";
+    switch(resort) {
+        case "Stevens Pass":
+            urlPath = '/points/47.7459,-121.0891/forecast';
+            console.log("Stevens Pass Weather");
+            break;
+        case "Snoqualmie Pass":
+            urlPath = '/points/47.4374,-121.4154/forecast';
+            console.log("Snoqualmie weather");
+            break;
+        case "Crystal Mountain":
+            urlPath = '/points/46.9291,-121.501/forecast';
+            console.log("Crystal weather");
+            break;
+        case "Mt Baker":
+            urlPath = '/points/48.8541,-121.68/forecast';
+            console.log("Baker weather");
+            break;
+        case "Mission Ridge":
+            urlPath ='/points/47.2867,-120.4184/forecast';
+            console.log("Mission ridge weather");
+            break;
+        case "Hurricane Ridge":
+            urlPath = '/points/47.971,-123.493/forecast';
+            console.log('Hurricane ride weather');
+        default:
+
+            break;
+    }
     var options = {
         host: 'api.weather.gov',
-        path: '/points/47.7459,-121.0891/forecast',
+        path: urlPath,
         method: 'GET',
         headers: {
             'user-agent': 'Snow-Report,',
