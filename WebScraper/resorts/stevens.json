@@ -1,0 +1,23 @@
+{
+  "name": "Stevens Pass",
+  "url": "https://www.stevenspass.com/site/mountain/reports/snow-and-weather-report/@@snow-and-weather-report",
+  "tags": [
+    "Washington"
+  ],
+  "website": "https://www.stevenspass.com",
+  "twitter": "TWITTER",
+  "selectors": {
+    "reportDateUpdated": "$('.page-report-snowfall-value').text()",
+    "overNightSnowFall": "$($('.page-report-snowfall-value')[0]).text().slice(0, -1)",
+    "snowFallOneDay": "$($('.page-report-snowfall-value')[1]).text().slice(0, -1)",
+    "snowFallTwoDay": "$($('.page-report-snowfall-value')[2]).text().slice(0, -1)",
+    "snowDepthBase": "$($('.page-report-snowdepth-value')[0]).text().slice(0, -1)",
+    "snowDepthMidMtn": "$($('.page-report-snowdepth-value')[1]).text().slice(0, -1)",
+    "seasonSnowFall": {
+      "sel": ".page-report-snowdepth-value",
+      "array": 2,
+      "slice1": 0,
+      "slice2": -1
+    }
+  }
+}

@@ -1,78 +1,179 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 const db = require('../AWS_Helpers');
+const fs = require('fs');
 
-//TODO: Scraper file for each site to scrape?
-//TODO: Add additional for lifts
-//TODO: Will probably just report num lifts open / total instead of specific ones
-//TODO: COuld report frontside/backside lifts or output to the card which lifts are clsoed/open
+//--------------CALL LAMBDA TEST TO RUN exports.handler locally--------------------
 
 
 exports.handler = function(event, context, callback) {
-    //Gets response of all data scraped
-    //Puts the data into table
-    scrapeSite((data) => {
-        if (data === "ERROR") {
-            //TODO: Handle error msg
-            console.log("Error occurred in scraping Stevens Pass website");
-        } else {
-            var params = {
-                TableName: "SkiResortData",
-                Item: {
-                    "resort": "Stevens Pass",
-                    "overNightSnowFall": data.overNightSnowFall,
-                    "snowFallOneDay": data.snowFallOneDay,
-                    "snowFallTwoDay": data.snowFallTwoDay,
-                    "snowDepthBase": data.snowDepthBase,
-                    "snowDepthMidMtn": data.snowDepthMidMtn,
-                    "seasonSnowFall": data.seasonSnowFall
-                }
-            };
+    var dir = './WebScraper/resorts';
+    getListOfFiles(dir, (resortList) => {
+        console.log("Reading from each file");
 
-            //Push this data to the database
-            console.log("Adding data to database...");
-            db.putData(params, (response) => {
-                if (response == "FAILED") {
-                    console.log("Error: Unable to add Stevens Pass data");
-                }
-                else {
-                    console.log("Data push successful");
-                }
-            });
-        }
+        resortList.forEach(function (resort, index) {
+            fs.readFile(dir + "/" + resortList[index], function (err, data) {
+                var parsedData = JSON.parse(data);
+                var url = parsedData.url;
+                console.log("Call scraper now for: " + resort);
+                scrapeSite(url, resort, (data) => {
+                    if (data === "ERROR") {
+                        console.log("Error occurred in scraping: " + resort);
+                    }
+                    else {
+                        console.log("Data for: " + data.resort);
+                        console.log(data);
+                        var params = {
+                            TableName: "SkiResortData",
+                            Item: {
+                                "resort": data.resort,
+                                "overNightSnowFall": data.type.overNightSnowFall,
+                                "snowFallOneDay": data.type.snowFallOneDay,
+                                "snowFallTwoDay": data.type.snowFallTwoDay,
+                                "snowDepthBase": data.type.snowDepthBase,
+                                "snowDepthMidMtn": data.type.snowDepthMidMtn,
+                                "seasonSnowFall": data.type.seasonSnowFall
+                            }
+                        };
+                        console.log("Adding data to database...");
+                        db.putData(params, (response) => {
+                            if (response == "FAILED") {
+                                console.log("DB Error: Unable to add " + params.Item.resort);
+                            }
+                            else {
+                                console.log("Data push successful");
+                            }
+                        });
+                    }
+                });
+            })
+        })
     });
-}
 
-function scrapeSite(callback) {
-    const options = {
-        uri: 'https://www.stevenspass.com/site/mountain/reports/snow-and-weather-report/@@snow-and-weather-report',
-        transform: function (body) {
-            return cheerio.load(body);
-        }
+    function scrapeSite(url, resort, callback) {
+        const options = {
+            uri: url,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+
+        console.log("Fetching data from site...");
+        rp(options)
+            .then(($) => {
+                console.log("Data received");
+
+                //Temporary solution for selectors
+                //Need to find way to properly store these in the resort json files and parse out
+                var currentResort = "";
+                var stevensPass = {
+                    resort: "Stevens Pass",
+                    selectors: {
+                        reportDateUpdated: $('.page-report-snowfall-value').text(),
+                        overNightSnowFall: $($('.page-report-snowfall-value')[0]).text().slice(0, -1),
+                        snowFallOneDay: $($('.page-report-snowfall-value')[1]).text().slice(0, -1),
+                        snowFallTwoDay: $($('.page-report-snowfall-value')[2]).text().slice(0, -1),
+                        snowDepthBase: $($('.page-report-snowdepth-value')[0]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.page-report-snowdepth-value')[1]).text().slice(0, -1),
+                        seasonSnowFall: $($('.page-report-snowdepth-value')[2]).text().slice(0, -1)
+                    }
+                };
+
+                var snoqualmiePass = {
+                    resort: "Snoqualmie Pass",
+                    selectors: {
+                        reportDateUpdated: $($('#block-conditions-overview .subtitle')).text(),
+                        overNightSnowFall: $($('.condition-snow .value')[0]).text(),
+                        snowFallOneDay: $($('.condition-snow .value')[10]).text(),
+                        snowFallTwoDay: $($('.condition-snow .value')[11]).text(),
+                        snowDepthBase: $($('.condition-snow-base .value')[2]).text(),
+                        snowDepthMidMtn: $($('.condition-snow-base .value')[1]).text(),
+                        seasonSnowFall: $($('.content .total .value')[0]).text().slice(0, -1)
+                    }
+                };
+
+                var crystalMountain = {
+                    resort: "Crystal Mountain",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $('#overnight2').text().slice(0, -1),
+                        snowFallOneDay: $('#hours-24-2').text().slice(0, -1),
+                        snowFallTwoDay: $('#hours-48-2').text().slice(0, -1),
+                        snowDepthBase: $('#bottom-depth').text().slice(0, -1),
+                        snowDepthMidMtn: $('#top-depth').text().slice(0, -1),
+                        seasonSnowFall: $('#season-total').text().slice(0, -1)
+                    }
+                };
+
+                var mtBaker = {
+                    resort: "Mount Baker",
+                    selectors: {
+                        reportDateUpdated: $('.report-timestamp').text().replace(/\n/g, "").replace("//", ", "),
+                        overNightSnowFall: $('.report-snowfall-value-12 .unit-i').text().slice(0, -1),
+                        snowFallOneDay: $('.report-snowfall-value-24 .unit-i').text().slice(0, -1),
+                        snowFallTwoDay: $('.report-snowfall-value-48 .unit-i').text().slice(0, -1),
+                        snowDepthBase: $($('.report-snowbase-value .unit-i')[0]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.report-snowbase-value .unit-i')[1]).text().slice(0, -1),
+                        seasonSnowFall: ($($('.report-snowbase-value .unit-i')[0]).text().slice(0, -1)) >= $($('.report-snowbase-value .unit-i')[1]).text().slice(0, -1) ? ($($('.report-snowbase-value .unit-i')[0]).text().slice(0, -1)) : $($('.report-snowbase-value .unit-i')[1]).text().slice(0, -1)
+                    }
+                };
+
+                var missionRidge = {
+                    resort: "Mission Ridge",
+                    selectors: {
+                        reportDateUpdated: $('.bluebar-time').text().trim(),
+                        overNightSnowFall: $($('.weather.data-table .odd .data')[5]).text().slice(0, -1),
+                        snowFallOneDay: $($('.weather.data-table .even .data')[2]).text().slice(0, -1),
+                        snowFallTwoDay: $($('.weather.data-table .odd .data')[2]).text().slice(0, -1),
+                        snowDepthBase: $($('.weather.data-table .even .data')[11]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[11]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.weather.data-table .even .data')[9]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[9]).text().slice(0, -1),
+                        seasonSnowFall: "N/A"
+                    }
+                };
+
+                switch (resort) {
+                    case "stevens.json":
+                        currentResort = stevensPass;
+                        break;
+                    case "crystal.json":
+                        currentResort = crystalMountain;
+                        break;
+                    case "snoqualmie.json":
+                        currentResort = snoqualmiePass;
+                        break;
+                    case "baker.json":
+                        currentResort = mtBaker;
+                        break;
+                    case "mission_ridge.json":
+                        currentResort = missionRidge;
+                        break;
+                    default:
+                        callback("ERROR: Invalid Resort");
+                        break;
+                }
+
+                var data = {
+                    resort: currentResort.resort,
+                    type: currentResort.selectors
+                };
+                callback(data);
+            })
+            .catch((err) => {
+                console.log(err);
+                callback("ERROR");
+            });
     };
 
-    console.log("Fetching data from site...");
-    rp(options)
-        .then(($) => {
-            console.log("Data received");
-            var reportDateUpdated = $('.page-report-snowfall-value');
-            var snowFallTotals = $('.page-report-snowfall-value');
-            var snowDepthTotals = $('.page-report-snowdepth-value');
-
-            var data = {
-                reportDateUpdated: $(reportDateUpdated).text(),
-                overNightSnowFall: $(snowFallTotals[0]).text().slice(0, -1),
-                snowFallOneDay: $(snowFallTotals[1]).text().slice(0, -1),
-                snowFallTwoDay: $(snowFallTotals[2]).text().slice(0, -1),
-                snowDepthBase: $(snowDepthTotals[0]).text().slice(0, -1),
-                snowDepthMidMtn: $(snowDepthTotals[1]).text().slice(0, -1),
-                seasonSnowFall: $(snowDepthTotals[2]).text().slice(0, -1)
-            };
-
-            callback(data);
-        })
-        .catch((err) => {
-            console.log(err);
-            callback("ERROR");
+    function getListOfFiles(dir, callback) {
+        //Read all json files from directory
+        fs.readdir(dir, function (err, resortList) {
+            console.log("Reading resorts from directory: " + dir);
+            if (err) {
+                console.log("ERROR getting resort json files from directory w/ msg:  " + err);
+            }
+            else {
+                callback(resortList);
+            }
         });
-};
+    };
+}
