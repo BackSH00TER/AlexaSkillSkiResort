@@ -28,7 +28,7 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit(':ask', WELCOME_MESSAGE, HELP_MESSAGE);
     },
-    'forecastToday': function () {
+    'forecastToday': function ()  {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID;
@@ -46,35 +46,12 @@ var handlers = {
         else {
             console.log("Resort is: " + slotResort);
             //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
-            var slotResortID = "";
-            slotResort = slotResort.toLowerCase();
-            switch (slotResort) {
-                case "stevens":
-                case "stevens pass":
-                    slotResortID = "Stevens_Pass";
-                    break;
-                case "snoqualmie":
-                case "snoqualmie pass":
-                    slotResortID = "Snoqualmie_Pass";
-                    break;
-                case "crystal":
-                case "crystal mountain":
-                    slotResortID = "Crystal_Mountain";
-                    break;
-                case "mount baker":
-                case "mt baker":
-                case "baker":
-                    slotResortID = "Mt_Baker";
-                    break;
-                case "mission ridge":
-                    slotResortID = "Mission_Ridge";
-                    break;
-                default:
-                    slotResortID = "ERROR";
-            }
-            var resortName = slotResortID.split('_').join(' ');
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
             //-------------------------------------
-            getWeather(slotResortID, (response) => {
+            getWeather(resortID, (response) => {
                 if (response == null) {
                     outputMsg = ERROR_MESSAGE;
                     this.emit(':ask', outputMsg);
@@ -93,27 +70,269 @@ var handlers = {
             })
         }
     },
-    'snowReportOvernight': function () {
-        var params = {
-            TableName: "SkiResortData",
-            Key: {
-                "resort": "Stevens Pass"
-            }
-        };
+    'forecastWeek': function () {
+        //TODO: Implement, output temp for each day of week, skip the night temps.
+    },
+    'forecastWeekDay': function () {
+        var slotDay = this.event.request.intent.slots.Day.value;
+        if (slotDay === "friday") { //TODO: wait till request schema is fixed to remove this
+            slotDay = "Friday";
+        }
 
-        db.getData(params, (response) => {
-            //Empty response may be caused by incorrect resort name
-            if (Object.keys(response).length === 0) {
-                outputMsg = ERROR_MESSAGE;
-                this.emit(':ask', outputMsg);
+        var slotResort = this.event.request.intent.slots.Resort.value;
+        ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
+        var resortID;
+        if (this.event.request.intent.slots.Resort.resolutions) {
+            var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
+            resortID = resolution[0].values[0].value.id;
+            console.log("resolution id: " + resortID);
+        }
+        //-----------------------END HOLD---------------------
+
+        if (!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
+
+            //Check if valid day
+            var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            if (daysOfWeek.indexOf(slotDay) >= 0) {
+                getWeather(resortID, (response) => {
+                        if (response == null) {
+                            outputMsg = ERROR_MESSAGE;
+                            this.emit(':ask', outputMsg);
+                        }
+                        else {
+                            var responseData = JSON.parse(response);
+                            if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
+                                outputMsg = "There was an error getting the weather for " + resortName;
+                            }
+                            else {
+
+                                //search for value of day asked for, make sure exists
+                                var periodsNum = [];
+                                for (var i = 0; i < responseData.properties.periods.length; i++) {
+                                    var obj = responseData.properties.periods[i].name;
+                                    if (obj.indexOf(slotDay) >= 0) {
+                                        periodsNum.push(i);
+                                    }
+                                }
+                                if (periodsNum == "") {
+                                    //day not found in response (either is asking for 7th day,
+                                    // or specially named holiday replaced day name IE: Veterans day instead of Saturday
+                                    console.log("Couldn't find weather data for day: " + slotDay);
+                                    this.emit(':tell', "Sorry, I don't have the extended forecast for " + slotDay); //todo: check error response is appropriate
+                                }
+                                else {
+                                    var detailedForecast = responseData.properties.periods[(periodsNum[0])].detailedForecast;
+                                    outputMsg = "At " + resortName + " on " + slotDay + " there will be a high of " + responseData.properties.periods[(periodsNum[0])].temperature;
+                                    if (periodsNum.length > 1) { //night
+                                        outputMsg += " with a low of " + responseData.properties.periods[(periodsNum[1])].temperature;
+                                    }
+
+                                    outputMsg += ". The forecast calls for, " + detailedForecast;
+                                    this.emit(':tell', outputMsg);
+                                }
+                            }
+                        }
+                    }
+                );
             }
             else {
-                var overNightSnow = response.Item.overNightSnowFall;
-                outputMsg = "Steven's Pass got " + overNightSnow + " inches of snow over night.";
-                this.emit(':tell', outputMsg);
+                console.log("Day not recognized.");
+                this.emit(':ask', "Sorry, I didn't understand that. Try again please."); //todo test is this is good response
             }
-        });
+        }
+    }, //TODO: Test
+    'snowReportOvernight': function () {
+        var slotResort = this.event.request.intent.slots.Resort.value;
+        ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
+        var resortID;
+        if (this.event.request.intent.slots.Resort.resolutions) {
+            var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
+            resortID = resolution[0].values[0].value.id;
+            console.log("resolution id: " + resortID);
+        }
+        //-----------------------END HOLD---------------------
+        if (!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
+
+            var params = {
+                TableName: "SkiResortData",
+                Key: {
+                    "resort": resortName
+                }
+            };
+
+            db.getData(params, (response) => {
+                //Empty response may be caused by incorrect resort name
+                if (Object.keys(response).length === 0) {
+                    outputMsg = ERROR_MESSAGE;
+                    this.emit(':ask', outputMsg);
+                }
+                else {
+                    var overNightSnow = response.Item.overNightSnowFall;
+                    outputMsg = resortName + " got " + overNightSnow + " inches of snow over night.";
+                    this.emit(':tell', outputMsg);
+                }
+            });
+        }
     },
+    'snowReportOneDay': function () {
+        var slotResort = this.event.request.intent.slots.Resort.value;
+        ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
+        var resortID;
+        if (this.event.request.intent.slots.Resort.resolutions) {
+            var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
+            resortID = resolution[0].values[0].value.id;
+            console.log("resolution id: " + resortID);
+        }
+        //-----------------------END HOLD---------------------
+        if (!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
+
+            var params = {
+                TableName: "SkiResortData",
+                Key: {
+                    "resort": resortName
+                }
+            };
+
+            db.getData(params, (response) => {
+                //Empty response may be caused by incorrect resort name
+                if (Object.keys(response).length === 0) {
+                    outputMsg = ERROR_MESSAGE;
+                    this.emit(':ask', outputMsg);
+                }
+                else {
+                    var snowFall = response.Item.snowFallOneDay;
+                    var twoDay = response.Item.snowFallTwoDay;
+                    outputMsg = resortName + " got " + snowFall + " inches of snow yesterday and a total of " + twoDay + " inches in the last two days.";
+                    this.emit(':tell', outputMsg);
+                }
+            });
+        }
+    }, //test
+    'snowReportSeasonTotal': function () {
+        var slotResort = this.event.request.intent.slots.Resort.value;
+        ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
+        var resortID;
+        if (this.event.request.intent.slots.Resort.resolutions) {
+            var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
+            resortID = resolution[0].values[0].value.id;
+            console.log("resolution id: " + resortID);
+        }
+        //-----------------------END HOLD---------------------
+        if (!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
+
+            var params = {
+                TableName: "SkiResortData",
+                Key: {
+                    "resort": resortName
+                }
+            };
+
+            db.getData(params, (response) => {
+                //Empty response may be caused by incorrect resort name
+                if (Object.keys(response).length === 0) {
+                    outputMsg = ERROR_MESSAGE;
+                    this.emit(':ask', outputMsg);
+                }
+                else {
+                    var snowFall = response.Item.seasonSnowFall;
+                    outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall;
+                    this.emit(':tell', outputMsg);
+                }
+            });
+        }
+    }, //test
+    'snowReportDepth': function () {
+        var slotResort = this.event.request.intent.slots.Resort.value;
+        ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
+        var resortID;
+        if (this.event.request.intent.slots.Resort.resolutions) {
+            var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
+            resortID = resolution[0].values[0].value.id;
+            console.log("resolution id: " + resortID);
+        }
+        //-----------------------END HOLD---------------------
+        if (!slotResort) {
+            console.log("NOT a valid resort");
+            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            //todo: handle the err better
+        }
+        else {
+            console.log("Resort is: " + slotResort);
+            //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
+
+            var params = {
+                TableName: "SkiResortData",
+                Key: {
+                    "resort": resortName
+                }
+            };
+
+            db.getData(params, (response) => {
+                //Empty response may be caused by incorrect resort name
+                if (Object.keys(response).length === 0) {
+                    outputMsg = ERROR_MESSAGE;
+                    this.emit(':ask', outputMsg);
+                }
+                else {
+                    var base = response.Item.snowDepthBase;
+                    var midMtn = response.Item.snowDepthMidMtn;
+                    var seasonTotal = response.Item.seasonSnowFall;
+                    var twoDay = response.Item.snowFallTwoDay;
+                    outputMsg = "In the last two days " + resortName + " has received " + twoDay + " inches of new snow. The base depth is currently at " + base + " inches and mid mountain is at " + midMtn + " inches.";
+                    outputMsg += " The season total is " + seasonTotal + " inches."
+                    this.emit(':tell', outputMsg);
+                }
+            });
+        }
+    }, //test
     'temperatureToday': function () {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
@@ -123,7 +342,6 @@ var handlers = {
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
         }
-
 
         //-----------------------END HOLD---------------------
 
@@ -135,35 +353,12 @@ var handlers = {
         else {
             console.log("Resort is: " + slotResort);
             //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
-            var slotResortID = "";
-            slotResort = slotResort.toLowerCase();
-            switch (slotResort) {
-                case "stevens":
-                case "stevens pass":
-                    slotResortID = "Stevens_Pass";
-                    break;
-                case "snoqualmie":
-                case "snoqualmie pass":
-                    slotResortID = "Snoqualmie_Pass";
-                    break;
-                case "crystal":
-                case "crystal mountain":
-                    slotResortID = "Crystal_Mountain";
-                    break;
-                case "mount baker":
-                case "mt baker":
-                case "baker":
-                    slotResortID = "Mt_Baker";
-                    break;
-                case "mission ridge":
-                    slotResortID = "Mission_Ridge";
-                    break;
-                default:
-                    slotResortID = "ERROR";
-            }
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
             var resortName = slotResortID.split('_').join(' ');
             //-------------------------------------
-            getWeather(slotResortID, (response) => {
+            getWeather(resortID, (response) => {
                 if (response == null) {
                     outputMsg = ERROR_MESSAGE;
                     this.emit(':ask', outputMsg);
@@ -196,6 +391,9 @@ var handlers = {
             })
         }
     },
+    'temperatureTonight': function () {
+        //TODO: Implement
+    },
     'temperatureWeekDay': function () {
         var slotDay = this.event.request.intent.slots.Day.value;
         if (slotDay === "friday") { //TODO: wait till request schema is fixed to remove this
@@ -220,39 +418,15 @@ var handlers = {
         else {
             console.log("Resort is: " + slotResort);
             //----------------TEMP SOLUTION UNTIL RESOLUTION WORKING PROPERLY
-            var slotResortID = "";
-            slotResort = slotResort.toLowerCase();
-            switch (slotResort) {
-                case "stevens":
-                case "stevens pass":
-                    slotResortID = "Stevens_Pass";
-                    break;
-                case "snoqualmie":
-                case "snoqualmie pass":
-                    slotResortID = "Snoqualmie_Pass";
-                    break;
-                case "crystal":
-                case "crystal mountain":
-                    slotResortID = "Crystal_Mountain";
-                    break;
-                case "mount baker":
-                case "mt baker":
-                case "baker":
-                    slotResortID = "Mt_Baker";
-                    break;
-                case "mission ridge":
-                    slotResortID = "Mission_Ridge";
-                    break;
-                default:
-                    slotResortID = "ERROR";
-            }
-            //----------------------------------
-            var resortName = slotResortID.split('_').join(' ');
+            resortID = getResortID(slotResort);
+            console.log("resortID from func: " + resortID);
+
+            var resortName = resortID.split('_').join(' ');
 
             //Check if valid day
             var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             if (daysOfWeek.indexOf(slotDay) >= 0) {
-                getWeather(slotResortID, (response) => {
+                getWeather(resortID, (response) => {
                         if (response == null) {
                             outputMsg = ERROR_MESSAGE;
                             this.emit(':ask', outputMsg);
@@ -263,7 +437,7 @@ var handlers = {
                                 outputMsg = "There was an error getting the weather for " + resortName;
                             }
                             else {
-                                var shortForecast = responseData.properties.periods[0].shortForecast;
+
                                 //search for value of day asked for, make sure exists
                                 var periodsNum = [];
                                 for (var i = 0; i < responseData.properties.periods.length; i++) {
@@ -279,26 +453,26 @@ var handlers = {
                                     this.emit(':tell', "Sorry, I don't have the extended forecast for " + slotDay); //todo: check error response is appropriate
                                 }
                                 else {
+                                    var shortForecast = responseData.properties.periods[(periodsNum[0])].shortForecast;
                                     outputMsg = "The temperature at " + resortName + " on " + slotDay + " will be a high of " + responseData.properties.periods[(periodsNum[0])].temperature;
                                     if (periodsNum.length > 1) { //night
                                         outputMsg += " with a low of " + responseData.properties.periods[(periodsNum[1])].temperature;
                                     }
 
-                                    outputMsg += ", with a forecast of " + shortForecast;
+                                    outputMsg += ", and a forecast of " + shortForecast;
                                     this.emit(':tell', outputMsg);
                                 }
                             }
                         }
                     }
                 );
-
             }
             else {
                 console.log("Day not recognized.");
                 this.emit(':ask', "Sorry, I didn't understand that. Try again please."); //todo test is this is good response
             }
         }
-    },
+    }, //test
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
         var reprompt = HELP_REPROMPT;
@@ -375,3 +549,36 @@ function getWeather(resort, callback) {
     });
     req.end();
 };
+
+
+//used to check the synonyms of returned slot values
+//A temp fix until Skills Dashboard returns resolutions
+function getResortID(slotResort) {
+    var slotResortID = "";
+    slotResort = slotResort.toLowerCase();
+    switch (slotResort) {
+        case "stevens":
+        case "stevens pass":
+            slotResortID = "Stevens_Pass";
+            break;
+        case "snoqualmie":
+        case "snoqualmie pass":
+            slotResortID = "Snoqualmie_Pass";
+            break;
+        case "crystal":
+        case "crystal mountain":
+            slotResortID = "Crystal_Mountain";
+            break;
+        case "mount baker":
+        case "mt baker":
+        case "baker":
+            slotResortID = "Mt_Baker";
+            break;
+        case "mission ridge":
+            slotResortID = "Mission_Ridge";
+            break;
+        default:
+            slotResortID = "ERROR";
+    }
+    return slotResortID;
+}
