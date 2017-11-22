@@ -1,74 +1,257 @@
 {
-  "intents": [
-    {
-      "name": "AMAZON.CancelIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.HelpIntent",
-      "samples": []
-    },
-    {
-      "name": "AMAZON.StopIntent",
-      "samples": []
-    },
-    {
-      "name": "forecastToday",
-      "samples": [
-        "what's the forecast",
-        "what is the forecast",
-        "what's today's forecast",
-        "what is today's forecast",
-        "what is the weather going to be like today",
-        "what is the weather going to be like today at stevens pass",
-        "whats is today's forecast for stevens pass"
-      ],
-      "slots": []
-    },
-    {
-      "name": "forecastWeek",
-      "samples": [
-        "what is the weekly forecast",
-        "what's the weekly weather forecast",
-        "what is this weeks forecast",
-        "what is the forecast looking like for the week",
-        "what is the weather going to be like this week",
-        "tell me the forecast",
-        "tell me the weekly forecast",
-        "tell me this weeks forecast",
-        "give me this weeks forecast",
-        "give me the weekly forecast"
-      ],
-      "slots": []
-    },
-    {
-      "name": "precipitationChanceToday",
-      "samples": [
-        "is it snowing at stevens pass",
-        "is it raining at stevens pass",
-        "what is the chance of snow"
-      ],
-      "slots": []
-    },
-    {
-      "name": "snowReportOverNight",
-      "samples": [
-        "how much snow did stevens get last night",
-        "how much snow fell at stevens pass last night",
-        "tell me how much snow stevens pass got last night"
-      ],
-      "slots": []
-    },
-    {
-      "name": "temperatureToday",
-      "samples": [
-        "what is the temperature at stevens pass",
-        "what's the temperature at stevens pass",
-        "tell me the temperature right now",
-        "tell me the temperature at stevens pass",
-        "what is the current temperature at stevens pass"
-      ],
-      "slots": []
-    }
-  ]
+  "languageModel": {
+    "types": [
+      {
+        "name": "LIST_OF_RESORTS",
+        "values": [
+          {
+            "id": "Stevens_Pass",
+            "name": {
+              "value": "Stevens Pass",
+              "synonyms": [
+                "Stevens"
+              ]
+            }
+          },
+          {
+            "id": "Snoqualmie_Pass",
+            "name": {
+              "value": "Snoqualmie Pass",
+              "synonyms": [
+                "Snoqualmie"
+              ]
+            }
+          },
+          {
+            "id": "Crystal_Mountain",
+            "name": {
+              "value": "Crystal Mountain",
+              "synonyms": [
+                "Crystal"
+              ]
+            }
+          },
+          {
+            "id": "Mt_Baker",
+            "name": {
+              "value": "Mt Baker",
+              "synonyms": [
+                "mount baker",
+                "baker"
+              ]
+            }
+          },
+          {
+            "id": "Mission_Ridge",
+            "name": {
+              "value": "Mission Ridge",
+              "synonyms": []
+            }
+          }
+        ]
+      }
+    ],
+    "intents": [
+      {
+        "name": "AMAZON.CancelIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.HelpIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.StopIntent",
+        "samples": []
+      },
+      {
+        "name": "forecastToday",
+        "samples": [
+          "what's the forecast at {Resort}",
+          "what is the forecast for {Resort}",
+          "what's today's forecast at {Resort}",
+          "what is the weather at {Resort} going to be like today",
+          "what is the weather going to be like today at {Resort}",
+          "what is today's forecast for {Resort}",
+          "give me an update on {Resort} weather conditions"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "forecastWeek",
+        "samples": [
+          "what is the weekly forecast for {Resort}",
+          "what's the weekly weather forecast for {Resort}",
+          "what is this weeks forecast for {Resort}",
+          "what is the forecast looking like for the week at {Resort}",
+          "what is the weather going to be like this week at {Resort}",
+          "tell me the forecast for {Resort}",
+          "tell me the weekly forecast for {Resort}",
+          "tell me this weeks forecast at {Resort}",
+          "give me this weeks forecast for {Resort}",
+          "give me the weekly forecast for {Resort}",
+          "what is the extended forecast for {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "forecastWeekDay",
+        "samples": [
+          "what's the forecast at {Resort} on {Day}",
+          "what is the forecast for {Resort} on {Day}",
+          "what's {Day} forecast at {Resort}",
+          "what is the weather at {Resort} going to be like on {Day}",
+          "what is the weather going to be like on {Day} at {Resort}",
+          "what is {Day} forecast for {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Day",
+            "type": "AMAZON.DayOfWeek"
+          },
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "snowReportDepth",
+        "samples": [
+          "how much snow does {Resort} have",
+          "how much snow does {Resort} have at the base",
+          "how much snow does {Resort} have at mid mountain",
+          "how deep is the snow at {Resort}",
+          "tell me how much snow {Resort} has",
+          "give me a snow report on {Resort}",
+          "what is the snow report for {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "snowReportOneDay",
+        "samples": [
+          "how much snow did {Resort} get yesterday",
+          "how much snow did {Resort} get in the last few days",
+          "how much snow did {Resort} get in the last two days",
+          "how much snow fell at {Resort} yesterday",
+          "tell me how much snow {Resort} got yesterday",
+          "what is the two day snow report at {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "snowReportOverNight",
+        "samples": [
+          "how much snow did {Resort} get last night",
+          "how much snow fell at {Resort} last night",
+          "tell me how much snow {Resort} got last night",
+          "what was the overnight snow fall at {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "snowReportSeasonTotal",
+        "samples": [
+          "how much snow has {Resort} got this season",
+          "how much snow has {Resort} received this season",
+          "how much snow fell at {Resort} this season",
+          "tell me how much snow {Resort} has gotten this season",
+          "what is the season total snow fall at {Resort}",
+          "what is the season total for snow at {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "temperatureToday",
+        "samples": [
+          "what is the current temperature at {Resort}",
+          "what's the temperature at {Resort}",
+          "tell me the temperature right now at {Resort}",
+          "tell me the temperature at {Resort}",
+          "get me the temp at {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "temperatureTonight",
+        "samples": [
+          "what is the temperature at {Resort} going to be tonight",
+          "what's the temperature going to be tonight at {Resort}",
+          "tell me tonights temperature for {Resort}",
+          "tell me the night time temperature for {Resort}",
+          "what is the temperature going to be tonight at {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
+        "name": "temperatureWeekDay",
+        "samples": [
+          "what is the temperature going to be on {Day} at {Resort}",
+          "what's the temperature going to be this {Day} at {Resort}",
+          "tell me what the temperature will be on {Day} at {Resort}",
+          "what will the temperature at {Resort} be on {Day}",
+          "what will the temperature be on {Day} at {Resort}",
+          "what will the temperature be next {Day} at {Resort}",
+          "what is the temperature going to be at {Resort} on {Day}",
+          "what is the weather going to be like on {Day} at {Resort}",
+          "what is the weather going to be like at {Resort} on {Day}",
+          "what will the weather be at {Resort} on {Day}",
+          "what will the weather be this {Day} at {Resort}",
+          "get the weather for {Resort} on {Day}"
+        ],
+        "slots": [
+          {
+            "name": "Day",
+            "type": "AMAZON.DayOfWeek"
+          },
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      }
+    ],
+    "invocationName": "snow report"
+  }
 }
