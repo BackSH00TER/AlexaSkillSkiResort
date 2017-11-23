@@ -253,7 +253,8 @@ var handlers = {
                 }
                 else {
                     var overNightSnow = response.Item.overNightSnowFall;
-                    outputMsg = resortName + " got " + overNightSnow + " inches of snow over night.";
+                    var inch = (overNightSnow == 1) ? "inch" : "inches";
+                    outputMsg = resortName + " got " + overNightSnow + " " + inch + " of snow over night.";
                     this.emit(':tell', outputMsg);
                 }
             });
@@ -342,7 +343,7 @@ var handlers = {
                 }
                 else {
                     var snowFall = response.Item.seasonSnowFall;
-                    outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall;
+                    outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall + " inches";
                     this.emit(':tell', outputMsg);
                 }
             });
@@ -419,7 +420,7 @@ var handlers = {
             resortID = getResortID(slotResort);
             console.log("resortID from func: " + resortID);
 
-            var resortName = slotResortID.split('_').join(' ');
+            var resortName = resortID.split('_').join(' ');
             //-------------------------------------
             getWeather(resortID, (response) => {
                 if (response == null) {
@@ -430,6 +431,7 @@ var handlers = {
                     var responseData = JSON.parse(response);
                     if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
                         outputMsg = "There was an error getting the weather for " + resortName;
+                        this.emit(':tell', outputMsg);
                     }
                     else {
                         var temperature = responseData.properties.periods[0].temperature;
@@ -443,11 +445,6 @@ var handlers = {
                         }
 
                         outputMsg += ", with a forecast of " + shortForecast;
-
-                        //TEMP REMOVE eventually
-                        if (resortID) {
-                            outputMsg += ", resort id is " + resortID;
-                        }
                     }
                     this.emit(':tell', outputMsg);
                 }
