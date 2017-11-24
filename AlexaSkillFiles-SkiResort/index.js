@@ -6,11 +6,12 @@ var db = require('./AWS_Helpers');
 var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. What would you like to know?";
-var HELP_MESSAGE = "INSERT HELP MESSAGE";
-var HELP_REPROMPT = "INSERT HELP REPROMPT";
+var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts.";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, or Mission Ridge.";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try again.";
-var STOP_MESSAGE = "Goodbye!";
+var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information. Please try again.";
+var UNKNOWN_RESORT = "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support";
 
 var outputMsg = "";
 
@@ -40,7 +41,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
+            this.emit(':ask', UNKNOWN_RESORT);
             //todo: handle the err better
         }
         else {
@@ -59,7 +60,12 @@ var handlers = {
                 else {
                     var responseData = JSON.parse(response);
                     if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
-                        outputMsg = "There was an error getting the weather for " + resortName;
+                        if(resortName === "ERROR"){
+                            outputMsg = "There was an error getting the weather for that resort";
+                        }
+                        else {
+                            outputMsg = "There was an error getting the weather for " + resortName;
+                        }
                     }
                     else {
                         var forecast = responseData.properties.periods[0].detailedForecast;
@@ -82,8 +88,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -154,8 +159,7 @@ var handlers = {
 
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -176,7 +180,12 @@ var handlers = {
                         else {
                             var responseData = JSON.parse(response);
                             if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
-                                outputMsg = "There was an error getting the weather for " + resortName;
+                                if(resortName === "ERROR"){
+                                    outputMsg = "There was an error getting the weather for that resort";
+                                }
+                                else {
+                                    outputMsg = "There was an error getting the weather for " + resortName;
+                                }
                             }
                             else {
 
@@ -192,7 +201,7 @@ var handlers = {
                                     //day not found in response (either is asking for 7th day,
                                     // or specially named holiday replaced day name IE: Veterans day instead of Saturday
                                     console.log("Couldn't find weather data for day: " + slotDay);
-                                    this.emit(':tell', "Sorry, I don't have the extended forecast for " + slotDay); //todo: check error response is appropriate
+                                    this.emit(':tell', "Sorry, I don't have the extended forecast for " + slotDay);
                                 }
                                 else {
                                     var detailedForecast = responseData.properties.periods[(periodsNum[0])].detailedForecast;
@@ -211,10 +220,10 @@ var handlers = {
             }
             else {
                 console.log("Day not recognized.");
-                this.emit(':ask', "Sorry, I didn't understand that. Try again please."); //todo test is this is good response
+                this.emit(':ask', "Sorry, I didn't understand that. Try again please.");
             }
         }
-    }, //TODO: Test
+    },
     'snowReportOvernight': function () {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
@@ -227,8 +236,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -272,8 +280,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -304,7 +311,7 @@ var handlers = {
                 }
             });
         }
-    }, //test
+    },
     'snowReportSeasonTotal': function () {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
@@ -317,8 +324,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -348,7 +354,7 @@ var handlers = {
                 }
             });
         }
-    }, //test
+    },
     'snowReportDepth': function () {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
@@ -361,8 +367,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -396,7 +401,7 @@ var handlers = {
                 }
             });
         }
-    }, //test
+    },
     'temperatureToday': function () {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
@@ -411,8 +416,7 @@ var handlers = {
 
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -430,7 +434,12 @@ var handlers = {
                 else {
                     var responseData = JSON.parse(response);
                     if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
-                        outputMsg = "There was an error getting the weather for " + resortName;
+                        if(resortName === "ERROR"){
+                            outputMsg = "There was an error getting the weather for that resort";
+                        }
+                        else {
+                            outputMsg = "There was an error getting the weather for " + resortName;
+                        }
                         this.emit(':tell', outputMsg);
                     }
                     else {
@@ -463,8 +472,7 @@ var handlers = {
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -510,8 +518,7 @@ var handlers = {
 
         if (!slotResort) {
             console.log("NOT a valid resort");
-            this.emit(':ask', "Sorry, I don't know that resort. If you'd like to know the resorts I support just ask me what resorts I support");
-            //todo: handle the err better
+            this.emit(':ask', UNKNOWN_RESORT);
         }
         else {
             console.log("Resort is: " + slotResort);
@@ -532,7 +539,12 @@ var handlers = {
                         else {
                             var responseData = JSON.parse(response);
                             if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
-                                outputMsg = "There was an error getting the weather for " + resortName;
+                                if(resortName === "ERROR"){
+                                    outputMsg = "There was an error getting the weather for that resort";
+                                }
+                                else {
+                                    outputMsg = "There was an error getting the weather for " + resortName;
+                                }
                             }
                             else {
 
@@ -567,10 +579,15 @@ var handlers = {
             }
             else {
                 console.log("Day not recognized.");
-                this.emit(':ask', "Sorry, I didn't understand that. Try again please."); //todo test is this is good response
+                this.emit(':ask', "Sorry, I didn't understand that. Try again please.");
             }
         }
-    }, //test
+    },
+    'supportedResorts': function () {
+      outputMsg = "The resorts that I currently support are ";
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, and Mission Ridge."
+        this.emit(':tell', outputMsg);
+    },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
         var reprompt = HELP_REPROMPT;

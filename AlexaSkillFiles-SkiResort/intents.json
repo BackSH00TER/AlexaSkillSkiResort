@@ -73,7 +73,9 @@
           "what is the weather at {Resort} going to be like today",
           "what is the weather going to be like today at {Resort}",
           "what is today's forecast for {Resort}",
-          "give me an update on {Resort} weather conditions"
+          "give me an update on {Resort} weather conditions",
+          "give me a weather report for {Resort}",
+          "give me today's weather report for {Resort}"
         ],
         "slots": [
           {
@@ -161,11 +163,13 @@
         ]
       },
       {
-        "name": "snowReportOverNight",
+        "name": "snowReportOvernight",
         "samples": [
           "how much snow did {Resort} get last night",
           "how much snow fell at {Resort} last night",
+          "how much snow did {Resort} get overnight",
           "tell me how much snow {Resort} got last night",
+          "tell me how much snow {Resort} got overnight",
           "what was the overnight snow fall at {Resort}"
         ],
         "slots": [
@@ -181,7 +185,9 @@
           "how much snow has {Resort} got this season",
           "how much snow has {Resort} received this season",
           "how much snow fell at {Resort} this season",
+          "how much snow has {Resort} got this year",
           "tell me how much snow {Resort} has gotten this season",
+          "tell me how much snow {Resort} has gotten this year",
           "what is the season total snow fall at {Resort}",
           "what is the season total for snow at {Resort}"
         ],
@@ -193,13 +199,26 @@
         ]
       },
       {
+        "name": "supportedResorts",
+        "samples": [
+          "what resorts do you support",
+          "what resorts are supported",
+          "which resorts are supported",
+          "which resorts can i ask about"
+        ],
+        "slots": []
+      },
+      {
         "name": "temperatureToday",
         "samples": [
           "what is the current temperature at {Resort}",
           "what's the temperature at {Resort}",
           "tell me the temperature right now at {Resort}",
           "tell me the temperature at {Resort}",
-          "get me the temp at {Resort}"
+          "get me the temp at {Resort}",
+          "what is the temperature at {Resort} right now",
+          "what is today's temperature at {Resort}",
+          "what is the temperature going to be for {Resort}"
         ],
         "slots": [
           {

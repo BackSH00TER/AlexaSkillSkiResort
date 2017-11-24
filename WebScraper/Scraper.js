@@ -1,13 +1,14 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
-const db = require('../AWS_Helpers');
+const db = require('./AWS_Helpers');
 const fs = require('fs');
 
 //--------------CALL LAMBDA TEST TO RUN exports.handler locally--------------------
 
 
 exports.handler = function(event, context, callback) {
-    var dir = './WebScraper/resorts';
+    var pwd = __dirname;
+    var dir = pwd + '/resorts';
     getListOfFiles(dir, (resortList) => {
         console.log("Reading from each file");
 
