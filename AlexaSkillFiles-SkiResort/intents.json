@@ -136,7 +136,8 @@
           "how deep is the snow at {Resort}",
           "tell me how much snow {Resort} has",
           "give me a snow report on {Resort}",
-          "what is the snow report for {Resort}"
+          "what is the snow report for {Resort}",
+          "give me the snow report for {Resort}"
         ],
         "slots": [
           {
