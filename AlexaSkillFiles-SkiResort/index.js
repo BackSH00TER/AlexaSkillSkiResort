@@ -35,11 +35,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) { //todo: need to check status code, resolution.status.code, if match or no match
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) { //missing a value for slot, dont continue
             console.log("NOT a valid resort, missing resort value");
@@ -87,11 +87,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -172,11 +172,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
 
         if (!slotResort) {
@@ -255,11 +255,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -304,11 +304,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -353,11 +353,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -401,11 +401,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -453,11 +453,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
 
         //-----------------------END HOLD---------------------
 
@@ -516,11 +516,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
         if (!slotResort) {
             console.log("NOT a valid resort, missing resort value");
@@ -576,11 +576,11 @@ var handlers = {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
-        if (this.event.request.intent.slots.Resort.resolutions) {
+        /*if (this.event.request.intent.slots.Resort.resolutions) {
             var resolution = this.event.request.intent.slots.Resort.resolutions.resolutionsPerAuthority;
             resortID = resolution[0].values[0].value.id;
             console.log("resolution id: " + resortID);
-        }
+        }*/
         //-----------------------END HOLD---------------------
 
         if (!slotResort) {
