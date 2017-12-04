@@ -23,6 +23,15 @@ exports.handler = function(event, context, callback) {
                     }
                     else {
                         console.log("Data for: " + data.resort);
+
+                        //Before sending data, loop over and check for blank value
+                        //Blank value indicates selector failed to get value from website (probably broken selector)
+                        for (var res in data.type) {
+                            if(data.type[res] === "") {
+                                console.log("Data of : " + data.resort + " " + res + " equals blank"); //TODO find way to alert of this
+                                data.type[res] = "FAIL";
+                            }
+                        }
                         console.log(data);
                         var params = {
                             TableName: "SkiResortData",

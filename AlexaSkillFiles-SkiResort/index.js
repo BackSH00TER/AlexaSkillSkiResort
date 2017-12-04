@@ -251,7 +251,7 @@ var handlers = {
             }
         }
     },
-    'snowReportOvernight': function () {
+    'snowReportOvernight': function ()  {
         var slotResort = this.event.request.intent.slots.Resort.value;
         ///------------------HOLD TILL FIGURE OUT WHY RESOLUTION NOW PASSED IN REQUEST (Doesnt work in Build Screen, works on echosim/device---------
         var resortID = "";
@@ -293,8 +293,16 @@ var handlers = {
                 }
                 else {
                     var overNightSnow = response.Item.overNightSnowFall;
-                    var inch = (overNightSnow == 1) ? "inch" : "inches";
-                    outputMsg = resortName + " got " + overNightSnow + " " + inch + " of snow over night.";
+                    if(overNightSnow === "FAIL") {
+                        outputMsg = "Sorry, there was an error getting the over night snow fall at this time. If this issue persists please contact the developer."
+                    }
+                    else if(overNightSnow === "N/A") {
+                        outputMsg = "Sorry, I don't currently support getting the over night snow fall for " + resortName;
+                    }
+                    else {
+                        var inch = (overNightSnow == 1) ? "inch" : "inches";
+                        outputMsg = resortName + " got " + overNightSnow + " " + inch + " of snow over night.";
+                    }
                     this.emit(':tell', outputMsg);
                 }
             });
@@ -343,7 +351,24 @@ var handlers = {
                 else {
                     var snowFall = response.Item.snowFallOneDay;
                     var twoDay = response.Item.snowFallTwoDay;
-                    outputMsg = resortName + " got " + snowFall + " inches of snow yesterday and a total of " + twoDay + " inches in the last two days.";
+                    var inchOne = (snowFall == 1) ? "inch" : "inches";
+                    var inchTwo = (twoDay == 1) ? "inch" : "inches";
+
+                    if(snowFall === "N/A" && twoDay === "N/A") {
+                        outputMsg = "Sorry, I don't currently support getting yesterdays snow report for " + resortName;
+                    }
+                    else if((snowFall === "FAIL" && twoDay === "FAIL") || (snowFall === "FAIL" && twoDay === "N/A") || (snowFall === "N/A" && twoDay === "FAIL")) {
+                        outputMsg = "Sorry, there was an error getting yesterdays snow report for " + resortName + ". If this issue persists please contact the developer.";
+                    }
+                    else if((snowFall !== "FAIL" && snowFall !== "N/A") && (twoDay === "N/A" || twoDay === "FAIL")) {
+                        outputMsg = resortName + " got " + snowFall + " " + inchOne + " of snow yesterday.";
+                    }
+                    else if((twoDay !== "N/A" && twoDay !== "FAIL") && (snowFall === "FAIL" || snowFall === "N/A")) {
+                        outputMsg = resortName + " got " + twoDay + " " + inchTwo + " of snow in the past two days.";
+                    }
+                    else {
+                        outputMsg = resortName + " got " + snowFall + " " + inchOne + " of snow yesterday and a total of " + twoDay + " " + inchTwo + " in the last two days.";
+                    }
                     this.emit(':tell', outputMsg);
                 }
             });
@@ -391,7 +416,15 @@ var handlers = {
                 }
                 else {
                     var snowFall = response.Item.seasonSnowFall;
-                    outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall + " inches";
+                    if(snowFall === "FAIL") {
+                        outputMsg = "Sorry, there was an error getting the season snow fall for " + resortName + ". If this issue persists please contact the developer.";
+                    }
+                    else if(snowFall === "N/A") {
+                        outputMsg = "Sorry, I don't current support getting the season snow fall for " + resortName;
+                    }
+                    else {
+                        outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall + " inches";
+                    }
                     this.emit(':tell', outputMsg);
                 }
             });
@@ -438,12 +471,32 @@ var handlers = {
                     this.emit(':ask', outputMsg);
                 }
                 else {
+                    outputMsg = "";
                     var base = response.Item.snowDepthBase;
                     var midMtn = response.Item.snowDepthMidMtn;
                     var seasonTotal = response.Item.seasonSnowFall;
                     var twoDay = response.Item.snowFallTwoDay;
-                    outputMsg = "In the last two days " + resortName + " has received " + twoDay + " inches of new snow. The base depth is currently at " + base + " inches and mid mountain is at " + midMtn + " inches.";
-                    outputMsg += " The season total is " + seasonTotal + " inches."
+                    var twoDayInches = (twoDay == 1) ? "inch" : "inches";
+
+                    var status1 = false;
+                    var status2 = false;
+                    var status3 = false;
+
+                    if(twoDay !== "N/A" && twoDay !== "FAIL") {
+                        outputMsg = "In the last two days " + resortName + " has received " + twoDay + " " + twoDayInches + " of new snow.";
+                        status1 = true;
+                    }
+                    if((base !== "N/A" && midMtn !== "FAIL") && (midMtn !== "N/A" && midMtn !== "FAIL")) {
+                        outputMsg += " The base depth is currently at " + base + " inches and mid mountain is at " + midMtn + " inches.";
+                        status2 = true;
+                    }
+                    if(seasonTotal !== "N/A" && seasonTotal !== "FAIL") {
+                        outputMsg += " The season total is " + seasonTotal + " inches.";
+                        status3 = true;
+                    }
+                    if(!status1 && !status2 && !status3) {
+                        outputMsg = "Sorry, there was an error getting the season total snow fall for " + resortName + ". If this issue persists please contact the developer.";
+                    }
                     this.emit(':tell', outputMsg);
                 }
             });
