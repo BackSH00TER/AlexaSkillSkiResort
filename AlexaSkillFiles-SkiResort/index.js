@@ -303,6 +303,8 @@ var handlers = {
                         var tempLow = responseData.properties.periods[indexTomorrow + 1].temperature;
                         var detailedForecast = responseData.properties.periods[indexTomorrow].detailedForecast;
 
+                        outputMsg = "Tomorrow at " + resortName + " there will be a high of " + tempHigh + " with a low of " + tempLow + " degrees."
+                        outputMsg += " The forecast calls for " + detailedForecast;
 
                         this.emit(':tell', outputMsg);
                     }
