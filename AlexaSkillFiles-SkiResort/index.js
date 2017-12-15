@@ -11,6 +11,7 @@ var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
+var WEATHER_SERVICE_ERR = "I'm sorry, there was an error getting the data from the weather service database. If this issue persists fo, please contact the developer."
 var UNKNOWN_RESORT = "Sorry, I didn't catch the resort you said. Try asking again with one of the supported resorts.";
 var UNKOWN_RESORT_REPROMPT = "I didn't hear the resort you were asking about. Try asking the question again using one of the supported resorts.";
 var INVALID_RESORT = "Sorry, I don't currently support that resort. Try asking your question again using one of the supported resorts. Just ask me if you dont know which resorts are supported."
@@ -59,8 +60,8 @@ var handlers = {
         }
         else {
             getWeather(resortID, (response) => {
-                if (response == null) {
-                    outputMsg = ERROR_MESSAGE;
+                if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
                 else {
@@ -111,8 +112,8 @@ var handlers = {
         }
         else {
             getWeather(resortID, (response) => {
-                if (response == null) {
-                    outputMsg = ERROR_MESSAGE;
+                if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
                 else {
@@ -200,8 +201,8 @@ var handlers = {
             var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             if (daysOfWeek.indexOf(slotDay) >= 0) {
                 getWeather(resortID, (response) => {
-                        if (response == null) {
-                            outputMsg = ERROR_MESSAGE;
+                        if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                             this.emit(':ask', outputMsg);
                         }
                         else {
@@ -280,8 +281,8 @@ var handlers = {
         }
         else {
             getWeather(resortID, (response) => {
-                if (response == null) {
-                    outputMsg = ERROR_MESSAGE;
+                if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
                 else {
@@ -593,8 +594,8 @@ var handlers = {
         }
         else {
             getWeather(resortID, (response) => {
-                if (response == null) {
-                    outputMsg = ERROR_MESSAGE;
+                if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
                 else {
@@ -654,8 +655,8 @@ var handlers = {
         }
         else {
             getWeather(resortID, (response) => {
-                if (response == null) {
-                    outputMsg = ERROR_MESSAGE;
+                if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
                 else {
@@ -718,8 +719,8 @@ var handlers = {
             var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             if (daysOfWeek.indexOf(slotDay) >= 0) {
                 getWeather(resortID, (response) => {
-                        if (response == null) {
-                            outputMsg = ERROR_MESSAGE;
+                        if (response == null || response === "WEATHER SERVICE ERROR") {
+                    outputMsg = WEATHER_SERVICE_ERR;
                             this.emit(':ask', outputMsg);
                         }
                         else {
@@ -802,28 +803,47 @@ var handlers = {
 function getWeather(resort, callback) {
     var urlPath = "";
     switch (resort) {
-        case "Stevens_Pass":
-            urlPath = '/points/47.7459,-121.0891/forecast';
+        case "Stevens Pass":
+            urlPath = '/gridpoints/SEW/164,66/forecast';//'/points/47.7459,-121.0891/forecast';
             console.log("Stevens Pass Weather");
             break;
-        case "Snoqualmie_Pass":
-            urlPath = '/points/47.4374,-121.4154/forecast';
+        case "Snoqualmie Pass":
+            urlPath = '/gridpoints/SEW/151,53/forecast';//'/points/47.4374,-121.4154/forecast';
             console.log("Snoqualmie weather");
             break;
-        case "Crystal_Mountain":
-            urlPath = '/points/46.9291,-121.501/forecast';
+        case "Crystal Mountain":
+            urlPath = '/gridpoints/SEW/144,30/forecast';//'/points/46.9291,-121.501/forecast';
             console.log("Crystal weather");
             break;
-        case "Mt_Baker":
-            urlPath = '/points/48.8541,-121.68/forecast';
+        case "Mt Baker":
+            urlPath = '/gridpoints/SEW/156,122/forecast';//'/points/48.8541,-121.68/forecast';
             console.log("Baker weather");
             break;
-        case "Mission_Ridge":
-            urlPath = '/points/47.2867,-120.4184/forecast';
+        case "Mission Ridge":
+            urlPath = '/gridpoints/OTX/42,89/forecast';//'/points/47.2867,-120.4184/forecast';
             console.log("Mission ridge weather");
             break;
-        default:
 
+
+        // case "Mount_Hood":
+        //     urlPath = '/points/47.2867,-120.4184/forecast';
+        //     console.log("Mount Hood weather");
+        //     break;
+        // case "Mount_Bachelor":
+        //     urlPath = '/points/47.2867,-120.4184/forecast';
+        //     console.log("Mount Bachelor weather");
+        //     break;
+        // case "Schweitzer":
+        //     urlPath = '/points/47.2867,-120.4184/forecast';
+        //     console.log("Schweitzer weather");
+        //     break;
+        // case "Sun_Valley":
+        //     urlPath = '/points/47.2867,-120.4184/forecast';
+        //     console.log("Sun Valley weather");
+        //     break;
+
+        default:
+            urlPath='/'
             break;
     }
     var options = {
@@ -845,7 +865,12 @@ function getWeather(resort, callback) {
         });
 
         res.on('end', () => {
-            callback(returnData);
+            if(returnData.indexOf("properties") > -1) {
+                callback(returnData);
+            }
+            else {
+                callback("WEATHER SERVICE ERROR");
+            }
         });
     });
     req.end();
