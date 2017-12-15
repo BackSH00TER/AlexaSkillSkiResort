@@ -803,23 +803,23 @@ var handlers = {
 function getWeather(resort, callback) {
     var urlPath = "";
     switch (resort) {
-        case "Stevens Pass":
+        case "Stevens_Pass":
             urlPath = '/gridpoints/SEW/164,66/forecast';//'/points/47.7459,-121.0891/forecast';
             console.log("Stevens Pass Weather");
             break;
-        case "Snoqualmie Pass":
+        case "Snoqualmie_Pass":
             urlPath = '/gridpoints/SEW/151,53/forecast';//'/points/47.4374,-121.4154/forecast';
             console.log("Snoqualmie weather");
             break;
-        case "Crystal Mountain":
+        case "Crystal_Mountain":
             urlPath = '/gridpoints/SEW/144,30/forecast';//'/points/46.9291,-121.501/forecast';
             console.log("Crystal weather");
             break;
-        case "Mt Baker":
+        case "Mt_Baker":
             urlPath = '/gridpoints/SEW/156,122/forecast';//'/points/48.8541,-121.68/forecast';
             console.log("Baker weather");
             break;
-        case "Mission Ridge":
+        case "Mission_Ridge":
             urlPath = '/gridpoints/OTX/42,89/forecast';//'/points/47.2867,-120.4184/forecast';
             console.log("Mission ridge weather");
             break;
