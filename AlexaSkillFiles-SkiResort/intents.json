@@ -18,7 +18,8 @@
             "name": {
               "value": "Snoqualmie Pass",
               "synonyms": [
-                "Snoqualmie"
+                "Snoqualmie",
+                "summit at snoqualmie"
               ]
             }
           },
@@ -45,6 +46,39 @@
             "id": "Mission_Ridge",
             "name": {
               "value": "Mission Ridge",
+              "synonyms": []
+            }
+          },
+          {
+            "id": "Mt_Hood",
+            "name": {
+              "value": "Mt Hood",
+              "synonyms": [
+                "mount hood"
+              ]
+            }
+          },
+          {
+            "id": "Mt_Bachelor",
+            "name": {
+              "value": "Mt Bachelor",
+              "synonyms": [
+                "mount bachelor",
+                "bachelor"
+              ]
+            }
+          },
+          {
+            "id": "Schweitzer",
+            "name": {
+              "value": "Schweitzer",
+              "synonyms": []
+            }
+          },
+          {
+            "id": "Sun_Valley",
+            "name": {
+              "value": "Sun Valley",
               "synonyms": []
             }
           }
@@ -85,6 +119,26 @@
         ]
       },
       {
+        "name": "forecastTomorrow",
+        "samples": [
+          "what is the weather going to be like at {Resort} tomorrow",
+          "what's tomorrows forecast at {Resort}",
+          "what is tomorrows forecast for {Resort}",
+          "what's the forecast at {Resort} for tomorrow",
+          "what is the weather at {Resort} going to be like tomorrow",
+          "what is the weather going to be like tomorrow at {Resort}",
+          "what is tomorrow's forecast for {Resort}",
+          "give me tomorrows weather update on {Resort}",
+          "give me tomorrows weather report for {Resort}"
+        ],
+        "slots": [
+          {
+            "name": "Resort",
+            "type": "LIST_OF_RESORTS"
+          }
+        ]
+      },
+      {
         "name": "forecastWeek",
         "samples": [
           "what is the weekly forecast for {Resort}",
@@ -114,7 +168,10 @@
           "what's {Day} forecast at {Resort}",
           "what is the weather at {Resort} going to be like on {Day}",
           "what is the weather going to be like on {Day} at {Resort}",
-          "what is {Day} forecast for {Resort}"
+          "what is {Day} forecast for {Resort}",
+          "what will the weather be at {Resort} on {Day}",
+          "what will the weather be this {Day} at {Resort}",
+          "get the weather for {Resort} on {Day}"
         ],
         "slots": [
           {
@@ -253,12 +310,7 @@
           "what will the temperature at {Resort} be on {Day}",
           "what will the temperature be on {Day} at {Resort}",
           "what will the temperature be next {Day} at {Resort}",
-          "what is the temperature going to be at {Resort} on {Day}",
-          "what is the weather going to be like on {Day} at {Resort}",
-          "what is the weather going to be like at {Resort} on {Day}",
-          "what will the weather be at {Resort} on {Day}",
-          "what will the weather be this {Day} at {Resort}",
-          "get the weather for {Resort} on {Day}"
+          "what is the temperature going to be at {Resort} on {Day}"
         ],
         "slots": [
           {

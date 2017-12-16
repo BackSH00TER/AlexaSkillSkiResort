@@ -75,7 +75,11 @@ exports.handler = function(event, context, callback) {
 
                 //Temporary solution for selectors
                 //Need to find way to properly store these in the resort json files and parse out
+                //------------------------------------------------------------------------------
+                //------------------                SELECTORS             ----------------------
+                //------------------------------------------------------------------------------
                 var currentResort = "";
+
                 var stevensPass = {
                     resort: "Stevens Pass",
                     selectors: {
@@ -141,6 +145,59 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
+                var mtHood = {
+                    resort: "Mount Hood",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.reading.depth')[0]).text().slice(0, -1),
+                        snowFallOneDay: $($('.reading.depth')[1]).text().slice(0, -1),
+                        snowFallTwoDay: $($('.reading.depth')[2]).text().slice(0, -1),
+                        snowDepthBase: $('.snowdepth-base .reading.depth').text().substring(5).split("\"", 1)[0],
+                        snowDepthMidMtn: $('.snowdepth-mid .reading.depth').text().substring(4).split("\"", 1)[0],
+                        seasonSnowFall: $('.snowdepth-ytd .reading.depth').text().slice(0, -1)
+                    }
+                };
+
+                var mtBachelor = {
+                    resort: "Mount Bachelor",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.key')[0]).text().slice(0, -1),
+                        snowFallOneDay: $($('.key')[1]).text().slice(0, -1),
+                        snowFallTwoDay: $($('.key')[2]).text().slice(0, -1),
+                        snowDepthBase: $($('.key')[11]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.key')[5]).text().slice(0, -1),
+                        seasonSnowFall: $($('.key')[10]).text().slice(0, -1),
+                    }
+                };
+
+                var schweitzer = {
+                    resort: "Schweitzer",
+                    selectors: {
+                        reportDateUpdated: $('.snow-report-last-updated').text(),
+                        overNightSnowFall: $($('.quickList .hour .convert.inches')[0]).text().trim().slice(0, -1),
+                        snowFallOneDay: $($('.quickList .hour .convert.inches')[1]).text().trim().slice(0, -1),
+                        snowFallTwoDay: $($('.quickList .hour .convert.inches')[2]).text().trim().slice(0, -1),
+                        snowDepthBase: $($('.quickList.depths .convert.inches')[2]).text().trim().slice(0, -1),
+                        snowDepthMidMtn: $($('.quickList.depths .convert.inches')[1]).text().trim().slice(0, -1),
+                        seasonSnowFall: $($('.quickList .season .convert.inches')).text().trim().slice(0, -1),
+                    }
+                };
+
+                var sunValley = {
+                    resort: "Sun Valley",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.weather-time h3')[0]).text().slice(0, -1),
+                        snowFallOneDay: $($('.weather-time h3')[1]).text().slice(0, -1),
+                        snowFallTwoDay: $($('.weather-time h3')[2]).text().slice(0, -1),
+                        snowDepthBase: $($('.weather-data h3')[0]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.weather-data h3')[1]).text().slice(0, -1),
+                        seasonSnowFall: $($('.weather-data h3')[2]).text().slice(0, -1)
+                    }
+                };
+
+                //Assign current resort to use selectors of the currently selected resort
                 switch (resort) {
                     case "stevens.json":
                         currentResort = stevensPass;
@@ -156,6 +213,18 @@ exports.handler = function(event, context, callback) {
                         break;
                     case "mission_ridge.json":
                         currentResort = missionRidge;
+                        break;
+                    case "mthood.json":
+                        currentResort = mtHood;
+                        break;
+                    case "mtbachelor.json":
+                        currentResort = mtBachelor;
+                        break;
+                    case "schweitzer.json":
+                        currentResort = schweitzer;
+                        break;
+                    case "sun_valley.json":
+                        currentResort = sunValley;
                         break;
                     default:
                         callback("ERROR: Invalid Resort");

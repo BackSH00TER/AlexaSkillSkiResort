@@ -7,7 +7,7 @@ var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
-var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, or Mission Ridge. What would you like to know?";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood, Mount Bachelor, Schweitzer, or Sun Valley. What would you like to know?";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
@@ -772,7 +772,7 @@ var handlers = {
     },
     'supportedResorts': function () {
       outputMsg = "The resorts that I currently support are ";
-      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, and Mission Ridge. What else would you like to know?"
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood, Mount Bachelor, Schweitzer, and Sun Valley. What else would you like to know?"
         this.emit(':ask', outputMsg);
     },
     'AMAZON.HelpIntent': function () {
@@ -823,24 +823,22 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/OTX/42,89/forecast';//'/points/47.2867,-120.4184/forecast';
             console.log("Mission ridge weather");
             break;
-
-
-        // case "Mount_Hood":
-        //     urlPath = '/points/47.2867,-120.4184/forecast';
-        //     console.log("Mount Hood weather");
-        //     break;
-        // case "Mount_Bachelor":
-        //     urlPath = '/points/47.2867,-120.4184/forecast';
-        //     console.log("Mount Bachelor weather");
-        //     break;
-        // case "Schweitzer":
-        //     urlPath = '/points/47.2867,-120.4184/forecast';
-        //     console.log("Schweitzer weather");
-        //     break;
-        // case "Sun_Valley":
-        //     urlPath = '/points/47.2867,-120.4184/forecast';
-        //     console.log("Sun Valley weather");
-        //     break;
+        case "Mt_Hood":
+            urlPath = '/gridpoints/PQR/143,88/forecast';//'/points/45.3419,-121.6689/forecast';
+            console.log("Mount Hood weather");
+            break;
+        case "Mt_Bachelor":
+            urlPath = '/gridpoints/PDT/22,39/forecast';//'/points/43.9889,-121.6818/forecast';
+            console.log("Mount Bachelor weather");
+            break;
+        case "Schweitzer":
+            urlPath = '/gridpoints/OTX/171,120/forecast';//'/points/48.3799,-116.6339/forecast';
+            console.log("Schweitzer weather");
+            break;
+        case "Sun_Valley":
+            urlPath = '/gridpoints/PIH/38,93/forecast';//'/points/43.6826586,-114.3763201/forecast';
+            console.log("Sun Valley weather");
+            break;
 
         default:
             urlPath='/'
@@ -889,6 +887,7 @@ function getResortID(slotResort) {
             break;
         case "snoqualmie":
         case "snoqualmie pass":
+        case "summit at snoqualmie":
             slotResortID = "Snoqualmie_Pass";
             break;
         case "crystal":
@@ -902,6 +901,21 @@ function getResortID(slotResort) {
             break;
         case "mission ridge":
             slotResortID = "Mission_Ridge";
+            break;
+        case "mount hood":
+        case "mount hood meadows":
+        case "mt hood":
+            slotResortID = "Mt_Hood";
+            break;
+        case "mount bachelor":
+        case "mt bachelor":
+        case "bachelor":
+            slotResortID = "Mt_Bachelor";
+            break;
+            slotResortID = "Schweitzer";
+            break;
+        case "sun valley":
+            slotResortID = "Sun_Valley";
             break;
         default:
             slotResortID = "ERROR";
