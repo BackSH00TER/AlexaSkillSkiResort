@@ -912,6 +912,7 @@ function getResortID(slotResort) {
         case "bachelor":
             slotResortID = "Mt_Bachelor";
             break;
+        case "schweitzer":
             slotResortID = "Schweitzer";
             break;
         case "sun valley":
