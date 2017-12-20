@@ -921,5 +921,27 @@ function getResortID(slotResort) {
         default:
             slotResortID = "ERROR";
     }
+
+    var usedResort = (slotResortID !== "ERROR") ? slotResortID : slotResort;
+    //Track resorts that are called
+    var params = {
+        TableName: "SkiResortTracking",
+        Key: {
+            "resort": usedResort
+        },
+        UpdateExpression: "ADD resortCounter :val",
+        ExpressionAttributeValues: {
+            ":val":1
+        },
+        ReturnValues:"UPDATED_NEW"
+    };
+
+    db.updateResortCount(params, (response) => {
+        if(response !== "ERROR") {
+            console.log("Counter updated");
+        }
+        return;
+    });
+
     return slotResortID;
 }
