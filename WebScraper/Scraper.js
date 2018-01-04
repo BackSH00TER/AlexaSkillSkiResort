@@ -120,7 +120,7 @@ exports.handler = function(event, context, callback) {
                 };
 
                 var mtBaker = {
-                    resort: "Mount Baker",
+                    resort: "Mt Baker",
                     selectors: {
                         reportDateUpdated: $('.report-timestamp').text().replace(/\n/g, "").replace("//", ", "),
                         overNightSnowFall: $('.report-snowfall-value-12 .unit-i').text().slice(0, -1),
@@ -145,8 +145,8 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
-                var mtHood = {
-                    resort: "Mount Hood",
+                var mtHoodMeadows = {
+                    resort: "Mt Hood Meadows",
                     selectors: {
                         reportDateUpdated: "N/A",
                         overNightSnowFall: $($('.reading.depth')[0]).text().slice(0, -1),
@@ -158,8 +158,34 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
+                var mtHoodTimberline = {
+                    resort: "Mt Hood Timberline",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[1]).text().slice(0,-1),
+                        snowFallOneDay: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[2]).text().slice(0,-1),
+                        snowFallTwoDay: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[3]).text().slice(0,-1),
+                        snowDepthBase: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[4]).text().slice(0,-1),
+                        snowDepthMidMtn: 'N/A',
+                        seasonSnowFall: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[8]).text().slice(0,-1),
+                    }
+                };
+
+                var mtHoodSkibowl = {
+                    resort: "Mt Hood Skibowl",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.currentConditions td')[11]).text().slice(0,-1),
+                        snowFallOneDay: $($('.currentConditions td')[11]).text().slice(0,-1),
+                        snowFallTwoDay: $($('.currentConditions td')[13]).text().slice(0,-1),
+                        snowDepthBase: $($('.currentConditions td')[9]).text().split("-",1)[0].trim().slice(0,-1),
+                        snowDepthMidMtn: $($('.currentConditions td')[9]).text().split("-",2)[1].slice(0,-1),
+                        seasonSnowFall: $($('.currentConditions td')[15]).text().slice(0,-1)
+                    }
+                };
+
                 var mtBachelor = {
-                    resort: "Mount Bachelor",
+                    resort: "Mt Bachelor",
                     selectors: {
                         reportDateUpdated: "N/A",
                         overNightSnowFall: $($('.key')[0]).text().slice(0, -1),
@@ -214,8 +240,14 @@ exports.handler = function(event, context, callback) {
                     case "mission_ridge.json":
                         currentResort = missionRidge;
                         break;
-                    case "mthood.json":
-                        currentResort = mtHood;
+                    case "mthoodmeadows.json":
+                        currentResort = mtHoodMeadows;
+                        break;
+                    case "mthoodtimberline.json":
+                        currentResort = mtHoodTimberline;
+                        break;
+                    case "mthoodskibowl.json":
+                        currentResort = mtHoodSkibowl;
                         break;
                     case "mtbachelor.json":
                         currentResort = mtBachelor;
