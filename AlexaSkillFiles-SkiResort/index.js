@@ -7,7 +7,7 @@ var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
-var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood, Mount Bachelor, Schweitzer, or Sun Valley. What would you like to know?";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, or Sun Valley. What would you like to know?";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
@@ -482,7 +482,7 @@ var handlers = {
                         outputMsg = "Sorry, there was an error getting the season snow fall for " + resortName + ". If this issue persists please contact the developer.";
                     }
                     else if(snowFall === "N/A") {
-                        outputMsg = "Sorry, I don't current support getting the season snow fall for " + resortName;
+                        outputMsg = "Sorry, I don't currently support getting the season snow fall for " + resortName;
                     }
                     else {
                         outputMsg = "The season total of snow fall at " + resortName + " is " + snowFall + " inches";
@@ -772,7 +772,7 @@ var handlers = {
     },
     'supportedResorts': function () {
       outputMsg = "The resorts that I currently support are ";
-      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood, Mount Bachelor, Schweitzer, and Sun Valley. What else would you like to know?"
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, and Sun Valley. What else would you like to know?"
         this.emit(':ask', outputMsg);
     },
     'AMAZON.HelpIntent': function () {
@@ -823,9 +823,17 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/OTX/42,89/forecast';//'/points/47.2867,-120.4184/forecast';
             console.log("Mission ridge weather");
             break;
-        case "Mt_Hood":
+        case "Mt_Hood_Meadows":
             urlPath = '/gridpoints/PQR/143,88/forecast';//'/points/45.3419,-121.6689/forecast';
-            console.log("Mount Hood weather");
+            console.log("Mount Hood Meadows weather");
+            break;
+        case "Mt_Hood_Skibowl":
+            urlPath = '/gridpoints/PQR/139,87/forecast';//'/points/45.3017,-121.7725/forecast';
+            console.log("Mount Hood Skibowl weather");
+            break;
+        case "Mt_Hood_Timberline":
+            urlPath = '/gridpoints/PQR/135,95/forecast';//'/points/‎45.454350,-121.933136/forecast';
+            console.log("Mount Hood Timberline weather");
             break;
         case "Mt_Bachelor":
             urlPath = '/gridpoints/PDT/22,39/forecast';//'/points/43.9889,-121.6818/forecast';
@@ -902,10 +910,25 @@ function getResortID(slotResort) {
         case "mission ridge":
             slotResortID = "Mission_Ridge";
             break;
-        case "mount hood":
         case "mount hood meadows":
+        case "mt hood meadows":
+        case "meadows":
+        case "mount hood":
         case "mt hood":
-            slotResortID = "Mt_Hood";
+            slotResortID = "Mt_Hood_Meadows";
+            break;
+        case "mount hood ski bowl":
+        case "mount hood skibowl":
+        case "mt hood ski bowl":
+        case "ski bowl":
+        case "skibowl":
+            slotResortID = "Mt_Hood_Skibowl";
+            break;
+        case "mount hood timberline":
+        case "mt hood timberline":
+        case "timberline lodge":
+        case "timberline":
+            slotResortID = "Mt_Hood_Timberline";
             break;
         case "mount bachelor":
         case "mt bachelor":
@@ -936,6 +959,7 @@ function getResortID(slotResort) {
         ReturnValues:"UPDATED_NEW"
     };
 
+    //TODO: Make return slotResortID wait for updateResortCount to finish async
     db.updateResortCount(params, (response) => {
         if(response !== "ERROR") {
             console.log("Counter updated");

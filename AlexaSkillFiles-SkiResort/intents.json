@@ -50,11 +50,12 @@
             }
           },
           {
-            "id": "Mt_Hood",
+            "id": "Mt_Hood_Meadows",
             "name": {
-              "value": "Mt Hood",
+              "value": "Mt Hood Meadows",
               "synonyms": [
-                "mount hood"
+                "mount hood meadows",
+                "meadows"
               ]
             }
           },
@@ -80,6 +81,29 @@
             "name": {
               "value": "Sun Valley",
               "synonyms": []
+            }
+          },
+          {
+            "id": "Mt_Hood_Skibowl",
+            "name": {
+              "value": "Mt Hood Ski Bowl",
+              "synonyms": [
+                "ski bowl",
+                "skibowl",
+                "mount hood ski bowl",
+                "mount hood skibowl"
+              ]
+            }
+          },
+          {
+            "id": "Mt_Hood_Timberline",
+            "name": {
+              "value": "Mt Hood Timberline",
+              "synonyms": [
+                "mount hood timberline",
+                "timberline lodge",
+                "timberline"
+              ]
             }
           }
         ]

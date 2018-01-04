@@ -166,7 +166,7 @@ exports.handler = function(event, context, callback) {
                         snowFallOneDay: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[2]).text().slice(0,-1),
                         snowFallTwoDay: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[3]).text().slice(0,-1),
                         snowDepthBase: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[4]).text().slice(0,-1),
-                        snowDepthMidMtn: 'N/A',
+                        snowDepthMidMtn: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[4]).text().slice(0,-1),
                         seasonSnowFall: $($('.conditions-panel.bg-dark-blue.uk-text-contrast dt')[8]).text().slice(0,-1),
                     }
                 };
@@ -179,7 +179,7 @@ exports.handler = function(event, context, callback) {
                         snowFallOneDay: $($('.currentConditions td')[11]).text().slice(0,-1),
                         snowFallTwoDay: $($('.currentConditions td')[13]).text().slice(0,-1),
                         snowDepthBase: $($('.currentConditions td')[9]).text().split("-",1)[0].trim().slice(0,-1),
-                        snowDepthMidMtn: $($('.currentConditions td')[9]).text().split("-",2)[1].slice(0,-1),
+                        snowDepthMidMtn: $($('.currentConditions .info')[4]).text().split("-").pop().slice(0,-1).trim(),
                         seasonSnowFall: $($('.currentConditions td')[15]).text().slice(0,-1)
                     }
                 };
