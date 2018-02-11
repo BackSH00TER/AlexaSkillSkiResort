@@ -175,12 +175,12 @@ exports.handler = function(event, context, callback) {
                     resort: "Mt Hood Skibowl",
                     selectors: {
                         reportDateUpdated: "N/A",
-                        overNightSnowFall: $($('.currentConditions td')[11]).text().slice(0,-1),
-                        snowFallOneDay: $($('.currentConditions td')[11]).text().slice(0,-1),
-                        snowFallTwoDay: $($('.currentConditions td')[13]).text().slice(0,-1),
+                        overNightSnowFall: "N/A",
+                        snowFallOneDay: "N/A",
+                        snowFallTwoDay: "N/A",
                         snowDepthBase: $($('.currentConditions td')[9]).text().split("-",1)[0].trim().slice(0,-1),
                         snowDepthMidMtn: $($('.currentConditions .info')[4]).text().split("-").pop().slice(0,-1).trim(),
-                        seasonSnowFall: $($('.currentConditions td')[15]).text().slice(0,-1)
+                        seasonSnowFall: $($('.currentConditions td')[11]).text().slice(0,-1)
                     }
                 };
 
