@@ -5,8 +5,8 @@ const fs = require('fs');
 
 
 scrapeSite(
-    "http://www.skibowl.com/winter/mt-hood-weather-conditions",
-    "mthoodskibowl.json",
+    "http://www.summitatsnoqualmie.com/conditions",
+    "snoqualmie.json",
     (data) => {
         console.log(
             "resort "+  data.resort + "\n" +
@@ -55,16 +55,17 @@ function scrapeSite(url, resort, callback) {
                 }
             };
 
+            // Stats given for Summit West
             var snoqualmiePass = {
                 resort: "Snoqualmie Pass",
                 selectors: {
                     reportDateUpdated: $($('#block-conditions-overview .subtitle')).text(),
-                    overNightSnowFall: $($('.condition-snow .value')[0]).text(),
-                    snowFallOneDay: $($('.condition-snow .value')[10]).text(),
-                    snowFallTwoDay: $($('.condition-snow .value')[11]).text(),
-                    snowDepthBase: $($('.condition-snow-base .value')[2]).text(),
-                    snowDepthMidMtn: $($('.condition-snow-base .value')[1]).text(),
-                    seasonSnowFall: $($('.content .total .value')[0]).text().slice(0, -1)
+                    overNightSnowFall: $($('.box_sides4 .js-measurement')[0]).text(),
+                    snowFallOneDay: $($('.box_sides4 .js-measurement')[1]).text(),
+                    snowFallTwoDay: $($('.box_sides4 .js-measurement')[2]).text(),
+                    snowDepthBase: $($('.box_sides4 .js-measurement')[3]).text(),
+                    snowDepthMidMtn: $($('.box_right4 .js-measurement')[3]).text(),
+                    seasonSnowFall: $($('.box_sides4 .js-measurement')[4]).text()
                 }
             };
 
@@ -98,9 +99,9 @@ function scrapeSite(url, resort, callback) {
                 resort: "Mission Ridge",
                 selectors: {
                     reportDateUpdated: $('.bluebar-time').text().trim(),
-                    overNightSnowFall: $($('.weather.data-table .odd .data')[5]).text().slice(0, -1),
-                    snowFallOneDay: $($('.weather.data-table .even .data')[2]).text().slice(0, -1),
-                    snowFallTwoDay: $($('.weather.data-table .odd .data')[2]).text().slice(0, -1),
+                    overNightSnowFall: $($('.weather.data-table .odd .data')[5]).text() == '-' ? "N/A" : $($('.weather.data-table .odd .data')[5]).text().slice(0, -1),
+                    snowFallOneDay: $($('.weather.data-table .even .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[2]).text().slice(0, -1),
+                    snowFallTwoDay: $($('.weather.data-table .odd .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .odd .data')[2]).text().slice(0, -1),
                     snowDepthBase: $($('.weather.data-table .even .data')[11]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[11]).text().slice(0, -1),
                     snowDepthMidMtn: $($('.weather.data-table .even .data')[9]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[9]).text().slice(0, -1),
                     seasonSnowFall: "N/A"
