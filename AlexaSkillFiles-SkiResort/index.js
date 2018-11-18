@@ -7,7 +7,7 @@ var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
-var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, or Sun Valley. What would you like to know?";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Mountain, or Big Bear Mountain. What would you like to know?";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
@@ -772,7 +772,7 @@ var handlers = {
     },
     'supportedResorts': function () {
       outputMsg = "The resorts that I currently support are ";
-      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, and Sun Valley. What else would you like to know?"
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Moutain, and Big Bear Mountain. What else would you like to know?"
         this.emit(':ask', outputMsg);
     },
     'AMAZON.HelpIntent': function () {
@@ -847,7 +847,14 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/PIH/38,93/forecast';//'/points/43.6826586,-114.3763201/forecast';
             console.log("Sun Valley weather");
             break;
-
+        case "Mammoth_Mountain":
+            urlPath = '/gridpoints/REV/56,16/forecast'; //'/points/37.630768,-119.032631/forecast';
+            console.log("Mammoth Mountain weather");
+            break;
+        case "Big_Bear":
+            urlPath = '/gridpoints/SGX/76,78/forecast';  //'/points/34.236346,-116.8890035/forecast';
+            console.log("Big Bear weather");
+            break;
         default:
             urlPath='/'
             break;
@@ -941,6 +948,14 @@ function getResortID(slotResort) {
             break;
         case "sun valley":
             slotResortID = "Sun_Valley";
+            break;
+        case "mammoth mountain":
+        case "mammoth":
+            slotResortID = "Mammoth_Mountain";
+            break;
+        case "big bear mountain":
+        case "big bear":
+            slotResortID = "Big_Bear";
             break;
         default:
             slotResortID = "ERROR";

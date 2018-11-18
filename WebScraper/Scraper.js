@@ -224,6 +224,32 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
+                var mammothMountain = {
+                    resort: "Mammoth Mountain",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.weather-section.snow-report.winter span')[0]).text().slice(0, -1),
+                        snowFallOneDay: $($('.weather-section.snow-report.winter span')[0]).text().slice(0, -1),
+                        snowFallTwoDay: "N/A",
+                        snowDepthBase: $($('.weather-section.base.winter span')[1]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.weather-section.base.winter span')[2]).text().slice(0, -1),
+                        seasonSnowFall: $($('.weather-section.snow-report.winter span')[1]).text().slice(0, -1)
+                    }
+                };
+    
+                var bigBear = {
+                    resort: "Big Bear Mountain",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.forecast-day-block h4')[0]).text(),
+                        snowFallOneDay: $($('.forecast-day-block h4')[0]).text(),
+                        snowFallTwoDay: "N/A",
+                        snowDepthBase: $($('.forecast-day-block h4')[3]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.forecast-day-block h4')[4]).text().slice(0, -1),
+                        seasonSnowFall: $($('.forecast-day-block h4')[1]).text().slice(0, -1)
+                    }
+                };
+
                 //Assign current resort to use selectors of the currently selected resort
                 switch (resort) {
                     case "stevens.json":
@@ -258,6 +284,12 @@ exports.handler = function(event, context, callback) {
                         break;
                     case "sun_valley.json":
                         currentResort = sunValley;
+                        break;
+                    case "mammoth_mountain.json":
+                        currentResort = mammothMountain;
+                        break;
+                    case "big_bear.json":
+                        currentResort = bigBear;
                         break;
                     default:
                         callback("ERROR: Invalid Resort");

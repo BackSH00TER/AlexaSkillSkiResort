@@ -21,6 +21,12 @@ Files to zip:
 - node_modules/
 - resorts/
 
+#### Adding New Resort
+- Add resort file to `resorts/___.json`
+- Add selectors to Scraper.js
+- Add to weather report in index.js as well
+- Add new slot values on Alexa Dashboard
+
 # Testing
 Use scraperTest.js to test that the web scraper selectors are working for each resort 
 
@@ -29,3 +35,7 @@ To test the Util functions locally:
 - Call functions that need to be tested from file
 - Run `node fileName.js`
    - example `node utilsTest.js`
+
+
+# TODO - Need to add these resorts
+- Breckenridge
