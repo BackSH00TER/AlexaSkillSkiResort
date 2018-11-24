@@ -38,7 +38,6 @@ To test the Util functions locally:
 
 
 # TODO - Need to add these resorts
-- Breckenridge
-- mt washington (east coast)
+
 - Future:
 --- Add support for Canada, based on users region report depths in cm or inches
