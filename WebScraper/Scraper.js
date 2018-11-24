@@ -75,6 +75,7 @@ exports.handler = function(event, context, callback) {
 
                 //Temporary solution for selectors
                 //Need to find way to properly store these in the resort json files and parse out
+                //Possible solution to have files as .js and export the json portion containing selectors
                 //------------------------------------------------------------------------------
                 //------------------                SELECTORS             ----------------------
                 //------------------------------------------------------------------------------
@@ -250,6 +251,33 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
+                // Breckenridge getting data from onthesnow because breckenridge site is weird to scrape
+                var breckenridge = {
+                    resort: "Breckenridge",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallTwoDay: "N/A",
+                        snowDepthBase: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                        snowDepthMidMtn: $($('.elevation.upper .bluePill')).text().slice(0, -1),
+                        seasonSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                    }
+                };
+
+                var mtWashington = {
+                    resort: "Mt Washington",
+                    selectors: {
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: isNaN(Math.round($($('#ROW_ID .span3 span')[0]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[0]).text().slice(0, -2) * 0.39370079),
+                        snowFallOneDay: isNaN(Math.round($($('#ROW_ID .span3 span')[2]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[2]).text().slice(0, -2) * 0.39370079),
+                        snowFallTwoDay: isNaN(Math.round($($('#ROW_ID .span3 span')[4]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[4]).text().slice(0, -2) * 0.39370079),
+                        snowDepthBase: isNaN(Math.round($($('#ROW_ID .span3 span')[6]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[6]).text().slice(0, -2) * 0.39370079),
+                        snowDepthMidMtn: "N/A",
+                        seasonSnowFall: "N/A",
+                    }
+                };
+
                 //Assign current resort to use selectors of the currently selected resort
                 switch (resort) {
                     case "stevens.json":
@@ -290,6 +318,12 @@ exports.handler = function(event, context, callback) {
                         break;
                     case "big_bear.json":
                         currentResort = bigBear;
+                        break;
+                    case "breckenridge.json":
+                        currentResort = breckenridge;
+                        break;
+                    case "mtwashington.json":
+                        currentResort = mtWashington;
                         break;
                     default:
                         callback("ERROR: Invalid Resort");

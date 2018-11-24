@@ -5,8 +5,8 @@ const fs = require('fs');
 
 
 scrapeSite(
-    "https://www.bigbearmountainresort.com/winter/mountain-information/mountain-info/mountain-report",
-    "big_bear.json",
+    "https://www.mammothmountain.com/winter/mountain-information/mountain-information",
+    "mammoth_mountain.json",
     (data) => {
         console.log(
             "resort "+  data.resort + "\n" +
@@ -212,6 +212,33 @@ function scrapeSite(url, resort, callback) {
                 }
             };
 
+            // Breckenridge getting data from onthesnow because breckenridge site is weird to scrape
+            var breckenridge = {
+                resort: "Breckenridge",
+                selectors: {
+                    reportDateUpdated: "N/A",
+                    overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallTwoDay: "N/A",
+                    snowDepthBase: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                    snowDepthMidMtn: $($('.elevation.upper .bluePill')).text().slice(0, -1),
+                    seasonSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                }
+            };
+            
+            var mtWashington = {
+                resort: "Mt Washington",
+                selectors: {
+                    reportDateUpdated: "N/A",
+                    overNightSnowFall: isNaN(Math.round($($('#ROW_ID .span3 span')[0]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[0]).text().slice(0, -2) * 0.39370079),
+                    snowFallOneDay: isNaN(Math.round($($('#ROW_ID .span3 span')[2]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[2]).text().slice(0, -2) * 0.39370079),
+                    snowFallTwoDay: isNaN(Math.round($($('#ROW_ID .span3 span')[4]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[4]).text().slice(0, -2) * 0.39370079),
+                    snowDepthBase: isNaN(Math.round($($('#ROW_ID .span3 span')[6]).text().slice(0, -2) * 0.39370079)) ? 'N/A' : Math.round($($('#ROW_ID .span3 span')[6]).text().slice(0, -2) * 0.39370079),
+                    snowDepthMidMtn: "N/A",
+                    seasonSnowFall: "N/A",
+                }
+            };
+
             // var bogusBasin = { //TODO (numbers aren't working with the selectors, give undefined??
             //     resort: "Bogus Basin",
             //     selectors: {
@@ -265,6 +292,12 @@ function scrapeSite(url, resort, callback) {
                     break;
                 case "big_bear.json":
                     currentResort = bigBear;
+                    break;
+                case "breckenridge.json":
+                    currentResort = breckenridge;
+                    break;
+                case "mtwashington.json":
+                    currentResort = mtWashington;
                     break;
                 // case "bogus_basin.json":
                 //     currentResort = bogusBasin;

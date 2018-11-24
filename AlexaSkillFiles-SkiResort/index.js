@@ -7,11 +7,12 @@ var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
-var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Mountain, or Big Bear Mountain. What would you like to know?";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Mountain, Breckenridge, Big Bear Mountain, or Mount Washington. What would you like to know?";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
-var WEATHER_SERVICE_ERR = "I'm sorry, there was an error getting the data from the weather service database. If this issue persists fo, please contact the developer."
+var WEATHER_SERVICE_ERR = "I'm sorry, there was an error getting the data from the weather service database. If this issue persists, please contact the developer."
+var WEATHER_SERVICE_NOT_SUPPORTED = "I'm sorry, I currently don't support retrieving weather related information for this resort."
 var UNKNOWN_RESORT = "Sorry, I didn't catch the resort you said. Try asking again with one of the supported resorts.";
 var UNKOWN_RESORT_REPROMPT = "I didn't hear the resort you were asking about. Try asking the question again using one of the supported resorts.";
 var INVALID_RESORT = "Sorry, I don't currently support that resort. Try asking your question again using one of the supported resorts. Just ask me if you dont know which resorts are supported."
@@ -64,6 +65,10 @@ var handlers = {
                     outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
+                else if (response === "NOT_SUPPORTED") {
+                    outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                    this.emit(':tell', outputMsg);
+                }
                 else {
                     var responseData = JSON.parse(response);
                     if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
@@ -115,6 +120,10 @@ var handlers = {
                 if (response == null || response === "WEATHER SERVICE ERROR") {
                     outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
+                }
+                else if (response === "NOT_SUPPORTED") {
+                    outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                    this.emit(':tell', outputMsg);
                 }
                 else {
                     var responseData = JSON.parse(response);
@@ -202,8 +211,12 @@ var handlers = {
             if (daysOfWeek.indexOf(slotDay) >= 0) {
                 getWeather(resortID, (response) => {
                         if (response == null || response === "WEATHER SERVICE ERROR") {
-                    outputMsg = WEATHER_SERVICE_ERR;
+                            outputMsg = WEATHER_SERVICE_ERR;
                             this.emit(':ask', outputMsg);
+                        }
+                        else if (response === "NOT_SUPPORTED") {
+                            outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                            this.emit(':tell', outputMsg);
                         }
                         else {
                             var responseData = JSON.parse(response);
@@ -284,6 +297,10 @@ var handlers = {
                 if (response == null || response === "WEATHER SERVICE ERROR") {
                     outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
+                }
+                else if (response === "NOT_SUPPORTED") {
+                    outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                    this.emit(':tell', outputMsg);
                 }
                 else {
                     var responseData = JSON.parse(response);
@@ -598,6 +615,10 @@ var handlers = {
                     outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
                 }
+                else if (response === "NOT_SUPPORTED") {
+                    outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                    this.emit(':tell', outputMsg);
+                }
                 else {
                     var responseData = JSON.parse(response);
                     if (responseData.status == "OK") { //only returned if resort not matched in switch and uses default url
@@ -658,6 +679,10 @@ var handlers = {
                 if (response == null || response === "WEATHER SERVICE ERROR") {
                     outputMsg = WEATHER_SERVICE_ERR;
                     this.emit(':ask', outputMsg);
+                }
+                else if (response === "NOT_SUPPORTED") {
+                    outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                    this.emit(':tell', outputMsg);
                 }
                 else {
                     var responseData = JSON.parse(response);
@@ -720,8 +745,12 @@ var handlers = {
             if (daysOfWeek.indexOf(slotDay) >= 0) {
                 getWeather(resortID, (response) => {
                         if (response == null || response === "WEATHER SERVICE ERROR") {
-                    outputMsg = WEATHER_SERVICE_ERR;
+                            outputMsg = WEATHER_SERVICE_ERR;
                             this.emit(':ask', outputMsg);
+                        }
+                        else if (response === "NOT_SUPPORTED") {
+                            outputMsg = WEATHER_SERVICE_NOT_SUPPORTED;
+                            this.emit(':tell', outputMsg);
                         }
                         else {
                             var responseData = JSON.parse(response);
@@ -772,7 +801,7 @@ var handlers = {
     },
     'supportedResorts': function () {
       outputMsg = "The resorts that I currently support are ";
-      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Moutain, and Big Bear Mountain. What else would you like to know?"
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Moutain, Breckendridge, Big Bear Mountain, and Mount Washington. What else would you like to know?"
         this.emit(':ask', outputMsg);
     },
     'AMAZON.HelpIntent': function () {
@@ -854,6 +883,15 @@ function getWeather(resort, callback) {
         case "Big_Bear":
             urlPath = '/gridpoints/SGX/76,78/forecast';  //'/points/34.236346,-116.8890035/forecast';
             console.log("Big Bear weather");
+            break;
+        case "Breckenridge":
+            urlPath = '/gridpoints/BOU/24,52/forecast'; //'/points/39.4802,-106.0667/forecast';
+            console.log("Breckenridge weather");
+            break;
+        case "Mt_Washington":
+            // urlPath = ''; //'/points/49.73833,-125.2986/forecast'; // not supported because in Canada
+            console.log("Mount Washington weather");
+            callback("NOT_SUPPORTED");
             break;
         default:
             urlPath='/'
@@ -956,6 +994,13 @@ function getResortID(slotResort) {
         case "big bear mountain":
         case "big bear":
             slotResortID = "Big_Bear";
+            break;
+        case "breckenridge":
+            slotResortID = "Breckenridge";
+            break;
+        case "mount washington":
+        case "mt washington":
+            slotResortID = "Mt_Washington";
             break;
         default:
             slotResortID = "ERROR";
