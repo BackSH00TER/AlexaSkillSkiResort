@@ -7,7 +7,7 @@ var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
-var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Mountain, Breckenridge, Big Bear Mountain, or Mount Washington. What would you like to know?";
+var HELP_REPROMPT = "Ask me about the forecast, temperature, or snow reports for the following ski resorts, Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Mountain, Breckenridge, Big Bear Mountain, Mount Washington, Alta, Brighton, Snowbird, Solitude, Deer Valley, Park City, Sundance, Nordic Valley, Powder Mountain, Snowbasin, Brian Head, Eagle Point, or Beaver. What would you like to know?";
 var DIDNT_UNDERSTAND_MESSAGE = "I'm sorry, I didn't understand that. Try asking your question again.";
 var STOP_MESSAGE = "Cya later, have fun on the slopes!";
 var ERROR_MESSAGE = "I'm sorry, there was an error with getting that information from the database. Please try asking your question again.";
@@ -574,7 +574,7 @@ var handlers = {
                         status3 = true;
                     }
                     if(!status1 && !status2 && !status3) {
-                        outputMsg = "Sorry, there was an error getting the season total snow fall for " + resortName + ". If this issue persists please contact the developer.";
+                        outputMsg = "Sorry, there was an error getting the snow report for " + resortName + ". If this issue persists please contact the developer.";
                     }
                     this.emit(':tell', outputMsg);
                 }
@@ -801,7 +801,7 @@ var handlers = {
     },
     'supportedResorts': function () {
       outputMsg = "The resorts that I currently support are ";
-      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Moutain, Breckendridge, Big Bear Mountain, and Mount Washington. What else would you like to know?"
+      outputMsg += "Stevens Pass, Snoqualmie Pass, Crystal Mountain, Mount Baker, Mission Ridge, Mount Hood Meadows, Mount Hood Ski bowl, Mount Hood Timberline, Mount Bachelor, Schweitzer, Sun Valley, Mammoth Moutain, Breckenridge, Big Bear Mountain, Mount Washington, Alta, Brighton, Snowbird, Solitude, Deer Valley, Park City, Sundance, Nordic Valley, Powder Mountain, Snowbasin, Brian Head, Eagle Point, and Beaver. What else would you like to know?"
         this.emit(':ask', outputMsg);
     },
     'AMAZON.HelpIntent': function () {
@@ -887,6 +887,58 @@ function getWeather(resort, callback) {
         case "Breckenridge":
             urlPath = '/gridpoints/BOU/24,52/forecast'; //'/points/39.4802,-106.0667/forecast';
             console.log("Breckenridge weather");
+            break;
+        case "Alta":
+            urlPath = '/gridpoints/SLC/107,166/forecast'; //'/points/40.5902,-111.6391/forecast';
+            console.log("Alta weather");
+            break;
+        case "Brighton":
+            urlPath = '/gridpoints/SLC/109,166/forecast'; //'/points/40.5991,-111.5813/forecast';
+            console.log("Brighton weather");
+            break;
+        case "Snowbird":
+            urlPath = '/gridpoints/SLC/107,165/forecast'; //'/points/40.5833,-111.6508/forecast';
+            console.log("Snowbird weather");
+            break;
+        case "Solitude":
+            urlPath = '/gridpoints/SLC/109,167/forecast'; //'/points/40.6211,-111.5933/forecast';
+            console.log("Solitude weather");
+            break;
+        case "Deer_Valley":
+            urlPath = '/gridpoints/SLC/113,167/forecast'; //'/points/40.6374,-111.4783/forecast';
+            console.log("Deer Valley weather");
+            break;
+        case "Park_City":
+            urlPath = '/gridpoints/SLC/112,168/forecast'; //'/points/40.6514,-111.5080/forecast';
+            console.log("Park City weather");
+            break;
+        case "Sundance":
+            urlPath = '/gridpoints/SLC/108,157/forecast'; //'/points/40.3934,-111.5888/forecast';
+            console.log("Sundance weather");
+            break;
+        case "Nordic_Valley":
+            urlPath = '/gridpoints/SLC/103,199/forecast'; //'/points/41.3104,-111.8648/forecast';
+            console.log("Nordic Valley weather");
+            break;
+        case "Powder_Mountain":
+            urlPath = '/gridpoints/SLC/107,202/forecast'; //'/points/41.3790,-111.7807/forecast';
+            console.log("Powder Mountain weather");
+            break;
+        case "Snowbasin":
+            urlPath = '/gridpoints/SLC/103,195/forecast'; //'/points/41.2160,-111.8569/forecast';
+            console.log("Snowbasin weather");
+            break;
+        case "Brian_Head":
+            urlPath = '/gridpoints/SLC/48,41/forecast'; //'/points/37.7021,-112.8499/forecast';
+            console.log("Brian Head weather");
+            break;
+        case "Eagle_Point":
+            urlPath = '/gridpoints/SLC/68,67/forecast'; //'/points/38.3203,-112.3839/forecast';
+            console.log("Eagle Point weather");
+            break;
+        case "Beaver":
+            urlPath = '/gridpoints/SLC/118,228/forecast'; //'/points/41.9681,-111.5441/forecast';
+            console.log("Beaver weather");
             break;
         case "Mt_Washington":
             // urlPath = ''; //'/points/49.73833,-125.2986/forecast'; // not supported because in Canada
@@ -1001,6 +1053,50 @@ function getResortID(slotResort) {
         case "mount washington":
         case "mt washington":
             slotResortID = "Mt_Washington";
+            break;
+        case "alta":
+            slotResortID = "Alta";
+            break;
+        case "brighton":
+            slotResortID = "Brighton";
+            break;
+        case "snowbird":
+            slotResortID = "Snowbird";
+            break;
+        case "solitude":
+            slotResortID = "Solitude";
+            break;
+        case "deer valley":
+            slotResortID = "Deer_Valley";
+            break;
+        case "park city":
+        case "park city utah":
+        case "park city mountain":
+            slotResortID = "Park_City";
+            break;
+        case "sundance":
+            slotResortID = "Sundance";
+            break;
+        case "nordic valley":
+            slotResortID = "Nordic_Valley";
+            break;
+        case "powder mountain":
+            slotResortID = "Powder_Mountain";
+            break;
+        case "snowbasin":
+        case "snow basin": 
+            slotResortID = "Snowbasin";
+            break;
+        case "brian head":
+            slotResortID = "Brian_Head";
+            break;
+        case "eagle point":
+            slotResortID = "Eagle_Point";
+            break;
+        case "beaver":
+        case "beaver mountain":
+        case "beaver utah":
+            slotResortID = "Beaver";
             break;
         default:
             slotResortID = "ERROR";

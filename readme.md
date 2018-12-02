@@ -37,7 +37,13 @@ To test the Util functions locally:
    - example `node utilsTest.js`
 
 
-# TODO - Need to add these resorts
+# TODO
+
+Add: Big Sky, Heavenly, Jackson Hole, Squaw Valley, Vail, Whistler
+
+- Rename lambda function
 
 - Future:
+-- Add better method of listing all resorts (ie: list 10, would you like to hear more, pagination effect)
+--- Or have ability to say What resorts do you support in WA, CA, OR, etc and list out for specific states/regions
 --- Add support for Canada, based on users region report depths in cm or inches

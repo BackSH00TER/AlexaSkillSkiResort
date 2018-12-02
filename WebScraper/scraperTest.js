@@ -5,8 +5,8 @@ const fs = require('fs');
 
 
 scrapeSite(
-    "https://www.mammothmountain.com/winter/mountain-information/mountain-information",
-    "mammoth_mountain.json",
+    "https://www.missionridge.com/snow-report",
+    "mission_ridge.json",
     (data) => {
         console.log(
             "resort "+  data.resort + "\n" +
@@ -102,8 +102,8 @@ function scrapeSite(url, resort, callback) {
                     overNightSnowFall: $($('.weather.data-table .odd .data')[5]).text() == '-' ? "N/A" : $($('.weather.data-table .odd .data')[5]).text().slice(0, -1),
                     snowFallOneDay: $($('.weather.data-table .even .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[2]).text().slice(0, -1),
                     snowFallTwoDay: $($('.weather.data-table .odd .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .odd .data')[2]).text().slice(0, -1),
-                    snowDepthBase: $($('.weather.data-table .even .data')[11]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[11]).text().slice(0, -1),
-                    snowDepthMidMtn: $($('.weather.data-table .even .data')[9]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[9]).text().slice(0, -1),
+                    snowDepthBase: $($('.weather.data-table .even .data')[11]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[11]).text().slice(0, -1).replace(/\D/g,''),
+                    snowDepthMidMtn: $($('.weather.data-table .even .data')[9]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[9]).text().slice(0, -1).replace(/\D/g,''),
                     seasonSnowFall: "N/A"
                 }
             };
@@ -179,7 +179,7 @@ function scrapeSite(url, resort, callback) {
                     reportDateUpdated: "N/A",
                     overNightSnowFall: $($('.weather-time h3')[0]).text().slice(0, -1),
                     snowFallOneDay: $($('.weather-time h3')[1]).text().slice(0, -1),
-                    snowFallTwoDay: $($('.weather-time h3')[2]).text().slice(0, -1),
+                    snowFallTwoDay: "N/A",
                     snowDepthBase: $($('.weather-data h3')[0]).text().slice(0, -1),
                     snowDepthMidMtn: $($('.weather-data h3')[1]).text().slice(0, -1),
                     seasonSnowFall: $($('.weather-data h3')[2]).text().slice(0, -1)
@@ -239,18 +239,83 @@ function scrapeSite(url, resort, callback) {
                 }
             };
 
-            // var bogusBasin = { //TODO (numbers aren't working with the selectors, give undefined??
-            //     resort: "Bogus Basin",
-            //     selectors: {
-            //         reportDateUpdated: "N/A",
-            //         overNightSnowFall: $('.overnight-stat.stat-area').innerText,
-            //         snowFallOneDay: $('#conditions-snow-last-24').innerText,
-            //         snowFallTwoDay: $('#conditions-snow-last-48').text(),
-            //         snowDepthBase: $('.snowdepth-base .reading.depth').text(),
-            //         snowDepthMidMtn: $('.snowdepth-mid .reading.depth').text(),
-            //         seasonSnowFall: $($('span#conditions-snow-season-total')[0])
-            //     }
-            // };
+            // Utah Resorts pulled from same site, selectors are the same
+            var utahGeneric = {
+                selectors: {
+                    reportDateUpdated: "N/A",
+                    overNightSnowFall: "N/A",
+                    snowFallOneDay: $($('.snowfall-24 .amounts span[data-length-inches]')).text(),
+                    snowFallTwoDay: $($('.snowfall-history.hour48 span[data-length-inches]')[0]).text(),
+                    snowDepthBase: $($('.snowfall-history.base span[data-length-inches]')[0]).text(),
+                    snowDepthMidMtn: "N/A",
+                    seasonSnowFall:  $($('.snowfall-history.ytd span[data-length-inches]')[0]).text(),
+                }
+            };
+
+            var snowbird = {
+                ...utahGeneric,
+                resort: "Snowbird"
+            };
+
+            var alta = {
+                ...utahGeneric,
+                resort: "Alta"
+            };
+
+            var brighton = {
+                ...utahGeneric,
+                resort: "Brighton"
+            };
+
+            var solitude = {
+                ...utahGeneric,
+                resort: "Solitude"
+            };
+
+            var deerValley = {
+                ...utahGeneric,
+                resort: "Deer Valley"
+            };
+
+            var parkCity = {
+                ...utahGeneric,
+                resort: "Park City"
+            };
+
+            var sundance = {
+                ...utahGeneric,
+                resort: "Sundance"
+            };
+
+            var nordicValley = {
+                ...utahGeneric,
+                resort: "Nordic Valley"
+            };
+
+            var powderMountain = {
+                ...utahGeneric,
+                resort: "Powder Mountain"
+            };
+
+            var snowbasin = {
+                ...utahGeneric,
+                resort: "Snowbasin"
+            };
+
+            var brianHead = {
+                ...utahGeneric,
+                resort: "Brian Head"
+            };
+
+            var eaglePoint = {
+                ...utahGeneric,
+                resort: "Eagle Point"
+            };
+
+            var beaver = {
+                ...utahGeneric,
+                resort: "Beaver"
+            };
 
             //Assign current resort to use selectors of the currently selected resort
             switch (resort) {
@@ -299,9 +364,45 @@ function scrapeSite(url, resort, callback) {
                 case "mtwashington.json":
                     currentResort = mtWashington;
                     break;
-                // case "bogus_basin.json":
-                //     currentResort = bogusBasin;
-                //     break;
+                case "snowbird.json":
+                    currentResort = snowbird;
+                    break;
+                case "alta.json":
+                    currentResort = alta;
+                    break;
+                case "brighton.json":
+                    currentResort = brighton;
+                    break;
+                case "solitude.json":
+                    currentResort = solitude;
+                    break;
+                case "deer_valley.json":
+                    currentResort = deerValley;
+                    break;
+                case "park_city.json":
+                    currentResort = parkCity;
+                    break;
+                case "sundance.json":
+                    currentResort = sundance;
+                    break;
+                case "nordic_valley.json":
+                    currentResort = nordicValley;
+                    break;
+                case "powder_mountain.json":
+                    currentResort = powderMountain;
+                    break;
+                case "snowbasin.json":
+                    currentResort = snowbasin;
+                    break;
+                case "brian_head.json":
+                    currentResort = brianHead;
+                    break;
+                case "eagle_point.json":
+                    currentResort = eaglePoint;
+                    break;
+                case "beaver.json":
+                    currentResort = beaver;
+                    break;
                 default:
                     callback("ERROR: Invalid Resort");
                     break;
