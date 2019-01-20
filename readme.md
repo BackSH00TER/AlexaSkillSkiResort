@@ -39,7 +39,7 @@ To test the Util functions locally:
 
 # TODO
 
-Add: Big Sky, Heavenly, Jackson Hole, Squaw Valley, Vail, Whistler
+Add: Big Sky, Heavenly, Jackson Hole, Squaw Valley, and other tahoes resorts,  Vail, Whistler
 
 - Rename lambda function
 

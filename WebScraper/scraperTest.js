@@ -5,8 +5,8 @@ const fs = require('fs');
 
 
 scrapeSite(
-    "https://www.missionridge.com/snow-report",
-    "mission_ridge.json",
+    "https://www.sunvalley.com/mountain-snow-report",
+    "sun_valley.json",
     (data) => {
         console.log(
             "resort "+  data.resort + "\n" +
@@ -60,12 +60,12 @@ function scrapeSite(url, resort, callback) {
                 resort: "Snoqualmie Pass",
                 selectors: {
                     reportDateUpdated: $($('#block-conditions-overview .subtitle')).text(),
-                    overNightSnowFall: $($('.box_sides4 .js-measurement')[0]).text(),
-                    snowFallOneDay: $($('.box_sides4 .js-measurement')[1]).text(),
-                    snowFallTwoDay: $($('.box_sides4 .js-measurement')[2]).text(),
-                    snowDepthBase: $($('.box_sides4 .js-measurement')[3]).text(),
-                    snowDepthMidMtn: $($('.box_right4 .js-measurement')[3]).text(),
-                    seasonSnowFall: $($('.box_sides4 .js-measurement')[4]).text()
+                    overNightSnowFall: $($('.flex .box.box_right5 .text .js-measurement')[18]).text(),
+                    snowFallOneDay: $($('.flex .box.box_right5 .text .js-measurement')[20]).text(),
+                    snowFallTwoDay: $($('.flex .box.box_right5 .text .js-measurement')[21]).text(),
+                    snowDepthBase: $($('.flex .box.box_right5 .text .js-measurement')[23]).text(),
+                    snowDepthMidMtn: $($('.flex .box.box_right5 .text .js-measurement')[23]).text(),
+                    seasonSnowFall: $($('.flex .box.box_right5 .text .js-measurement')[22]).text(),
                 }
             };
 
@@ -102,8 +102,8 @@ function scrapeSite(url, resort, callback) {
                     overNightSnowFall: $($('.weather.data-table .odd .data')[5]).text() == '-' ? "N/A" : $($('.weather.data-table .odd .data')[5]).text().slice(0, -1),
                     snowFallOneDay: $($('.weather.data-table .even .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[2]).text().slice(0, -1),
                     snowFallTwoDay: $($('.weather.data-table .odd .data')[2]).text() == "-" ? "N/A" : $($('.weather.data-table .odd .data')[2]).text().slice(0, -1),
-                    snowDepthBase: $($('.weather.data-table .even .data')[11]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[11]).text().slice(0, -1).replace(/\D/g,''),
-                    snowDepthMidMtn: $($('.weather.data-table .even .data')[9]).text() == "-" ? "N/A" : $($('.weather.data-table .even .data')[9]).text().slice(0, -1).replace(/\D/g,''),
+                    snowDepthBase: $($('.weather.data-table .odd .data')[14]).text() == "-" ? "N/A" : $($('.weather.data-table .odd .data')[14]).text().slice(0, -1).replace(/\D/g,''),
+                    snowDepthMidMtn: $($('.weather.data-table .odd .data')[12]).text() == "-" ? "N/A" : $($('.weather.data-table .odd .data')[12]).text().slice(0, -1).replace(/\D/g,''),
                     seasonSnowFall: "N/A"
                 }
             };
@@ -182,7 +182,7 @@ function scrapeSite(url, resort, callback) {
                     snowFallTwoDay: "N/A",
                     snowDepthBase: $($('.weather-data h3')[0]).text().slice(0, -1),
                     snowDepthMidMtn: $($('.weather-data h3')[1]).text().slice(0, -1),
-                    seasonSnowFall: $($('.weather-data h3')[2]).text().slice(0, -1)
+                    seasonSnowFall: "N/A"
                 }
             };
 
