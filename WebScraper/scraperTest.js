@@ -5,8 +5,8 @@ const fs = require('fs');
 
 
 scrapeSite(
-    "https://www.sunvalley.com/mountain-snow-report",
-    "sun_valley.json",
+    "https://www.onthesnow.com/washington/stevens-pass-resort/historical-snowfall.html",
+    "stevens.json",
     (data) => {
         console.log(
             "resort "+  data.resort + "\n" +
@@ -35,23 +35,24 @@ function scrapeSite(url, resort, callback) {
             console.log("Data received");
 
             //Temporary solution for selectors
-            //Need to find way to properly store these in the resort json files and parse out
+            //Need to find way to properly store these in the resort json files and parse out (could just use .js file and export the object)
             //Marked N/A if info not found on site
             //------------------------------------------------------------------------------
             //------------------                SELECTORS             ----------------------
             //------------------------------------------------------------------------------
             var currentResort = "";
 
-            var stevensPass = {
+            // Using onThesnow for now, stevens website loading dynamically
+            var stevensPass = { // TODO: Going to need to try out using Puppeteer to scrape since content is loaded dynamically
                 resort: "Stevens Pass",
                 selectors: {
-                    reportDateUpdated: $('.page-report-snowfall-value').text(),
-                    overNightSnowFall: $($('.page-report-snowfall-value')[0]).text().slice(0, -1),
-                    snowFallOneDay: $($('.page-report-snowfall-value')[1]).text().slice(0, -1),
-                    snowFallTwoDay: $($('.page-report-snowfall-value')[2]).text().slice(0, -1),
-                    snowDepthBase: $($('.page-report-snowdepth-value')[0]).text().slice(0, -1),
-                    snowDepthMidMtn: $($('.page-report-snowdepth-value')[1]).text().slice(0, -1),
-                    seasonSnowFall: $($('.page-report-snowdepth-value')[2]).text().slice(0, -1)
+                    reportDateUpdated: "N/A",
+                    overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallTwoDay: "N/A",
+                    snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                    snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                    seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                 }
             };
 
@@ -69,16 +70,17 @@ function scrapeSite(url, resort, callback) {
                 }
             };
 
+            // using OnTheSnow for now, crystal website loading dynamically
             var crystalMountain = {
                 resort: "Crystal Mountain",
                 selectors: {
                     reportDateUpdated: "N/A",
-                    overNightSnowFall: $('#overnight2').text().slice(0, -1),
-                    snowFallOneDay: $('#hours-24-2').text().slice(0, -1),
-                    snowFallTwoDay: $('#hours-48-2').text().slice(0, -1),
-                    snowDepthBase: $('#bottom-depth').text().slice(0, -1),
-                    snowDepthMidMtn: $('#top-depth').text().slice(0, -1),
-                    seasonSnowFall: $('#season-total').text().slice(0, -1)
+                    overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                    snowFallTwoDay: "N/A",
+                    snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                    snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                    seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                 }
             };
 
@@ -220,9 +222,9 @@ function scrapeSite(url, resort, callback) {
                     overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
                     snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
                     snowFallTwoDay: "N/A",
-                    snowDepthBase: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
-                    snowDepthMidMtn: $($('.elevation.upper .bluePill')).text().slice(0, -1),
-                    seasonSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                    snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                    snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                    seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                 }
             };
             

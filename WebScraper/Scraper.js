@@ -81,16 +81,17 @@ exports.handler = function(event, context, callback) {
                 //------------------------------------------------------------------------------
                 var currentResort = "";
 
-                var stevensPass = {
+                // Using onThesnow for now, stevens website loading dynamically
+                var stevensPass = { // TODO: Going to need to try out using Puppeteer to scrape since content is loaded dynamically
                     resort: "Stevens Pass",
                     selectors: {
-                        reportDateUpdated: $('.page-report-snowfall-value').text(),
-                        overNightSnowFall: $($('.page-report-snowfall-value')[0]).text().slice(0, -1),
-                        snowFallOneDay: $($('.page-report-snowfall-value')[1]).text().slice(0, -1),
-                        snowFallTwoDay: $($('.page-report-snowfall-value')[2]).text().slice(0, -1),
-                        snowDepthBase: $($('.page-report-snowdepth-value')[0]).text().slice(0, -1),
-                        snowDepthMidMtn: $($('.page-report-snowdepth-value')[1]).text().slice(0, -1),
-                        seasonSnowFall: $($('.page-report-snowdepth-value')[2]).text().slice(0, -1)
+                        reportDateUpdated: "N/A",
+                        overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallTwoDay: "N/A",
+                        snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                        seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                     }
                 };
 
@@ -108,16 +109,17 @@ exports.handler = function(event, context, callback) {
                     }
                 };
 
+                // using OnTheSnow for now, crystal website loading dynamically
                 var crystalMountain = {
                     resort: "Crystal Mountain",
                     selectors: {
                         reportDateUpdated: "N/A",
-                        overNightSnowFall: $('#overnight2').text().slice(0, -1),
-                        snowFallOneDay: $('#hours-24-2').text().slice(0, -1),
-                        snowFallTwoDay: $('#hours-48-2').text().slice(0, -1),
-                        snowDepthBase: $('#bottom-depth').text().slice(0, -1),
-                        snowDepthMidMtn: $('#top-depth').text().slice(0, -1),
-                        seasonSnowFall: $('#season-total').text().slice(0, -1)
+                        overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
+                        snowFallTwoDay: "N/A",
+                        snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                        seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                     }
                 };
 
@@ -259,9 +261,9 @@ exports.handler = function(event, context, callback) {
                         overNightSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
                         snowFallOneDay: $($('.sbox.sm.box_shadow .bluetxt.sfa')).text().slice(0, -1),
                         snowFallTwoDay: "N/A",
-                        snowDepthBase: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
-                        snowDepthMidMtn: $($('.elevation.upper .bluePill')).text().slice(0, -1),
-                        seasonSnowFall: $($('.sbox.sm.box_shadow .bluetxt.sd')).text().slice(0, -1),
+                        snowDepthBase: $($('#view .item strong')[2]).text().slice(0, -1),
+                        snowDepthMidMtn: $($('#view .item strong')[4]).text().slice(0, -1),
+                        seasonSnowFall: $($('#view .item strong')[0]).text().slice(0, -1),
                     }
                 };
 

@@ -39,6 +39,12 @@ To test the Util functions locally:
 
 # TODO
 
+Look into how to use onthesnow api: http://docs.clientservice.onthesnow.com/docs/index.html
+- If it works well, replace all the individual scraping with this
+
+If going to continue scraping individual websites, need to look into possibly switching over to using Puppeteer.
+Sites that load content dynamically don't work with Cheerio.
+
 Add: Big Sky, Heavenly, Jackson Hole, Squaw Valley, and other tahoes resorts,  Vail, Whistler
 
 - Rename lambda function
