@@ -1,7 +1,8 @@
 'use strict';
-var https = require('https');
-var Alexa = require('alexa-sdk');
-var db = require('./AWS_Helpers');
+const https = require('https');
+const Alexa = require('alexa-sdk');
+const db = require('./AWS_Helpers');
+// const responses = require('./responses');
 
 const { AlexaAppId } = require('./secrets/credentials');
 
@@ -23,12 +24,18 @@ var outputMsg = "";
 //=========================================================================================================================================
 // Handlers
 //=========================================================================================================================================
-exports.handler = function (event, context, callback) {
-    var alexa = Alexa.handler(event, context);
-    alexa.appId = AlexaAppId;
-    alexa.registerHandlers(handlers);
-    alexa.execute();
+exports.handler = function (event, context) {
+  var alexa = Alexa.handler(event, context);
+  alexa.appId = AlexaAppId;
+  alexa.registerHandlers(handlers);
+  alexa.execute();
 };
+
+// const handlers = {
+//   'LaunchRequest': function () {
+//     this.emit(':ask', responses.welcome(), responses.helpMessage());
+//   },
+// };
 
 var handlers = {
     'LaunchRequest': function () {
@@ -832,7 +839,7 @@ var handlers = {
 //Returns a json object
 function getWeather(resort, callback) {
     var urlPath = "";
-    switch (resort) {
+    switch (resort) { // TODO: This list of resort names needs to be updated to work as well
         case "Stevens_Pass":
             urlPath = '/gridpoints/SEW/164,66/forecast';//'/points/47.7459,-121.0891/forecast';
             console.log("Stevens Pass Weather");
@@ -845,7 +852,7 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/SEW/144,30/forecast';//'/points/46.9291,-121.501/forecast';
             console.log("Crystal weather");
             break;
-        case "Mt_Baker":
+        case "Mount_Baker":
             urlPath = '/gridpoints/SEW/156,122/forecast';//'/points/48.8541,-121.68/forecast';
             console.log("Baker weather");
             break;
@@ -853,19 +860,19 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/OTX/42,89/forecast';//'/points/47.2867,-120.4184/forecast';
             console.log("Mission ridge weather");
             break;
-        case "Mt_Hood_Meadows":
+        case "Mount_Hood_Meadows":
             urlPath = '/gridpoints/PQR/143,88/forecast';//'/points/45.3419,-121.6689/forecast';
             console.log("Mount Hood Meadows weather");
             break;
-        case "Mt_Hood_Skibowl":
+        case "Mount_Hood_Skibowl":
             urlPath = '/gridpoints/PQR/139,87/forecast';//'/points/45.3017,-121.7725/forecast';
             console.log("Mount Hood Skibowl weather");
             break;
-        case "Mt_Hood_Timberline":
+        case "Timberline_Lodge":
             urlPath = '/gridpoints/PQR/135,95/forecast';//'/points/‎45.454350,-121.933136/forecast';
             console.log("Mount Hood Timberline weather");
             break;
-        case "Mt_Bachelor":
+        case "Mount_Bachelor":
             urlPath = '/gridpoints/PDT/22,39/forecast';//'/points/43.9889,-121.6818/forecast';
             console.log("Mount Bachelor weather");
             break;
@@ -881,7 +888,7 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/REV/56,16/forecast'; //'/points/37.630768,-119.032631/forecast';
             console.log("Mammoth Mountain weather");
             break;
-        case "Big_Bear":
+        case "Big_Bear_Mountain":
             urlPath = '/gridpoints/SGX/76,78/forecast';  //'/points/34.236346,-116.8890035/forecast';
             console.log("Big Bear weather");
             break;
@@ -929,7 +936,7 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/SLC/103,195/forecast'; //'/points/41.2160,-111.8569/forecast';
             console.log("Snowbasin weather");
             break;
-        case "Brian_Head":
+        case "Brian_Head_Resort":
             urlPath = '/gridpoints/SLC/48,41/forecast'; //'/points/37.7021,-112.8499/forecast';
             console.log("Brian Head weather");
             break;
@@ -937,11 +944,11 @@ function getWeather(resort, callback) {
             urlPath = '/gridpoints/SLC/68,67/forecast'; //'/points/38.3203,-112.3839/forecast';
             console.log("Eagle Point weather");
             break;
-        case "Beaver":
+        case "Beaver_Mountain":
             urlPath = '/gridpoints/SLC/118,228/forecast'; //'/points/41.9681,-111.5441/forecast';
             console.log("Beaver weather");
             break;
-        case "Mt_Washington":
+        case "Mount_Washington":
             // urlPath = ''; //'/points/49.73833,-125.2986/forecast'; // not supported because in Canada
             console.log("Mount Washington weather");
             callback("NOT_SUPPORTED");
@@ -995,7 +1002,9 @@ function getResortID(slotResort) {
         case "snoqualmie":
         case "snoqualmie pass":
         case "summit at snoqualmie":
-            slotResortID = "The_Summit_at_Snoqualmie_Pass";
+        case "the summit at snoqualmie pass":
+        case "the summit at snoqualmie":
+            slotResortID = "Snoqualmie_Pass";
             break;
         case "crystal":
         case "crystal mountain":

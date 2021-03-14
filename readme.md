@@ -12,6 +12,7 @@ Files to zip:
 - intents.json
 - package.json
 - node_modules/
+- secrets/
 
 ### WebScraper
 Files to zip:
@@ -28,12 +29,17 @@ Files to zip:
 - Add new slot values on Alexa Dashboard
 
 # Testing
+
+#### WebScraper
 Use Scraper.js to test that the web scraper selectors are working for each resort 
 Uncomment the line `executeWebScraper(false, "stevens.json");`. Pass in false (to not update DynamoDB Table) and the name of the resort file (ex: "stevens.json"). 
 
 To test the Util functions locally:
 - Open Integrated Terminal in VS Code
 - Run `node Scraper.js`
+
+#### Intents
+
 
 
 # TODO

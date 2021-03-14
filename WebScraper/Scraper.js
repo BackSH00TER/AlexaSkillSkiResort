@@ -154,4 +154,8 @@ const executeWebScraper = async (shouldUploadToDB, resortFile = null) => {
 // executeWebScraper(false, "stevens.json");
 
 // This is for prod
-executeWebScraper(true);
+// executeWebScraper(true);
+
+exports.handler = async (event, context) => {
+  await executeWebScraper(true);
+}
