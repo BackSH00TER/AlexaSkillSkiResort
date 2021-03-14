@@ -987,6 +987,7 @@ function getResortID(slotResort) {
     var slotResortID = "";
     slotResort = slotResort.toLowerCase();
     switch (slotResort) {
+        // TODO: Alphabatize this list
         case "stevens":
         case "stevens pass":
             slotResortID = "Stevens_Pass";
@@ -994,7 +995,7 @@ function getResortID(slotResort) {
         case "snoqualmie":
         case "snoqualmie pass":
         case "summit at snoqualmie":
-            slotResortID = "Snoqualmie_Pass";
+            slotResortID = "The_Summit_at_Snoqualmie_Pass";
             break;
         case "crystal":
         case "crystal mountain":
@@ -1003,7 +1004,7 @@ function getResortID(slotResort) {
         case "mount baker":
         case "mt baker":
         case "baker":
-            slotResortID = "Mt_Baker";
+            slotResortID = "Mount_Baker";
             break;
         case "mission ridge":
             slotResortID = "Mission_Ridge";
@@ -1013,25 +1014,25 @@ function getResortID(slotResort) {
         case "meadows":
         case "mount hood":
         case "mt hood":
-            slotResortID = "Mt_Hood_Meadows";
+            slotResortID = "Mount_Hood_Meadows";
             break;
         case "mount hood ski bowl":
         case "mount hood skibowl":
         case "mt hood ski bowl":
         case "ski bowl":
         case "skibowl":
-            slotResortID = "Mt_Hood_Skibowl";
+            slotResortID = "Mount_Hood_Skibowl";
             break;
         case "mount hood timberline":
         case "mt hood timberline":
         case "timberline lodge":
         case "timberline":
-            slotResortID = "Mt_Hood_Timberline";
+            slotResortID = "Timberline_Lodge";
             break;
         case "mount bachelor":
         case "mt bachelor":
         case "bachelor":
-            slotResortID = "Mt_Bachelor";
+            slotResortID = "Mount_Bachelor";
             break;
         case "schweitzer":
         case "schweitzer mountain":
@@ -1046,14 +1047,14 @@ function getResortID(slotResort) {
             break;
         case "big bear mountain":
         case "big bear":
-            slotResortID = "Big_Bear";
+            slotResortID = "Big_Bear_Mountain";
             break;
         case "breckenridge":
             slotResortID = "Breckenridge";
             break;
         case "mount washington":
         case "mt washington":
-            slotResortID = "Mt_Washington";
+            slotResortID = "Mount_Washington";
             break;
         case "alta":
             slotResortID = "Alta";
@@ -1089,7 +1090,8 @@ function getResortID(slotResort) {
             slotResortID = "Snowbasin";
             break;
         case "brian head":
-            slotResortID = "Brian_Head";
+        case "brian head resort":
+            slotResortID = "Brian_Head_Resort";
             break;
         case "eagle point":
             slotResortID = "Eagle_Point";
@@ -1097,7 +1099,7 @@ function getResortID(slotResort) {
         case "beaver":
         case "beaver mountain":
         case "beaver utah":
-            slotResortID = "Beaver";
+            slotResortID = "Beaver_Mountain";
             break;
         default:
             slotResortID = "ERROR";

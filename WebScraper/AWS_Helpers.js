@@ -30,7 +30,7 @@ module.exports = {
     putData: function(params, callback) {
         docClient.put(params, function(err, data) {
             if (err) {
-                console.error("Unable to add Stevens Pass data. Error JSON:", JSON.stringify(err, null, 2));
+                console.error("Unable to add resort data. Error JSON:", JSON.stringify(err, null, 2));
                 callback("FAILED");
             } else {
                 callback("SUCCESS");

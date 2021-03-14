@@ -28,13 +28,12 @@ Files to zip:
 - Add new slot values on Alexa Dashboard
 
 # Testing
-Use scraperTest.js to test that the web scraper selectors are working for each resort 
+Use Scraper.js to test that the web scraper selectors are working for each resort 
+Uncomment the line `executeWebScraper(false, "stevens.json");`. Pass in false (to not update DynamoDB Table) and the name of the resort file (ex: "stevens.json"). 
 
 To test the Util functions locally:
 - Open Integrated Terminal in VS Code
-- Call functions that need to be tested from file
-- Run `node fileName.js`
-   - example `node utilsTest.js`
+- Run `node Scraper.js`
 
 
 # TODO
