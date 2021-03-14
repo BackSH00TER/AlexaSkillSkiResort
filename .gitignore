@@ -54,3 +54,4 @@ node_modules/
 TestStuff/
 */*.zip
 *.docx
+secrets

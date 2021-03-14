@@ -3,7 +3,8 @@ var https = require('https');
 var Alexa = require('alexa-sdk');
 var db = require('./AWS_Helpers');
 
-var APP_ID = "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009";
+const { AlexaAppId } = require('./secrets/credentials');
+
 var SKILL_NAME = "Snow Report";
 var WELCOME_MESSAGE = "Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
 var HELP_MESSAGE = "You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?";
@@ -24,7 +25,7 @@ var outputMsg = "";
 //=========================================================================================================================================
 exports.handler = function (event, context, callback) {
     var alexa = Alexa.handler(event, context);
-    alexa.appId = APP_ID;
+    alexa.appId = AlexaAppId;
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
