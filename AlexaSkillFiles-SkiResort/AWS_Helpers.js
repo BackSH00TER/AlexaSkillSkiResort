@@ -30,7 +30,7 @@ module.exports = {
     putData: function(params, callback) {
         docClient.put(params, function(err, data) {
             if (err) {
-                console.error("Unable to add Stevens Pass data. Error JSON:", JSON.stringify(err, null, 2));
+                console.error("Unable to add resort data. Error JSON:", JSON.stringify(err, null, 2));
                 callback("FAILED");
             } else {
                 callback("SUCCESS");
@@ -39,16 +39,18 @@ module.exports = {
     },
 
     //Used to update atomic counters for resorts called
-    updateResortCount: function(params, callback) {
-        docClient.update(params, function(err, data) {
-            if(err) {
-                console.error("Error updating count for: " + params.Key.resort);
-                callback("ERROR");
-            }
-            else {
-                callback("SUCCESS");
-            }
-        })
+    updateResortCount: async function(params) {
+      return docClient.update(params).promise();
+
+        // docClient.update(params, function(err, data) {
+        //     if(err) {
+        //         console.error("Error updating count for: " + params.Key.resort);
+        //         callback("ERROR");
+        //     }
+        //     else {
+        //         callback("SUCCESS");
+        //     }
+        // })
     }
 };
 
