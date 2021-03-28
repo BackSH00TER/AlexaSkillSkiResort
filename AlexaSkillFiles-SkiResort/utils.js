@@ -104,11 +104,18 @@ const resortWeatherGridpoints = {
  * Makes a network request to the WeatherAPI to get the forecast for the given resort
  * @param {string} resortID 
  * @returns JSON formatted object of the weather forecast for the week.
+ * It returns error NOT_SUPPORTED if the resortId is not supported by the Weather API
  * If there are any errors, it returns a TERMINAL_ERROR
  */
 const getWeatherRequest = async (resortID) => {
   console.log(`Requesting weather for ${resortID}`);
   const gridpoint = resortWeatherGridpoints[resortID];
+  
+  // End early if resortID is not supported
+  if (gridpoint === NOT_SUPPORTED) {
+    return { data: undefined, error: NOT_SUPPORTED };
+  }
+  
   const path = `/gridpoints/${gridpoint}/forecast`;
   const options = {
     host: 'api.weather.gov',
@@ -123,10 +130,10 @@ const getWeatherRequest = async (resortID) => {
   try {
     const data = await fetch(`https://api.weather.gov${path}`, options);
     const jsonData = await data.json();
-    return jsonData;
+    return { data: jsonData, error: undefined };
   } catch (error) {
     console.log(`Error fetching Weather info for ${resortID}: ${error}`);
-    return TERMINAL_ERROR;
+    return { data: undefined, error: TERMINAL_ERROR };
   }
 };
 
@@ -134,32 +141,23 @@ const getWeatherRequest = async (resortID) => {
  * Gets the weather for today
  * @param {string} resortID 
  * @returns {object} {detailedForecast?: string, error?: string}
- * On success, returns the detailedForecast for today
- * On error, returns NOT_SUPPORTED if the resort is not supported by the WeatherAPI.
- * Returns TERMINAL_ERROR if there was an error getting the weather.
+ * Returns the detailedForecast for today on success
+ * Returns any errors that are returned from getWeatherRequest
  */
 const getForecastToday = async (resortID) => {
-  console.log('resortId', resortID);
-  // End early if resortID is not supported
-  if (resortWeatherGridpoints[resortID] === NOT_SUPPORTED) {
-    return { error: NOT_SUPPORTED };
-  }
-
-  const response = await exportFunctions.getWeatherRequest(resortID);
-
-  if (response === TERMINAL_ERROR) {
-    return { error: TERMINAL_ERROR };
-  }
+  const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
-  const forecast = JSON.parse(response);
+  if (error) {
+    return { detailedForecast: undefined, error };
+  }
 
-  return { detailedForecast: forecast.properties.periods[0].detailedForecast, error: undefined };
+  const forecast = JSON.parse(data);
+
+  return {
+    detailedForecast: forecast.properties.periods[0].detailedForecast,
+    error: undefined
+  };
 };
-
-// TODO: pull the first few lines into a helper function
-  // helper function checks not+uspported, callst he cactual request, checks terminal error, and also tries to parse the response (this could go wrong potentially result in terminal errro)
-  // then it can return an {isValid, error}, if error return, else if isvalid do teh rest
-  // should help to reduce copy paste code between each one
 
 /**
  * Gets the forecast for the week
@@ -169,21 +167,16 @@ const getForecastToday = async (resortID) => {
  *   forecastDataArray?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
  *   error?: string
  * }
- * On error, returns NOT_SUPPORTED if the resort is not supported by the WeatherAPI.
- * Returns TERMINAL_ERROR if there was an error getting the weather.
+ * Returns any errors that are returned from getWeatherRequest
  */
 const getForecastWeek = async (resortID) => {
-  // End early if resortID is not supported
-  if (resortWeatherGridpoints[resortID] === NOT_SUPPORTED) {
-    return { error: NOT_SUPPORTED };
+  const { data, error } = await exportFunctions.getWeatherRequest(resortID);
+  
+  if (error) {
+    return { forecastDataArray: undefined, error };
   }
 
-  const response = await exportFunctions.getWeatherRequest(resortID);
-  
-  if (response === TERMINAL_ERROR) {
-    return { error: TERMINAL_ERROR };
-  }
-  const forecast = JSON.parse(response);
+  const forecast = JSON.parse(data);
   const forecastPeriods = forecast.properties.periods;
 
   // If the first result has isDaytime = false, then it will only have one result for "Tonight"
@@ -205,7 +198,10 @@ const getForecastWeek = async (resortID) => {
     });
   }
 
-  return { forecastDataArray: forecastData, error: null };
+  return {
+    forecastDataArray: forecastData,
+    error: undefined
+  };
 };
 
 /**
@@ -217,26 +213,25 @@ const getForecastWeek = async (resortID) => {
  *   forecastData?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
  *   error?: string
  * }
- * On error, returns NOT_SUPPORTED if the resort is not supported by the WeatherAPI.
- * Returns TERMINAL_ERROR if there was an error getting the weather.
+ * Returns any errors that are returned from getWeatherRequest
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
 const getForecastWeekDay = (resortID, day) => {
   const { forecastDataArray, error } = exportFunctions.getForecastWeek(resortID);
 
-  if (error) { 
-    return { error };
+  if (error) {
+    return { forecastData: undefined, error };
   }
 
   // Make sure user said a valid day and that we have the data for that day
   // Ex: If they ask for Friday and today is Friday, we only have up to next Thursday
   // Ex: In some cases a holiday name could replace the name of the day in the field
-  if(!isValidDayOfTheWeek(day)) {
+  if (!isValidDayOfTheWeek(day)) {
     return { error: INVALID_DAY };
   }
 
   const forecastDataForSpecificDay = forecastDataArray.find(data => data.day.toLowerCase() === day.toLowerCase())
-  const noDataForDayError = !forecastDataForSpecificDay ? NO_DATA_FOR_DAY : null;
+  const noDataForDayError = !forecastDataForSpecificDay ? NO_DATA_FOR_DAY : undefined;
 
   return {
     forecastData: forecastDataForSpecificDay,

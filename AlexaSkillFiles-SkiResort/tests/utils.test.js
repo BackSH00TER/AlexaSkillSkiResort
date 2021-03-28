@@ -87,24 +87,29 @@ describe('test util functions', () => {
     };
 
     it('returns NOT_SUPPORTED, if resortID is not supported by the weather API', async () => {
-      expect.assertions(1);
+      expect.assertions(3);
       // Mount Washington currently is a resort that isn't supported
-      const { error } = await utils.getForecastToday('Mount_Washington');
+      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
+      const { detailedForecast, error } = await utils.getForecastToday('Mount_Washington');
+      
+      expect(getWeatherRequestStub).toHaveBeenCalled();
+      expect(detailedForecast).toBeUndefined();
       expect(error).toEqual(utils.NOT_SUPPORTED);
     });
 
     it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
-      expect.assertions(2);
-      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => utils.TERMINAL_ERROR);
-      const { error } = await utils.getForecastToday(mockResortSlotID);
+      expect.assertions(3);
+      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
+      const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
 
       expect(getWeatherRequestStub).toHaveBeenCalled();
+      expect(detailedForecast).toBeUndefined();
       expect(error).toEqual(utils.TERMINAL_ERROR);
     });
 
-    it.only('returns the forecast for today', async () => {
+    it('returns the forecast for today', async () => {
       expect.assertions(3);
-      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => JSON.stringify(mockForecastResponse));
+      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockForecastResponse), error: undefined}));
       const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
 
       expect(getWeatherRequestStub).toHaveBeenCalled();
