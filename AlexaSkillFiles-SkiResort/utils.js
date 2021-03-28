@@ -27,6 +27,7 @@ const getResortSlotID = async (resortSlot) => {
   // Attempt to get resortSlotID
   if (
     resortSlot.resolutions &&
+    resortSlot.resolutions.resolutionsPerAuthority &&
     resortSlot.resolutions.resolutionsPerAuthority[0] &&
     resortSlot.resolutions.resolutionsPerAuthority[0].status &&
     resortSlot.resolutions.resolutionsPerAuthority[0].status.code &&
@@ -35,7 +36,7 @@ const getResortSlotID = async (resortSlot) => {
     resortSlotID = resortSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
   }
 
-  await updateDBUniqueResortCounter(resortSlotID, synonymValue);
+  await exportFunctions.updateDBUniqueResortCounter(resortSlotID, synonymValue);
 
   console.log(`getResortSlotID returning: resortSlotID: ${resortSlotID} synonymValue: ${synonymValue}`);
   return {
@@ -54,13 +55,13 @@ const updateDBUniqueResortCounter = async (resortSlotID, synonymValue) => {
   const params = {
     TableName: "SkiResortTracking",
     Key: {
-        "resort": resort
+      "resort": resort
     },
     UpdateExpression: "ADD resortCounter :val",
     ExpressionAttributeValues: {
-        ":val":1
+      ":val":1
     },
-    ReturnValues:"UPDATED_NEW"
+    ReturnValues: "UPDATED_NEW"
   }
 
   console.log('Updating DB Resort Counter...');
@@ -106,7 +107,7 @@ const resortWeatherGridpoints = {
  * If there are any errors, it returns a TERMINAL_ERROR
  */
 const getWeatherRequest = async (resortID) => {
-  console.log(`Requesting weather for ${resortId}`);
+  console.log(`Requesting weather for ${resortID}`);
   const gridpoint = resortWeatherGridpoints[resortID];
   const path = `/gridpoints/${gridpoint}/forecast`;
   const options = {
@@ -138,20 +139,21 @@ const getWeatherRequest = async (resortID) => {
  * Returns TERMINAL_ERROR if there was an error getting the weather.
  */
 const getForecastToday = async (resortID) => {
+  console.log('resortId', resortID);
   // End early if resortID is not supported
   if (resortWeatherGridpoints[resortID] === NOT_SUPPORTED) {
     return { error: NOT_SUPPORTED };
   }
 
-  const response = await getWeatherRequest(resortID);
+  const response = await exportFunctions.getWeatherRequest(resortID);
 
   if (response === TERMINAL_ERROR) {
     return { error: TERMINAL_ERROR };
   }
-
+  
   const forecast = JSON.parse(response);
 
-  return { detailedForecast: forecast.properties.periods[0].detailedForecast };
+  return { detailedForecast: forecast.properties.periods[0].detailedForecast, error: undefined };
 };
 
 // TODO: pull the first few lines into a helper function
@@ -176,7 +178,7 @@ const getForecastWeek = async (resortID) => {
     return { error: NOT_SUPPORTED };
   }
 
-  const response = await getWeatherRequest(resortID);
+  const response = await exportFunctions.getWeatherRequest(resortID);
   
   if (response === TERMINAL_ERROR) {
     return { error: TERMINAL_ERROR };
@@ -220,7 +222,7 @@ const getForecastWeek = async (resortID) => {
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
 const getForecastWeekDay = (resortID, day) => {
-  const { forecastDataArray, error } = getForecastWeek(resortID);
+  const { forecastDataArray, error } = exportFunctions.getForecastWeek(resortID);
 
   if (error) { 
     return { error };
@@ -256,12 +258,27 @@ const isValidDayOfTheWeek =  (day) => {
 // For testing
 // getWeatherRequest("Stevens_Pass");
 
-
-module.exports = {
+// Due to the way module.exports works, when unit testing these module functions that call other module functions
+// It actually saves it as an object. So when you go to mock a function it ends up using the copied function instead of the mock
+// In order to work around this constraint, we are using this object.
+// IMPORTANT: When calling a module function from within the same module, it should be called from exportFunction.moduleName
+// The following article explains this further:
+// https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
+const exportFunctions = {
+  // Constants
   NOT_SUPPORTED,
+  TERMINAL_ERROR,
+  INVALID_DAY,
+  NO_DATA_FOR_DAY,
   getResortSlotID: getResortSlotID,
   getResortName: getResortName,
+  // Weather helpers
   getForecastToday: getForecastToday,
   getForecastWeek: getForecastWeek,
-  getForecastWeekDay: getForecastWeekDay
+  getForecastWeekDay: getForecastWeekDay,
+  // Exported for unit tests only
+  updateDBUniqueResortCounter: updateDBUniqueResortCounter,
+  getWeatherRequest: getWeatherRequest
 };
+
+module.exports = exportFunctions;
