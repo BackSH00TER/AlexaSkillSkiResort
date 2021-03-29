@@ -9,7 +9,6 @@ const {
   INVALID_DAY,
   NO_DATA_FOR_DAY,
   getResortSlotIdAndName,
-  getResortName,
   getForecastToday,
   getForecastWeek,
   getForecastWeekDay
@@ -87,36 +86,29 @@ const handlers = {
     this.emit(':tell', responses.forecastToday(resortName, detailedForecast));
   },
   'forecastWeek': async function () {
-    const {resortSlotID, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
 
-    if (resortSlotID) {
-      const resortName = getResortName(resortSlotID);
-      const { forecastDataArray, error } = getForecastWeek(resortSlotID);
-
-      // Check for errors
-      if (error === NOT_SUPPORTED) {
-        this.emit(':ask', responses.weatherServiceNotSupported());
-      } else if (error === TERMINAL_ERROR || !forecastDataArray.length) {
-        this.emit(':ask', responses.weatherServiceTerminalError());
-      } else {
-        // Return forecast for the week
-        this.emit(':tell', responses.forecastWeek(resortName, forecastDataArray));
-      }
-    } else {
-      // Unable to get resortSlotID, reprompt the user to ask again
-      // TODO: Playback the value that Alexa heard to the user and say i dont recognize it as a supported resort??
-      // TODO: These 2 lines will be re-used a lot, move to a function
+    if (!resortSlotID || !resortName) {
       console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
-      this.emit(':ask', responses.unknownResort(), responses.unknownResortReprompt());
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
     }
 
+    const { forecastDataArray, error } = await getForecastWeek(resortSlotID);
+
+    if (error || (!forecastDataArray || !forecastDataArray.length)) {
+      const response = getErrorResponse(!!forecastDataArray, error);
+      this.emit(':ask', response);
+    }
+
+    // Return forecast for the week
+    this.emit(':tell', responses.forecastWeek(resortName, forecastDataArray));
   },
   'forecastWeekDay': async function () {
     const {resortSlotID, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
     const daySlotValue = this.events.request.intent.slots.Day.value;
 
     if (resortSlotID) {
-      const resortName = getResortName(resortSlotID);
+      // const resortName = getResortName(resortSlotID);
       const { forecastData, error } = getForecastWeekDay(resortSlotID, daySlotValue);
 
       // Check for errors

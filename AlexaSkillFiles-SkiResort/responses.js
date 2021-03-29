@@ -25,7 +25,7 @@ module.exports.forecastWeek = (resortName, forecastDataArray) => {
   let response = `This week's forecast for ${resortName} is: `;
 
   forecastDataArray.forEach(forecast => {
-    response += `${forecast.day} a low of ${forecast.tempLow} with a high of ${forecast.tempHigh}, ${forecast.shortForecast}`
+    response += ` ${forecast.day} a low of ${forecast.tempLow} with a high of ${forecast.tempHigh}, ${forecast.shortForecast}.`
   });
 
   return response;

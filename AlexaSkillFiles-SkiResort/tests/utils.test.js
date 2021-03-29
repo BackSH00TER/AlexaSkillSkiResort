@@ -58,67 +58,267 @@ describe('test util functions', () => {
   // describe('getWeatherRequest', () => {
   
   // });
-  
-  describe('getForecastToday', () => {
-    const mockDetailedForecast = "Mock detailed forecast.";
-    const mockForecastResponse = {
+  describe('getForecast functions', () => {
+    const mockTempLow = 25;
+    const mockTempHigh = 35;
+    const mockShortForecast = 'mock short forecast';
+    const mockDetailedForecast = 'mock detailed forecast';
+    const mockFullForecastStartWithNotIsDaytime = {
       "properties": {
         "periods": [
           {
             "number": 1,
             "name": "Tonight",
             "isDaytime": false,
-            "temperature": 32,
-            "shortForecast": "Mostly Cloudy",
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
             "detailedForecast": mockDetailedForecast
           },
           {
             "number": 2,
+            "name": "Friday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 3,
+            "name": "Friday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 4,
+            "name": "Saturday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 5,
+            "name": "Saturday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 6,
             "name": "Sunday",
             "isDaytime": true,
-            "temperature": 37,
-            "shortForecast": "Heavy Snow",
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 7,
+            "name": "Sunday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 8,
+            "name": "Monday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 9,
+            "name": "Monday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 10,
+            "name": "Tuesday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 11,
+            "name": "Tuesday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 12,
+            "name": "Wednesday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 13,
+            "name": "Wednesday Night",
+            "isDaytime": false,
+            "temperature": mockTempLow,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          {
+            "number": 14,
+            "name": "Thursday",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
             "detailedForecast": mockDetailedForecast
           }
         ]
       }
     };
+    const mockFullForecastStartWithIsDaytime = {
+      "properties": {
+        "periods": [
+          {
+            "number": 0,
+            "name": "Today",
+            "isDaytime": true,
+            "temperature": mockTempHigh,
+            "shortForecast": mockShortForecast,
+            "detailedForecast": mockDetailedForecast
+          },
+          ...mockFullForecastStartWithNotIsDaytime.properties.periods
+        ]
+      }
+    };
+    // Removes the last day, so that we have even number day/night
+    mockFullForecastStartWithIsDaytime.properties.periods.pop();
 
-    it('returns NOT_SUPPORTED, if resortID is not supported by the weather API', async () => {
-      expect.assertions(3);
-      // Mount Washington currently is a resort that isn't supported
-      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
-      const { detailedForecast, error } = await utils.getForecastToday('Mount_Washington');
-      
-      expect(getWeatherRequestStub).toHaveBeenCalled();
-      expect(detailedForecast).toBeUndefined();
-      expect(error).toEqual(utils.NOT_SUPPORTED);
+    const dayInfo = {
+      tempHigh: mockTempHigh,
+      tempLow: mockTempLow,
+      shortForecast: mockShortForecast,
+      detailedForecast: mockDetailedForecast
+    };
+    const expectedFullForecastStartWithNotIsDaytime = [
+      {
+        day: "Friday",
+        ...dayInfo
+      },
+      {
+        day: "Saturday",
+        ...dayInfo
+      },
+      {
+        day: "Sunday",
+        ...dayInfo
+      },
+      {
+        day: "Monday",
+        ...dayInfo
+      },
+      {
+        day: "Tuesday",
+        ...dayInfo
+      },
+      {
+        day: "Wednesday",
+        ...dayInfo
+      }
+    ];
+    const expectedFullForecastStartWithIsDaytime = [
+      {
+        day: "Today",
+        ...dayInfo
+      },
+      ...expectedFullForecastStartWithNotIsDaytime
+    ];
+
+    describe('getForecastToday', () => {  
+      it('returns the forecast for today', async () => {
+        expect.assertions(3);
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
+  
+        expect(getWeatherRequestStub).toHaveBeenCalled();
+        expect(detailedForecast).toEqual(mockDetailedForecast);
+        expect(error).toBeUndefined();
+      });
+  
+      it('returns NOT_SUPPORTED, if resortID is not supported by the weather API', async () => {
+        expect.assertions(3);
+        // Mount Washington currently is a resort that isn't supported
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
+        const { detailedForecast, error } = await utils.getForecastToday('Mount_Washington');
+        
+        expect(getWeatherRequestStub).toHaveBeenCalled();
+        expect(detailedForecast).toBeUndefined();
+        expect(error).toEqual(utils.NOT_SUPPORTED);
+      });
+  
+      it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
+        expect.assertions(3);
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
+        const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
+  
+        expect(getWeatherRequestStub).toHaveBeenCalled();
+        expect(detailedForecast).toBeUndefined();
+        expect(error).toEqual(utils.TERMINAL_ERROR);
+      });
     });
-
-    it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
-      expect.assertions(3);
-      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
-      const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
-
-      expect(getWeatherRequestStub).toHaveBeenCalled();
-      expect(detailedForecast).toBeUndefined();
-      expect(error).toEqual(utils.TERMINAL_ERROR);
-    });
-
-    it('returns the forecast for today', async () => {
-      expect.assertions(3);
-      const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockForecastResponse), error: undefined}));
-      const { detailedForecast, error } = await utils.getForecastToday(mockResortSlotID);
-
-      expect(getWeatherRequestStub).toHaveBeenCalled();
-      expect(detailedForecast).toEqual(mockDetailedForecast);
-      expect(error).toBeUndefined();
+    
+    describe('getForecastWeek', () => {
+      describe('returns forecast for the week', () => {
+        it('when it starts with isDaytime false', async () => {
+          expect.assertions(3);
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+          const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
+  
+          expect(getWeatherRequestStub).toHaveBeenCalled();
+          expect(forecastDataArray).toEqual(expectedFullForecastStartWithNotIsDaytime);
+          expect(error).toBeUndefined();
+        });
+  
+        it('when it starts with isDaytime true', async () => {
+          expect.assertions(3);
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithIsDaytime), error: undefined}));
+          const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
+  
+          expect(getWeatherRequestStub).toHaveBeenCalled();
+          expect(forecastDataArray).toEqual(expectedFullForecastStartWithIsDaytime);
+          expect(error).toBeUndefined();
+        });
+  
+        it('returns NOT_SUPPORTED, if resortID is not supported by the weather API', async () => {
+          expect.assertions(3);
+          // Mount Washington currently is a resort that isn't supported
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
+          const { forecastDataArray, error } = await utils.getForecastWeek('Mount_Washington');
+          
+          expect(getWeatherRequestStub).toHaveBeenCalled();
+          expect(forecastDataArray).toBeUndefined();
+          expect(error).toEqual(utils.NOT_SUPPORTED);
+        });
+  
+        it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
+          expect.assertions(3);
+          // Mount Washington currently is a resort that isn't supported
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
+          const { forecastDataArray, error } = await utils.getForecastWeek('Mount_Washington');
+          
+          expect(getWeatherRequestStub).toHaveBeenCalled();
+          expect(forecastDataArray).toBeUndefined();
+          expect(error).toEqual(utils.TERMINAL_ERROR);
+        });
+      });
     });
   });
   
-  // describe('getForecastWeek', () => {
-  
-  // });
   
   // describe('getForecastWeekDay', () => {
   

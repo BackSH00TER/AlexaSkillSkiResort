@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const sessionStartIntent = require('./intent-sample-requests/new-session/session-start.intent');
 const forecastTodayIntent = require('./intent-sample-requests/forecastToday/forecast-today.intent');
+const forecastWeekIntent = require('./intent-sample-requests/forecast-week.intent');
 
 const NO_REMPROMPT = 'no_reprompt';
 const sanitise = text => text.replace(/\n/g, '');
@@ -40,6 +41,46 @@ jest.mock('../utils.js');
 const mockDetailedForecast = "A detailed forecast";
 
 describe('intents', () => {
+  const mockResortName = "Stevens Pass";
+  const mockResortSlotID = "Stevens_Pass";
+
+  const mockTempLow = 25;
+  const mockTempHigh = 35;
+  const mockShortForecast = 'mock short forecast';
+  const mockDetailedForecast = 'mock detailed forecast';
+  const dayInfo = {
+    tempHigh: mockTempHigh,
+    tempLow: mockTempLow,
+    shortForecast: mockShortForecast,
+    detailedForecast: mockDetailedForecast
+  };
+  const mockFullForecast = [
+    {
+      day: "Friday",
+      ...dayInfo
+    },
+    {
+      day: "Saturday",
+      ...dayInfo
+    },
+    {
+      day: "Sunday",
+      ...dayInfo
+    },
+    {
+      day: "Monday",
+      ...dayInfo
+    },
+    {
+      day: "Tuesday",
+      ...dayInfo
+    },
+    {
+      day: "Wednesday",
+      ...dayInfo
+    }
+  ];
+
   beforeEach(() => {
     utils.getResortSlotIdAndName.mockImplementation(() => {
       return {
@@ -49,20 +90,20 @@ describe('intents', () => {
       }
     });
 
-    utils.getResortName.mockImplementation((resortSlotID) => {
-      return resortSlotID.split('_').join(' ');
-    });
-
     utils.getForecastToday.mockImplementation(() => {
       return { 
         detailedForecast: mockDetailedForecast, 
         error: undefined
       };
     });
-  });
 
-  const mockResortName = "Stevens Pass";
-  const mockResortSlotID = "Stevens_Pass";
+    utils.getForecastWeek.mockImplementation(() => {
+      return { 
+        forecastDataArray: mockFullForecast, 
+        error: undefined
+      };
+    });
+  });
 
   describe('LaunchRequest', () => {
     it('Welcomes users and asks what they want to know', async () => {
@@ -173,6 +214,94 @@ describe('intents', () => {
       const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTodayIntent);
 
       expect(utils.getForecastToday).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.weatherServiceTerminalError());
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeFalsy();
+    });
+  });
+
+  // TODO: Refactor some of these failure tests in functions
+  describe('forecastWeek', () => {
+    it('returns the forecast for the week', async () => {
+      expect.assertions(4);
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastWeekIntent);
+      const expectedOutputSpeech = responses.forecastWeek(mockResortName, mockFullForecast);
+      
+      expect(utils.getForecastWeek).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+
+    it('returns unknownResort when resortId is undefined', async () => {
+      expect.assertions(4);
+
+      utils.getResortSlotIdAndName.mockImplementation(() => {
+        return {
+          resortSlotID: undefined,
+          resortName: mockResortName,
+          synonymValue: mockResortName
+        }
+      });
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastWeekIntent);
+
+      expect(utils.getResortSlotIdAndName).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.unknownResort(mockResortName));
+      expect(repromptSpeech).toEqual(responses.unknownResortReprompt());
+      expect(endOfSession).toBeFalsy();
+    });
+
+    it('returns unknownResort when resortName is undefined', async () => {
+      expect.assertions(4);
+
+      utils.getResortSlotIdAndName.mockImplementation(() => {
+        return {
+          resortSlotID: mockResortSlotID,
+          resortName: undefined,
+          synonymValue: mockResortName
+        }
+      });
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastWeekIntent);
+
+      expect(utils.getResortSlotIdAndName).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.unknownResort(mockResortName));
+      expect(repromptSpeech).toEqual(responses.unknownResortReprompt());
+      expect(endOfSession).toBeFalsy();
+    });
+
+    it('returns weatherServiceTerminalError when forecastDataArray is empty', async () => {
+      expect.assertions(4);
+
+      utils.getForecastWeek.mockImplementationOnce(() => {
+        return {
+          forecastDataArray: [],
+          error: undefined
+        };
+      });
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastWeekIntent);
+
+      expect(utils.getForecastWeek).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.weatherServiceTerminalError());
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeFalsy();
+    });
+
+    it('returns weatherServiceTerminalError when forecastDataArray is undefined', async () => {
+      expect.assertions(4);
+
+      utils.getForecastWeek.mockImplementationOnce(() => {
+        return {
+          forecastDataArray: undefined,
+          error: undefined
+        };
+      });
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastWeekIntent);
+
+      expect(utils.getForecastWeek).toHaveBeenCalled();
       expect(outputSpeech).toEqual(responses.weatherServiceTerminalError());
       expect(repromptSpeech).toEqual(NO_REMPROMPT);
       expect(endOfSession).toBeFalsy();

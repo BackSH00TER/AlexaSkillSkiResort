@@ -261,7 +261,6 @@ const exportFunctions = {
   INVALID_DAY,
   NO_DATA_FOR_DAY,
   getResortSlotIdAndName: getResortSlotIdAndName,
-  getResortName: getResortName,
   // Weather helpers
   getForecastToday: getForecastToday,
   getForecastWeek: getForecastWeek,
