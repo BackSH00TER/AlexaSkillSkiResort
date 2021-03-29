@@ -4,7 +4,7 @@ const mockResortName = "Stevens Pass";
 const mockResortSlotID = "Stevens_Pass";
 
 describe('test util functions', () => {
-  describe('getResortSlotID', () => {
+  describe('getResortSlotIdAndName', () => {
     const resortSlot = {
       value: 'mockValue',
       resolutions: {
@@ -23,19 +23,20 @@ describe('test util functions', () => {
     };
   
     it('returns the resortSlotID and synonym value', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       // Mocking this to make sure the actual DB calls don't happen
       const updateCounterStub = jest.spyOn(utils, 'updateDBUniqueResortCounter').mockImplementation(() => {});
-      const { resortSlotID, synonymValue } = await utils.getResortSlotID(resortSlot);
+      const { resortSlotID, resortName, synonymValue } = await utils.getResortSlotIdAndName(resortSlot);
       
       expect(updateCounterStub).toHaveBeenCalled();
 
       expect(resortSlotID).toEqual('mockResortId');
+      expect(resortName).toEqual('mockResortName');
       expect(synonymValue).toEqual('mockValue');
     });
 
     it('returns undefined resortSlotID if there was no match', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       const noResortSlot = {
         ...resortSlot,
         resolutions: {}
@@ -43,19 +44,16 @@ describe('test util functions', () => {
       
       // Mocking this to make sure the actual DB calls don't happen
       const updateCounterStub = jest.spyOn(utils, 'updateDBUniqueResortCounter').mockImplementation(() => {});
-      const { resortSlotID, synonymValue } = await utils.getResortSlotID(noResortSlot);
+      const { resortSlotID, resortName, synonymValue } = await utils.getResortSlotIdAndName(noResortSlot);
       
       expect(updateCounterStub).toHaveBeenCalled();
 
       expect(resortSlotID).toBeUndefined();
+      expect(resortName).toBeUndefined();
       expect(synonymValue).toEqual('mockValue');
     });
   
   });
-  
-  // describe('getResortName', () => {
-  
-  // });
 
   // describe('getWeatherRequest', () => {
   

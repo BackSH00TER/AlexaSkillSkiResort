@@ -7,22 +7,15 @@ const INVALID_DAY = "INVALID_DAY";
 const NO_DATA_FOR_DAY = "NO_DATA_FOR_DAY";
 
 /**
- * Removes underscores from the resortSlotID
- * @param {string} resortSlotID 
- * @returns {string} Resort name from the slotID w/ underscores removed
- */
-const getResortName = (resortSlotID) => {
-  return resortSlotID.split('_').join(' ');
-}
-/**
  * Returns the slotID and value for the resort in the IntentRequest
  * @param {object} resortsSlot - from the IntentRequest (ex: 'this.event.request.intent.slots.Resort')
  * @returns {object} {resortSlotID, synonymValue}
  */
-const getResortSlotID = async (resortSlot) => {
-  console.log('Attempting to get resortSlotID...');
+const getResortSlotIdAndName = async (resortSlot) => {
+  console.log('Attempting to get resortSlotIdAndName...');
   let synonymValue = resortSlot.value;
   let resortSlotID;
+  let resortName;
 
   // Attempt to get resortSlotID
   if (
@@ -34,13 +27,15 @@ const getResortSlotID = async (resortSlot) => {
     resortSlot.resolutions.resolutionsPerAuthority[0].status.code === "ER_SUCCESS_MATCH"
   ) {
     resortSlotID = resortSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
+    resortName = resortSlot.resolutions.resolutionsPerAuthority[0].values[0].value.name;
   }
 
   await exportFunctions.updateDBUniqueResortCounter(resortSlotID, synonymValue);
 
-  console.log(`getResortSlotID returning: resortSlotID: ${resortSlotID} synonymValue: ${synonymValue}`);
+  console.log(`getResortSlotIdAndName returning: resortSlotID: ${resortSlotID}, resortName: ${resortName}, synonymValue: ${synonymValue}`);
   return {
     resortSlotID,
+    resortName,
     synonymValue
   }
 }
@@ -265,7 +260,7 @@ const exportFunctions = {
   TERMINAL_ERROR,
   INVALID_DAY,
   NO_DATA_FOR_DAY,
-  getResortSlotID: getResortSlotID,
+  getResortSlotIdAndName: getResortSlotIdAndName,
   getResortName: getResortName,
   // Weather helpers
   getForecastToday: getForecastToday,

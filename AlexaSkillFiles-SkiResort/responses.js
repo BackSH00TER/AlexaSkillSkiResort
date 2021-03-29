@@ -6,11 +6,11 @@ module.exports.welcome = () =>
 module.exports.helpMessage = () =>
   'You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?';
 
-module.exports.unknownResort = () =>
-  "Sorry, I didn't catch the resort you said. Try asking again with one of the supported resorts.";
+module.exports.unknownResort = (synonymValue) =>
+  `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
 
 module.exports.unknownResortReprompt = () => 
-  "I didn't hear the resort you were asking about. Try asking the question again using one of the supported resorts.";
+  "Sorry, I don't recognize the resort you are asking about. Try asking the question again using one of the supported resorts.";
 
 module.exports.weatherServiceNotSupported = () =>
   "I'm sorry, I currently don't support retrieving weather related information for this resort."

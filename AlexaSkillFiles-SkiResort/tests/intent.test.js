@@ -41,9 +41,10 @@ const mockDetailedForecast = "A detailed forecast";
 
 describe('intents', () => {
   beforeEach(() => {
-    utils.getResortSlotID.mockImplementation(() => {
+    utils.getResortSlotIdAndName.mockImplementation(() => {
       return {
         resortSlotID: mockResortSlotID,
+        resortName: mockResortName,
         synonymValue: mockResortName
       }
     });
@@ -73,7 +74,7 @@ describe('intents', () => {
     });
   });
 
-  describe.only('forecastToday', () => {
+  describe('forecastToday', () => {
     it('tells the user the forecast for the day', async () => {
       expect.assertions(4);
       const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTodayIntent);
@@ -88,17 +89,37 @@ describe('intents', () => {
     it('returns unknownResort when resortId is undefined', async () => {
       expect.assertions(4);
       
-      utils.getResortSlotID.mockImplementation(() => {
+      utils.getResortSlotIdAndName.mockImplementation(() => {
         return {
           resortSlotID: undefined,
+          resortName: mockResortName,
           synonymValue: mockResortName
         }
       });
       
       const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTodayIntent);
 
-      expect(utils.getForecastToday).toHaveBeenCalled();
-      expect(outputSpeech).toEqual(responses.unknownResort());
+      expect(utils.getResortSlotIdAndName).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.unknownResort(mockResortName));
+      expect(repromptSpeech).toEqual(responses.unknownResortReprompt());
+      expect(endOfSession).toBeFalsy();
+    });
+
+    it('returns unknownResort when resortName is undefined', async () => {
+      expect.assertions(4);
+      
+      utils.getResortSlotIdAndName.mockImplementation(() => {
+        return {
+          resortSlotID: mockResortSlotID,
+          resortName: undefined,
+          synonymValue: mockResortName
+        }
+      });
+      
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTodayIntent);
+
+      expect(utils.getResortSlotIdAndName).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(responses.unknownResort(mockResortName));
       expect(repromptSpeech).toEqual(responses.unknownResortReprompt());
       expect(endOfSession).toBeFalsy();
     });
@@ -107,7 +128,8 @@ describe('intents', () => {
       expect.assertions(4);
 
       utils.getForecastToday.mockImplementationOnce(() => {
-        return { 
+        return {
+          detailedForecast: undefined,
           error: utils.NOT_SUPPORTED
         };
       });
@@ -124,7 +146,8 @@ describe('intents', () => {
       expect.assertions(4);
 
       utils.getForecastToday.mockImplementationOnce(() => {
-        return { 
+        return {
+          detailedForecast: undefined,
           error: utils.TERMINAL_ERROR
         };
       });

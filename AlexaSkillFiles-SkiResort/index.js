@@ -8,7 +8,7 @@ const {
   TERMINAL_ERROR,
   INVALID_DAY,
   NO_DATA_FOR_DAY,
-  getResortSlotID,
+  getResortSlotIdAndName,
   getResortName,
   getForecastToday,
   getForecastWeek,
@@ -42,36 +42,52 @@ exports.handler = function (event, context) {
   alexa.execute();
 };
 
+/**
+ * Returns the response for the correct error
+ * @param {boolean} isDataDefined 
+ * @param {string} error 
+ */
+const getErrorResponse = (
+  isDataDefined,
+  error
+) => {
+  let response;
+  if (error === NOT_SUPPORTED) {
+    response = responses.weatherServiceNotSupported();
+  } else if (error === TERMINAL_ERROR || !isDataDefined) {
+    response = responses.weatherServiceTerminalError();
+  } else {
+    // This case really shouldn't ever be hit, but is here just in case
+    response = responses.weatherServiceTerminalError();
+  }
+
+  return response;
+};
+
 const handlers = {
   'LaunchRequest': function () {
     this.emit(':ask', responses.welcome(), responses.helpMessage());
   },
   'forecastToday': async function ()  {
-    const {resortSlotID, synonymValue} = await getResortSlotID(this.event.request.intent.slots.Resort);
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
 
-    if (resortSlotID) {
-      const resortName = getResortName(resortSlotID);
-      const { detailedForecast, error } = await getForecastToday(resortSlotID);
-
-      // Check for errors
-      if (error === NOT_SUPPORTED) {
-        this.emit(':ask', responses.weatherServiceNotSupported());
-      } else if (error === TERMINAL_ERROR || !detailedForecast) {
-        this.emit(':ask', responses.weatherServiceTerminalError());
-      } else {
-        // Return detailed forecast for today
-        this.emit(':tell', responses.forecastToday(resortName, detailedForecast));
-      }
-    } else {
-      // Unable to get resortSlotID, reprompt the user to ask again
-      // TODO: Playback the value that Alexa heard to the user and say i dont recognize it as a supported resort??
-      // TODO: These 2 lines will be re-used a lot, move to a function
+    if (!resortSlotID || !resortName) {
       console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
-      this.emit(':ask', responses.unknownResort(), responses.unknownResortReprompt());
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
     }
+
+    const { detailedForecast, error } = await getForecastToday(resortSlotID);
+
+    if (error || !detailedForecast) {
+      const response = getErrorResponse(!!detailedForecast, error);
+      this.emit(':ask', response);
+    }
+
+    // Return detailed forecast for today
+    this.emit(':tell', responses.forecastToday(resortName, detailedForecast));
   },
   'forecastWeek': async function () {
-    const {resortSlotID, synonymValue} = await getResortSlotID(this.event.request.intent.slots.Resort);
+    const {resortSlotID, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
 
     if (resortSlotID) {
       const resortName = getResortName(resortSlotID);
@@ -96,7 +112,7 @@ const handlers = {
 
   },
   'forecastWeekDay': async function () {
-    const {resortSlotID, synonymValue} = await getResortSlotID(this.event.request.intent.slots.Resort);
+    const {resortSlotID, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
     const daySlotValue = this.events.request.intent.slots.Day.value;
 
     if (resortSlotID) {
