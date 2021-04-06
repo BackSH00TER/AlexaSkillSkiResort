@@ -211,21 +211,22 @@ const getForecastWeek = async (resortID) => {
  * Returns any errors that are returned from getWeatherRequest
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
-const getForecastWeekDay = (resortID, day) => {
-  const { forecastDataArray, error } = exportFunctions.getForecastWeek(resortID);
+const getForecastWeekDay = async (resortID, day) => {
+  const { forecastDataArray, error } = await exportFunctions.getForecastWeek(resortID);
 
   if (error) {
     return { forecastData: undefined, error };
   }
 
-  // Make sure user said a valid day and that we have the data for that day
-  // Ex: If they ask for Friday and today is Friday, we only have up to next Thursday
+  // Make sure user said a valid day
   // Ex: In some cases a holiday name could replace the name of the day in the field
   if (!isValidDayOfTheWeek(day)) {
-    return { error: INVALID_DAY };
+    return { forecastData: undefined, error: INVALID_DAY };
   }
 
-  const forecastDataForSpecificDay = forecastDataArray.find(data => data.day.toLowerCase() === day.toLowerCase())
+  const forecastDataForSpecificDay = forecastDataArray.find(data => data.day.toLowerCase() === day.toLowerCase());
+  // Make sure we have data for the specified day
+  // Ex: If they ask for Friday and today is Friday, we only have up to next Thursday
   const noDataForDayError = !forecastDataForSpecificDay ? NO_DATA_FOR_DAY : undefined;
 
   return {
@@ -241,8 +242,7 @@ const getForecastWeekDay = (resortID, day) => {
  */
 const isValidDayOfTheWeek =  (day) => {
   const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-  
-  return daysOfTheWeek.indexOf(day.toLowerCase() > -1);
+  return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
 }
 
 // For testing
