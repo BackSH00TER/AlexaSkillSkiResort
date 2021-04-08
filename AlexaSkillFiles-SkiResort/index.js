@@ -11,7 +11,8 @@ const {
   getResortSlotIdAndName,
   getForecastToday,
   getForecastWeek,
-  getForecastWeekDay
+  getForecastWeekDay,
+  getForecastTomorrow
 } = require('./utils');
 
 const { AlexaAppId } = require('./secrets/credentials');
@@ -136,6 +137,24 @@ const handlers = {
 
     // Return forecast for the week day
     this.emit(':tell', responses.forecastWeekDay(resortName, daySlotValue, forecastData));
+  },
+  'forecastTomorrow': async function () {
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
+
+    if (!resortSlotID || !resortName) {
+      console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
+    }
+
+    const { forecastData, error } = await getForecastTomorrow(resortSlotID);
+
+    if (error || !forecastData) {
+      const response = getErrorResponse({isDataDefined: !!forecastData, error});
+      this.emit(':ask', response);
+    }
+
+    // Return detailed forecast for tomorrow
+    this.emit(':tell', responses.forecastTomorrow(resortName, forecastData));
   }
 };
 

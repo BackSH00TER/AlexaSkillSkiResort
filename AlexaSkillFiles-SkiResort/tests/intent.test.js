@@ -7,6 +7,7 @@ const sessionStartIntent = require('./intent-sample-requests/new-session/session
 const forecastTodayIntent = require('./intent-sample-requests/forecastToday/forecast-today.intent');
 const forecastWeekIntent = require('./intent-sample-requests/forecast-week.intent');
 const forecastWeekDayIntent = require('./intent-sample-requests/forecast-weekday.intent');
+const forecastTomorrowIntent = require('./intent-sample-requests/forecast-tomorrow.intent');
 
 const NO_REMPROMPT = 'no_reprompt';
 const sanitise = text => text.replace(/\n/g, '');
@@ -168,6 +169,13 @@ describe('intents', () => {
     });
 
     utils.getForecastWeekDay.mockImplementation(() => {
+      return { 
+        forecastData: mockOneDayForecast, 
+        error: undefined
+      };
+    });
+
+    utils.getForecastTomorrow.mockImplementation(() => {
       return { 
         forecastData: mockOneDayForecast, 
         error: undefined
@@ -361,6 +369,62 @@ describe('intents', () => {
       });
 
       await testWeatherServiceTerminalError(forecastWeekDayIntent, utils.getForecastWeekDay);
+    });
+  });
+
+  describe('forecastTomorrow', () => {
+    it('tells the user tomorrows forecast', async () => {
+      expect.assertions(4);
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTomorrowIntent);
+      const expectedOutputSpeech = responses.forecastTomorrow(mockResortName, mockOneDayForecast);
+      
+      expect(utils.getForecastTomorrow).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+
+    it('returns unknownResort when resortId is undefined', async () => {
+      await testResortIdUndefined(forecastTomorrowIntent);
+    });
+
+    it('returns unknownResort when resortName is undefined', async () => {
+      await testResortNameUndefined(forecastTomorrowIntent);
+    });
+
+    it('returns weatherServiceNotSupported when resort passed in is not supported', async () => {
+      expect.assertions(4);
+
+      utils.getForecastTomorrow.mockImplementationOnce(() => {
+        return {
+          detailedForecast: undefined,
+          error: utils.NOT_SUPPORTED
+        };
+      });
+
+      await testWeatherServiceUnsupportedResortError(forecastTomorrowIntent, utils.getForecastTomorrow);
+    });
+
+    it('returns weatherServiceTerminalError when TERMINAL_ERROR received', async () => {
+      utils.getForecastTomorrow.mockImplementationOnce(() => {
+        return {
+          detailedForecast: undefined,
+          error: utils.TERMINAL_ERROR
+        };
+      });
+
+      await testWeatherServiceTerminalError(forecastTomorrowIntent, utils.getForecastTomorrow);
+    });
+
+    it('returns weatherServiceTerminalError when detailedForecast is undefined', async () => {
+      utils.getForecastTomorrow.mockImplementationOnce(() => {
+        return { 
+          detailedForecast: undefined,
+          error: undefined
+        };
+      });
+
+      await testWeatherServiceTerminalError(forecastTomorrowIntent, utils.getForecastTomorrow);
     });
   });
 });

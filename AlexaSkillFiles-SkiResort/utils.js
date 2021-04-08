@@ -233,7 +233,42 @@ const getForecastWeekDay = async (resortID, day) => {
     forecastData: forecastDataForSpecificDay,
     error: noDataForDayError
   };
-}
+};
+
+/**
+ * Gets the weather for tomorrow
+ * @param {string} resortID 
+ * @returns {object} {forecastData?: string, error?: string}
+ * Returns the forecastData for tomorrow on success
+ * Returns any errors that are returned from getWeatherRequest
+ */
+const getForecastTomorrow = async (resortID) => {
+  const { data, error } = await exportFunctions.getWeatherRequest(resortID);
+  
+  if (error) {
+    return { forecastData: undefined, error };
+  }
+
+  const forecast = JSON.parse(data);
+  const forecastPeriods = forecast.properties.periods;
+
+  // If the first result has isDaytime = false, then it will only have one result for "Tonight", otherwise it will have two results for today
+  const isFirstPeriodNight = !forecastPeriods[0].isDaytime;
+  const startIndex = isFirstPeriodNight ? 1 : 2;
+
+  const forecastData = {
+    day: forecastPeriods[startIndex].name,
+    tempHigh: forecastPeriods[startIndex].temperature,
+    tempLow: forecastPeriods[startIndex + 1].temperature,
+    shortForecast: forecastPeriods[startIndex].shortForecast,
+    detailedForecast: forecastPeriods[startIndex].detailedForecast
+  };
+
+  return {
+    forecastData,
+    error: undefined
+  };
+};
 
 /**
  * Checks that the a valid day of the week is being used
@@ -243,7 +278,7 @@ const getForecastWeekDay = async (resortID, day) => {
 const isValidDayOfTheWeek =  (day) => {
   const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
   return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
-}
+};
 
 // For testing
 // getWeatherRequest("Stevens_Pass");
@@ -265,6 +300,7 @@ const exportFunctions = {
   getForecastToday: getForecastToday,
   getForecastWeek: getForecastWeek,
   getForecastWeekDay: getForecastWeekDay,
+  getForecastTomorrow: getForecastTomorrow,
   // Exported for unit tests only
   updateDBUniqueResortCounter: updateDBUniqueResortCounter,
   getWeatherRequest: getWeatherRequest
