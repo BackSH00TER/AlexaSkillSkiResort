@@ -43,22 +43,37 @@ exports.handler = function (event, context) {
 
 /**
  * Returns the response for the correct error
- * @param {boolean} isDataDefined 
- * @param {string} error 
+ * @param {object} isDataDefined - boolean
+ * @param {object} error - string
+ * @returns {string} - error response to return based on error passed in
  */
-const getErrorResponse = (
+const getErrorResponse = ({
   isDataDefined,
-  error
-) => {
+  error,
+  daySlotValue
+}) => {
   let response;
-  if (error === NOT_SUPPORTED) {
-    response = responses.weatherServiceNotSupported();
-  } else if (error === TERMINAL_ERROR || !isDataDefined) {
-    response = responses.weatherServiceTerminalError();
-  } else {
-    // This case really shouldn't ever be hit, but is here just in case
+  if (!isDataDefined) {
     response = responses.weatherServiceTerminalError();
   }
+
+  switch (error) {
+    case NOT_SUPPORTED:
+      response = responses.weatherServiceNotSupported();
+      break;
+    case INVALID_DAY:
+      response = responses.dayNotRecognized();
+      break;
+    case NO_DATA_FOR_DAY:
+      response = responses.noExtendedForecast(daySlotValue);
+      break;
+    case TERMINAL_ERROR:
+      response = responses.weatherServiceTerminalError();
+      break;
+    default:
+      response = responses.weatherServiceTerminalError();
+      break;
+  };
 
   return response;
 };
@@ -78,7 +93,7 @@ const handlers = {
     const { detailedForecast, error } = await getForecastToday(resortSlotID);
 
     if (error || !detailedForecast) {
-      const response = getErrorResponse(!!detailedForecast, error);
+      const response = getErrorResponse({isDataDefined: !!detailedForecast, error});
       this.emit(':ask', response);
     }
 
@@ -96,7 +111,7 @@ const handlers = {
     const { forecastDataArray, error } = await getForecastWeek(resortSlotID);
 
     if (error || (!forecastDataArray || !forecastDataArray.length)) {
-      const response = getErrorResponse(!!forecastDataArray, error);
+      const response = getErrorResponse({isDataDefined: !!forecastDataArray, error});
       this.emit(':ask', response);
     }
 
@@ -104,34 +119,23 @@ const handlers = {
     this.emit(':tell', responses.forecastWeek(resortName, forecastDataArray));
   },
   'forecastWeekDay': async function () {
-    const {resortSlotID, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
-    const daySlotValue = this.events.request.intent.slots.Day.value;
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
+    const daySlotValue = this.event.request.intent.slots.Day.value;
 
-    if (resortSlotID) {
-      // const resortName = getResortName(resortSlotID);
-      const { forecastData, error } = getForecastWeekDay(resortSlotID, daySlotValue);
-
-      // Check for errors
-      if (error === NOT_SUPPORTED) {
-        this.emit(':tell', responses.weatherServiceNotSupported());
-      } else if (error === INVALID_DAY) {
-        this.emit(':ask', responses.dayNotRecognized());
-      } else if (error === NO_DATA_FOR_DAY) {
-        this.emit(':tell', responses.noExtendedForecast(daySlotValue));
-      } else if (error === TERMINAL_ERROR || !forecastData) {
-        this.emit(':ask', responses.weatherServiceTerminalError());
-      } else {
-        // Return forecast for the week day
-        this.emit(':tell', responses.forecastWeekDay(resortName, daySlotValue, forecastData));
-      }
-    } else {
-      // Unable to get resortSlotID, reprompt the user to ask again
-      // TODO: Playback the value that Alexa heard to the user and say i dont recognize it as a supported resort??
-      // TODO: These 2 lines will be re-used a lot, move to a function
+    if (!resortSlotID || !resortName) {
       console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
-      this.emit(':ask', responses.unknownResort(), responses.unknownResortReprompt());
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
+    }
+    
+    const { forecastData, error } = await getForecastWeekDay(resortSlotID, daySlotValue);
+
+    if (error || !forecastData) {
+      const response = getErrorResponse({isDataDefined: !!forecastData, error, daySlotValue});
+      this.emit(':ask', response);
     }
 
+    // Return forecast for the week day
+    this.emit(':tell', responses.forecastWeekDay(resortName, daySlotValue, forecastData));
   }
 };
 
