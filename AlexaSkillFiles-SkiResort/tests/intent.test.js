@@ -156,7 +156,7 @@ describe('intents', () => {
 
     utils.getForecastToday.mockImplementation(() => {
       return { 
-        detailedForecast: mockDetailedForecast, 
+        forecastData: mockOneDayForecast, 
         error: undefined
       };
     });
@@ -197,7 +197,7 @@ describe('intents', () => {
     it('tells the user the forecast for the day', async () => {
       expect.assertions(4);
       const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(forecastTodayIntent);
-      const expectedOutputSpeech = responses.forecastToday(mockResortName, mockDetailedForecast);
+      const expectedOutputSpeech = responses.forecastToday(mockResortName, mockOneDayForecast);
       
       expect(utils.getForecastToday).toHaveBeenCalled();
       expect(outputSpeech).toEqual(expectedOutputSpeech);
@@ -218,7 +218,7 @@ describe('intents', () => {
 
       utils.getForecastToday.mockImplementationOnce(() => {
         return {
-          detailedForecast: undefined,
+          forecastData: undefined,
           error: utils.NOT_SUPPORTED
         };
       });
@@ -229,7 +229,7 @@ describe('intents', () => {
     it('returns weatherServiceTerminalError when TERMINAL_ERROR received', async () => {
       utils.getForecastToday.mockImplementationOnce(() => {
         return {
-          detailedForecast: undefined,
+          forecastData: undefined,
           error: utils.TERMINAL_ERROR
         };
       });
@@ -240,7 +240,7 @@ describe('intents', () => {
     it('returns weatherServiceTerminalError when detailedForecast is undefined', async () => {
       utils.getForecastToday.mockImplementationOnce(() => {
         return { 
-          detailedForecast: undefined,
+          forecastData: undefined,
           error: undefined
         };
       });

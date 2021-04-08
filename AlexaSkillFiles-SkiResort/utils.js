@@ -5,6 +5,18 @@ const NOT_SUPPORTED = "NOT_SUPPORTED";
 const TERMINAL_ERROR = "TERMINAL_ERROR";
 const INVALID_DAY = "INVALID_DAY";
 const NO_DATA_FOR_DAY = "NO_DATA_FOR_DAY";
+const NO_DATA = "NO_DATA";
+
+
+/**
+ * Checks that the a valid day of the week is being used
+ * @param {string} day 
+ * @returns true/false
+ */
+ const isValidDayOfTheWeek =  (day) => {
+  const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
+};
 
 /**
  * Returns the slotID and value for the resort in the IntentRequest
@@ -143,13 +155,25 @@ const getForecastToday = async (resortID) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
   if (error) {
-    return { detailedForecast: undefined, error };
+    return { forecastData: undefined, error };
   }
 
   const forecast = JSON.parse(data);
+  const forecastPeriods = forecast.properties.periods;
+
+  // If the first result has isDaytime = false, then it will only have one result for "Tonight", otherwise it will have two results for today
+  const isFirstPeriodNight = !forecastPeriods[0].isDaytime;
+
+  const forecastData = {
+    day: forecastPeriods[0].name,
+    tempHigh: isFirstPeriodNight ? NO_DATA : forecastPeriods[0].temperature,
+    tempLow: isFirstPeriodNight ? forecastPeriods[0].temperature : forecastPeriods[1].temperature,
+    shortForecast: forecastPeriods[0].shortForecast,
+    detailedForecast: forecastPeriods[0].detailedForecast
+  };
 
   return {
-    detailedForecast: forecast.properties.periods[0].detailedForecast,
+    forecastData,
     error: undefined
   };
 };
@@ -270,14 +294,16 @@ const getForecastTomorrow = async (resortID) => {
   };
 };
 
-/**
- * Checks that the a valid day of the week is being used
- * @param {string} day 
- * @returns true/false
- */
-const isValidDayOfTheWeek =  (day) => {
-  const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-  return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
+const getTemperatureToday = () => {
+
+};
+
+const getTemperatureTonight = () => {
+
+};
+
+const getTemperatureWeekDay = () => {
+
 };
 
 // For testing
@@ -295,6 +321,7 @@ const exportFunctions = {
   TERMINAL_ERROR,
   INVALID_DAY,
   NO_DATA_FOR_DAY,
+  NO_DATA,
   getResortSlotIdAndName: getResortSlotIdAndName,
   // Weather helpers
   getForecastToday: getForecastToday,

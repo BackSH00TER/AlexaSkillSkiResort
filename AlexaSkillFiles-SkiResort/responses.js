@@ -18,8 +18,8 @@ module.exports.weatherServiceNotSupported = () =>
 module.exports.weatherServiceTerminalError = () =>
   "I'm sorry, there was an error getting the data from the weather service database. If this issue persists, please contact the developer."
 
-module.exports.forecastToday = (resortName, detailedForecast) =>
-  `Today's forecast for ${resortName} is: ${detailedForecast}`;
+module.exports.forecastToday = (resortName, forecastData) =>
+  `Today's forecast for ${resortName} is: ${forecastData.detailedForecast}`;
 
 module.exports.forecastWeek = (resortName, forecastDataArray) => {
   let response = `This week's forecast for ${resortName} is: `;

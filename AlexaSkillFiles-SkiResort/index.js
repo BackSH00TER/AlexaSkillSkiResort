@@ -91,15 +91,15 @@ const handlers = {
       this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
     }
 
-    const { detailedForecast, error } = await getForecastToday(resortSlotID);
+    const { forecastData, error } = await getForecastToday(resortSlotID);
 
-    if (error || !detailedForecast) {
-      const response = getErrorResponse({isDataDefined: !!detailedForecast, error});
+    if (error || !forecastData) {
+      const response = getErrorResponse({isDataDefined: !!forecastData, error});
       this.emit(':ask', response);
     }
 
     // Return detailed forecast for today
-    this.emit(':tell', responses.forecastToday(resortName, detailedForecast));
+    this.emit(':tell', responses.forecastToday(resortName, forecastData));
   },
   'forecastWeek': async function () {
     const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
