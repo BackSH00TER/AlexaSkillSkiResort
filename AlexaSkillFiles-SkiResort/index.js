@@ -155,6 +155,31 @@ const handlers = {
 
     // Return detailed forecast for tomorrow
     this.emit(':tell', responses.forecastTomorrow(resortName, forecastData));
+  },
+  'temperatureToday': async function () {
+    // TODO: Note this is the same as getForecastToday just a different response, maybe refactor?
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
+
+    if (!resortSlotID || !resortName) {
+      console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
+    }
+
+    const { forecastData, error } = await getForecastToday(resortSlotID);
+
+    if (error || !forecastData) {
+      const response = getErrorResponse({isDataDefined: !!forecastData, error});
+      this.emit(':ask', response);
+    }
+
+    // Return temperature for today
+    this.emit(':tell', responses.temperatureToday(resortName, forecastData));
+  },
+  'temperatureTonight': async function () {
+    
+  },
+  'temperatureWeekDay': async function () {
+    
   }
 };
 
