@@ -1,5 +1,7 @@
 'use strict';
 
+const { NO_DATA } = require('./utils');
+
 module.exports.welcome = () =>
   'Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?';
 
@@ -37,8 +39,13 @@ module.exports.forecastWeekDay = (resortName, day, forecastData) =>
 module.exports.forecastTomorrow = (resortName, forecastData) =>
   `Tomorrow at ${resortName} there will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
 
-module.exports.temperatureToday = (resortName, forecastData) =>
-  `The temperature at ${resortName} is ${forecastData.tempLow} degrees, with a forecast of ${forecastData.shortForecast}`;
+module.exports.temperatureToday = (resortName, forecastData) => {
+  const temp = forecastData.tempHigh == NO_DATA ? forecastData.tempLow : forecastData.tempHigh;
+  return `The temperature at ${resortName} is ${temp} degrees, with a forecast of ${forecastData.shortForecast}`;
+}
+
+module.exports.temperatureTonight = (resortName, forecastData) =>
+  `Tonights temperature at ${resortName} will be ${forecastData.tempLow} degrees, with a forecast of ${forecastData.shortForecast}`;
 
 module.exports.dayNotRecognized = () =>
   "Sorry, I didn't catch the day you were looking for. Try asking the question again please."
