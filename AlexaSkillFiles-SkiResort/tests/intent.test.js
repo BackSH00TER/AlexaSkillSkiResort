@@ -10,6 +10,7 @@ const forecastWeekDayIntent = require('./intent-sample-requests/forecast-weekday
 const forecastTomorrowIntent = require('./intent-sample-requests/forecast-tomorrow.intent');
 const temperatureTodayIntent = require('./intent-sample-requests/temperature-today.intent');
 const temperatureTonightIntent = require('./intent-sample-requests/temperature-tonight.intent');
+const temperatureWeekDayIntent = require('./intent-sample-requests/temperature-weekday.intent');
 
 
 const NO_REMPROMPT = 'no_reprompt';
@@ -565,6 +566,63 @@ describe('intents', () => {
       });
 
       await testWeatherServiceTerminalError(temperatureTonightIntent, utils.getForecastToday);
+    });
+  });
+
+  // Basically a copy of forecastWeekDay tests
+  describe('temperatureWeekDay', () => {
+    it('returns the forecast for a specific day of the week', async () => {
+      expect.assertions(4);
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(temperatureWeekDayIntent);
+      const expectedOutputSpeech = responses.temperatureWeekDay(mockResortName, "friday", mockOneDayForecast);
+      
+      expect(utils.getForecastWeekDay).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+
+    it('returns unknownResort when resortId is undefined', async () => {
+      await testResortIdUndefined(temperatureWeekDayIntent);
+    });
+
+    it('returns unknownResort when resortName is undefined', async () => {
+      await testResortNameUndefined(temperatureWeekDayIntent);
+    });
+
+    it('returns weatherServiceNotSupported when resort passed in is not supported', async () => {
+      expect.assertions(4);
+
+      utils.getForecastWeekDay.mockImplementationOnce(() => {
+        return {
+          forecastData: undefined,
+          error: utils.NOT_SUPPORTED
+        };
+      });
+
+      await testWeatherServiceUnsupportedResortError(temperatureWeekDayIntent, utils.getForecastWeekDay);
+    });
+
+    it('returns weatherServiceTerminalError when TERMINAL_ERROR received', async () => {
+      utils.getForecastWeekDay.mockImplementationOnce(() => {
+        return {
+          forecastData: undefined,
+          error: utils.TERMINAL_ERROR
+        };
+      });
+
+      await testWeatherServiceTerminalError(temperatureWeekDayIntent, utils.getForecastWeekDay);
+    });
+
+    it('returns weatherServiceTerminalError when forecastData is undefined', async () => {
+      utils.getForecastWeekDay.mockImplementationOnce(() => {
+        return {
+          forecastData: undefined,
+          error: undefined
+        };
+      });
+
+      await testWeatherServiceTerminalError(temperatureWeekDayIntent, utils.getForecastWeekDay);
     });
   });
 });

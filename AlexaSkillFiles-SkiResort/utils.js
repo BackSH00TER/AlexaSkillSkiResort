@@ -294,18 +294,6 @@ const getForecastTomorrow = async (resortID) => {
   };
 };
 
-const getTemperatureToday = () => {
-
-};
-
-const getTemperatureTonight = () => {
-
-};
-
-const getTemperatureWeekDay = () => {
-
-};
-
 // For testing
 // getWeatherRequest("Stevens_Pass");
 

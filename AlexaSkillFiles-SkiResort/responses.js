@@ -47,6 +47,9 @@ module.exports.temperatureToday = (resortName, forecastData) => {
 module.exports.temperatureTonight = (resortName, forecastData) =>
   `Tonights temperature at ${resortName} will be ${forecastData.tempLow} degrees, with a forecast of ${forecastData.shortForecast}`;
 
+module.exports.temperatureWeekDay = (resortName, day, forecastData) =>
+  `The temperature at ${resortName} on ${day} will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
+
 module.exports.dayNotRecognized = () =>
   "Sorry, I didn't catch the day you were looking for. Try asking the question again please."
 
