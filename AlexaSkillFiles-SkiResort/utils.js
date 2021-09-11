@@ -6,6 +6,7 @@ const TERMINAL_ERROR = "TERMINAL_ERROR";
 const INVALID_DAY = "INVALID_DAY";
 const NO_DATA_FOR_DAY = "NO_DATA_FOR_DAY";
 const NO_DATA = "NO_DATA";
+const DB_READ_ERROR = "DB_READ_ERROR";
 
 
 /**
@@ -13,7 +14,7 @@ const NO_DATA = "NO_DATA";
  * @param {string} day 
  * @returns true/false
  */
- const isValidDayOfTheWeek =  (day) => {
+const isValidDayOfTheWeek =  (day) => {
   const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
   return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
 };
@@ -294,8 +295,42 @@ const getForecastTomorrow = async (resortID) => {
   };
 };
 
+const getSnowReportData = async (resortID) => {
+  const params = {
+    TableName: "SkiResortData",
+    Key: {
+      "resort": resortID
+    }
+  };
+
+  const data = await db.getData(params);
+
+  if (!data) {
+    console.log('Error: Data returned is missing the Item object')
+    return {
+      snowReportData: undefined,
+      error: DB_READ_ERROR
+    };
+  }
+
+  return {
+    snowReportData: {
+      resort: data.Item.resort,
+      snowDepthBase: data.Item.snowDepthBase,
+      snowDepthMidMtn: data.Item.snowDepthMidMtn,
+      seasonSnowFall: data.Item.seasonSnowFall,
+      snowFallOvernight: data.Item.overNightSnowFall,
+      snowFallOneDay: data.Item.snowFallOneDay,
+      snowFallTwoDay: data.Item.snowFallTwoDay
+    },
+    error: undefined
+  };
+};
+
+
 // For testing
 // getWeatherRequest("Stevens_Pass");
+// getSnowReportData("Stevens Pass");
 
 // Due to the way module.exports works, when unit testing these module functions that call other module functions
 // It actually saves it as an object. So when you go to mock a function it ends up using the copied function instead of the mock
@@ -310,12 +345,14 @@ const exportFunctions = {
   INVALID_DAY,
   NO_DATA_FOR_DAY,
   NO_DATA,
+  DB_READ_ERROR,
   getResortSlotIdAndName: getResortSlotIdAndName,
   // Weather helpers
   getForecastToday: getForecastToday,
   getForecastWeek: getForecastWeek,
   getForecastWeekDay: getForecastWeekDay,
   getForecastTomorrow: getForecastTomorrow,
+  getSnowReportData: getSnowReportData,
   // Exported for unit tests only
   updateDBUniqueResortCounter: updateDBUniqueResortCounter,
   getWeatherRequest: getWeatherRequest

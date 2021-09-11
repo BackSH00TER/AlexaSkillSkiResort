@@ -20,6 +20,9 @@ module.exports.weatherServiceNotSupported = () =>
 module.exports.weatherServiceTerminalError = () =>
   "I'm sorry, there was an error getting the data from the weather service database. If this issue persists, please contact the developer."
 
+module.exports.snowReportTerminalError = () =>
+  "I'm sorry, there was an error getting the snow report data from the database. If this issue persists, please contact the developer."
+
 module.exports.forecastToday = (resortName, forecastData) =>
   `Today's forecast for ${resortName} is: ${forecastData.detailedForecast}`;
 
@@ -55,3 +58,9 @@ module.exports.dayNotRecognized = () =>
 
 module.exports.noExtendedForecast = (day) =>
   `Sorry, I don't have the extended forecast for ${day}.`
+
+module.exports.snowReportDepth = (resortName, snowReportData) => {
+  // TODO: Revist and try to make this less wordy. Also consider if this should return anything forecast related?? - yes
+  // TODO: Try seeing what alexa does by default when ask for snowreport
+  return `In the last two days ${resortName} has received ${snowReportData.snowFallTwoDay} inches of new snow. The base depth is currently at ${snowReportData.snowDepthBase} inches and mid mountain is at ${snowReportData.snowDepthMidMtn} inches. The season total is ${snowReportData.seasonSnowFall}.`
+};

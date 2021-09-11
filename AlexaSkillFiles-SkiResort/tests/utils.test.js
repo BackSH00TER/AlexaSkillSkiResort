@@ -1,4 +1,5 @@
 const utils = require('../utils');
+const db = require('../AWS_Helpers');
 
 const mockResortName = "Stevens Pass";
 const mockResortSlotID = "Stevens_Pass";
@@ -419,6 +420,50 @@ describe('test util functions', () => {
         expect(forecastData).toBeUndefined();
         expect(error).toEqual(utils.TERMINAL_ERROR);
       });
+    });
+  });
+
+  describe('getSnowReportData', () => {
+    const mockSnowReportData = {
+      Item: {
+        resort: 'Stevens Pass',
+        seasonSnowFall: '414',
+        snowFallTwoDay: '0',
+        snowDepthBase: '149',
+        snowDepthMidMtn: '190',
+        overNightSnowFall: '0',
+        snowFallOneDay: '0'
+      }
+    };
+
+    const expectedResponse = {
+      resort: 'Stevens Pass',
+      seasonSnowFall: '414',
+      snowFallTwoDay: '0',
+      snowDepthBase: '149',
+      snowDepthMidMtn: '190',
+      snowFallOvernight: '0',
+      snowFallOneDay: '0'
+    };
+
+    it('returns the data', async () => {
+      expect.assertions(3);
+      const getSnowReportDataStub = jest.spyOn(db, 'getData').mockImplementation(async () => (mockSnowReportData));
+      const { snowReportData, error } = await utils.getSnowReportData(mockResortName);
+  
+      expect(getSnowReportDataStub).toHaveBeenCalled();
+      expect(snowReportData).toEqual(expectedResponse);
+      expect(error).toBeUndefined();
+    });
+
+    it('returns an error if data is missing', async () => {
+      expect.assertions(3);
+      const getSnowReportDataStub = jest.spyOn(db, 'getData').mockImplementation(async () => {});
+      const { snowReportData, error } = await utils.getSnowReportData(mockResortName);
+  
+      expect(getSnowReportDataStub).toHaveBeenCalled();
+      expect(snowReportData).toBeUndefined();
+      expect(error).toEqual(utils.DB_READ_ERROR);
     });
   });
 });

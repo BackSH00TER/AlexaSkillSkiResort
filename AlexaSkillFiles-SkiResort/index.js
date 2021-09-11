@@ -8,11 +8,13 @@ const {
   TERMINAL_ERROR,
   INVALID_DAY,
   NO_DATA_FOR_DAY,
+  DB_READ_ERROR,
   getResortSlotIdAndName,
   getForecastToday,
   getForecastWeek,
   getForecastWeekDay,
-  getForecastTomorrow
+  getForecastTomorrow,
+  getSnowReportData
 } = require('./utils');
 
 const { AlexaAppId } = require('./secrets/credentials');
@@ -71,6 +73,8 @@ const getErrorResponse = ({
     case TERMINAL_ERROR:
       response = responses.weatherServiceTerminalError();
       break;
+    case DB_READ_ERROR:
+      response = responses.snowReportTerminalError();
     default:
       response = responses.weatherServiceTerminalError();
       break;
@@ -213,7 +217,24 @@ const handlers = {
 
     // Return forecast for the week day
     this.emit(':tell', responses.temperatureWeekDay(resortName, daySlotValue, forecastData));
-  }
+  },
+  'snowReportDepth': async function () {
+    const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
+
+    if (!resortSlotID || !resortName) {
+      console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+      this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
+    }
+
+    const { snowReportData, error } = await getSnowReportData(resortSlotID);
+
+    if (error || !snowReportData) {
+      const response = getErrorResponse({isDataDefined: !!snowReportData, error});
+      this.emit(':ask', response);
+    }
+
+    this.emit(':tell', responses.snowReportDepth(resortName, snowReportData));
+  },
 };
 
 // var handlers = {

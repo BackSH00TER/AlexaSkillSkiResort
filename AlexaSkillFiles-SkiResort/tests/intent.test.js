@@ -11,7 +11,7 @@ const forecastTomorrowIntent = require('./intent-sample-requests/forecast-tomorr
 const temperatureTodayIntent = require('./intent-sample-requests/temperature-today.intent');
 const temperatureTonightIntent = require('./intent-sample-requests/temperature-tonight.intent');
 const temperatureWeekDayIntent = require('./intent-sample-requests/temperature-weekday.intent');
-
+const snowReportDepthIntent = require('./intent-sample-requests/snow-report-depth.intent');
 
 const NO_REMPROMPT = 'no_reprompt';
 const sanitise = text => text.replace(/\n/g, '');
@@ -89,6 +89,15 @@ describe('intents', () => {
   const mockOneDayForecast = {
     day: "Friday",
     ...dayInfo
+  };
+  const mockSnowReport = {
+    resort: 'Stevens Pass',
+    snowDepthBase: '149',
+    snowDepthMidMtn: '190',
+    seasonSnowFall: '414',
+    snowFallOvernight: '1',
+    snowFallOneDay: '2',
+    snowFallTwoDay: '3',
   };
 
   const testResortIdUndefined = async (intent) => {
@@ -184,6 +193,13 @@ describe('intents', () => {
         forecastData: mockOneDayForecast, 
         error: undefined
       };
+    });
+
+    utils.getSnowReportData.mockImplementation(() => {
+      return {
+        snowReportData: mockSnowReport,
+        error: undefined
+      }
     });
   });
 
@@ -623,6 +639,27 @@ describe('intents', () => {
       });
 
       await testWeatherServiceTerminalError(temperatureWeekDayIntent, utils.getForecastWeekDay);
+    });
+  });
+
+  describe('snowReportDepth', () => {
+    it('returns the snow report for the resort', async () => {
+      expect.assertions(4);
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(snowReportDepthIntent);
+      const expectedOutputSpeech = responses.snowReportDepth(mockResortName, mockSnowReport);
+      
+      expect(utils.getSnowReportData).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+  
+    it('returns unknownResort when resortId is undefined', async () => {
+      await testResortIdUndefined(snowReportDepthIntent);
+    });
+
+    it('returns unknownResort when resortName is undefined', async () => {
+      await testResortNameUndefined(snowReportDepthIntent);
     });
   });
 });

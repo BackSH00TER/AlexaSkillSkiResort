@@ -13,17 +13,27 @@ AWS.config.update({
 var docClient = new AWS.DynamoDB.DocumentClient()
 
 module.exports = {
-    //Used to retrieve data from DynamoDB about the requested resort
-    //Mainly used by Alexa Skill lambda function to request data
-    getData: function(params, callback) {
-        docClient.get(params, function (err, data) {
-            if (err) {
-                console.error("Unable to read from resort: " + params.Key.resort + ". Error JSON:", JSON.stringify(err, null, 2));
-            } else {
-                callback(data);
-            }
-        });
+    // Used to retrieve data from DynamoDB about the requested resort
+    // Mainly used by Alexa Skill lambda function to request data
+    getData: async function (params) {
+      try {
+        const data = await docClient.get(params).promise();
+        return data;
+      } catch (err) {
+        console.log(`Error getting data for resort ${params.Key.resort}: ${err}`);
+        return err;
+      }
     },
+    
+    // function(params, callback) {
+    //     docClient.get(params, function (err, data) {
+    //         if (err) {
+    //             console.error("Unable to read from resort: " + params.Key.resort + ". Error JSON:", JSON.stringify(err, null, 2));
+    //         } else {
+    //             callback(data);
+    //         }
+    //     });
+    // },
 
     //Used to put updated data to DynamoDB about the given resort
     //Mainly used by the scraper lambda skill to update information periodically
