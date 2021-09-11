@@ -14,7 +14,8 @@ const {
   getForecastWeek,
   getForecastWeekDay,
   getForecastTomorrow,
-  getSnowReportData
+  getSnowReportData,
+  getSupportedResorts
 } = require('./utils');
 
 const { AlexaAppId } = require('./secrets/credentials');
@@ -290,6 +291,11 @@ const handlers = {
 
     this.emit(':tell', responses.snowReportOvernight(resortName, snowReportData));
   },
+  'supportedResorts': async function () {
+    const supportedResortsArray = await getSupportedResorts();
+    
+    this.emit(':ask', responses.supportedResorts(supportedResortsArray));
+  }
 };
 
 // var handlers = {

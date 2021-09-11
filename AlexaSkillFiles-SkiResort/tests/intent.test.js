@@ -15,6 +15,7 @@ const snowReportDepthIntent = require('./intent-sample-requests/snow-report-dept
 const snowReportSeasonTotalIntent = require('./intent-sample-requests/snow-report-season-total.intent');
 const snowReportOvernightIntent = require('./intent-sample-requests/snow-report-overnight.intent');
 const snowReportOneDayIntent = require('./intent-sample-requests/snow-report-one-day.intent');
+const supportedResortsIntent = require('./intent-sample-requests/supported-resorts.intent');
 
 const NO_REMPROMPT = 'no_reprompt';
 const sanitise = text => text.replace(/\n/g, '');
@@ -102,6 +103,8 @@ describe('intents', () => {
     snowFallOneDay: '2',
     snowFallTwoDay: '3',
   };
+
+  const mockResorts = ["resort 1", "resort 2", "resort 3"];
 
   const testResortIdUndefined = async (intent) => {
     expect.assertions(4);
@@ -222,6 +225,10 @@ describe('intents', () => {
         snowReportData: mockSnowReport,
         error: undefined
       }
+    });
+
+    utils.getSupportedResorts.mockImplementation(() => {
+      return mockResorts
     });
   });
 
@@ -1001,6 +1008,20 @@ describe('intents', () => {
       it('returns snowReportTerminalError when it fails to read from the DB', async () => {
         await testSnowReportTerminalError(snowReportOneDayIntent);
       });
+    });
+  });
+
+  describe('supportedResorts', () => {
+    it('returns the list of supported resorts', async () => {
+      expect.assertions(4);
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(supportedResortsIntent);
+      const expectedOutputSpeech = responses.supportedResorts(mockResorts);
+
+      expect(utils.getSupportedResorts).toHaveBeenCalled();
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeFalsy();
     });
   });
 });

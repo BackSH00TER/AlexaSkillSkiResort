@@ -14,7 +14,7 @@ const DB_READ_ERROR = "DB_READ_ERROR";
  * @param {string} day 
  * @returns true/false
  */
-const isValidDayOfTheWeek =  (day) => {
+const isValidDayOfTheWeek = (day) => {
   const daysOfTheWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
   return daysOfTheWeek.indexOf(day.toLowerCase()) > -1;
 };
@@ -109,6 +109,42 @@ const resortWeatherGridpoints = {
   Sundance:           'SLC/108,157',  // 40.3934,-111.5888
   Mount_Washington:   'NOT_SUPPORTED' // 49.73833,-125.2986
 };
+
+/**
+ * Returns an array of all the supported resort names
+ */
+const getSupportedResorts = async () => {
+  return [
+    "Crystal Mountain",
+    "Mount Baker",
+    "Snoqualmie Pass",
+    "Stevens Pass",
+    "Mission Ridge",
+    "Schweitzer",
+    'Mount Hood Meadows',
+    "Mount Hood Skibowl",
+    "Timberline Lodge",
+    "Mount Bachelor",
+    "Sun Valley",
+    "Mammoth Mountain",
+    "Big Bear Mountain",
+    "Breckenridge",
+    "Alta",
+    "Beaver Mountain",
+    "Brian Head Resort",
+    "Brighton",
+    "Deer Valley",
+    "Eagle Point",
+    "Nordic Valley",
+    "Park City",
+    "Powder Mountain",
+    "Snowbasin",
+    "Snowbird",
+    "Solitude",
+    "Sundance",
+    "Mount Washington",
+  ];
+}
 
 /**
  * Makes a network request to the WeatherAPI to get the forecast for the given resort
@@ -349,6 +385,7 @@ const exportFunctions = {
   NO_DATA,
   DB_READ_ERROR,
   getResortSlotIdAndName: getResortSlotIdAndName,
+  getSupportedResorts: getSupportedResorts,
   // Weather helpers
   getForecastToday: getForecastToday,
   getForecastWeek: getForecastWeek,

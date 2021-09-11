@@ -119,6 +119,12 @@ module.exports.snowReportOvernight = (resortName, snowReportData) => {
   }
 };
 
+module.exports.supportedResorts = (supportedResortsArray) => {
+  const supportedResorts = supportedResortsArray.join(', ');
+
+  return `The currently supported resorts are: ${supportedResorts}. What else would you like to know?`;
+};
+
 const inchOrInches = (data) => {
   return data == 1 ? "inch" : "inches";
 }

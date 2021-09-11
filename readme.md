@@ -24,10 +24,27 @@ Files to zip:
 
 #### Adding New Resort
 - Add resort file to `resorts/___.json`
-- Add selectors to Scraper.js
-- Add to weather report in index.js as well
-- Add new slot values on Alexa Dashboard
+  - use link to OnTheSnow
+- Validate selectors return data from Scraper.js
+  - should not require changes
+- Add weather report data
+  - Add the gridpoint to utils - resortWeatherGridpoints
+- Add resort name to the `getSupportedResorts()` util function
+- Add new slot values and synonyms on Alexa Dashboard
 
+
+# Weather API
+Documentation for Weather.gov API:
+https://www.weather.gov/documentation/services-web-api
+
+To get a gridpoint to use for a new resort:
+- Get the LAT, LON of the resort (just using google search)
+- Build a URL w/ the lat and long
+  - https://api.weather.gov/points/{latitude},{longitude}/forecast
+  - Enter the url in the browser and it will convert the url to one containing `/gridpoints/{region}/{num1,numb2}/forecast
+  - Copy this and use this in the code
+
+_Note: This Weather API only supports regions in the USA._
 # Testing
 
 #### WebScraper
