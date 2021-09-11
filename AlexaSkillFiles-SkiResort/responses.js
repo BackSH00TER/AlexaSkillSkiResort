@@ -62,5 +62,67 @@ module.exports.noExtendedForecast = (day) =>
 module.exports.snowReportDepth = (resortName, snowReportData) => {
   // TODO: Revist and try to make this less wordy. Also consider if this should return anything forecast related?? - yes
   // TODO: Try seeing what alexa does by default when ask for snowreport
-  return `In the last two days ${resortName} has received ${snowReportData.snowFallTwoDay} inches of new snow. The base depth is currently at ${snowReportData.snowDepthBase} inches and mid mountain is at ${snowReportData.snowDepthMidMtn} inches. The season total is ${snowReportData.seasonSnowFall}.`
+  if (
+    snowReportData.snowFallTwoDay === 'FAIL' &&
+    snowReportData.snowDepthBase === 'FAIL' &&
+    snowReportData.snowDepthMidMtn === 'FAIL' &&
+    snowReportData.seasonSnowFall === 'FAIL'
+  ) {
+    return dataErrorMessage(resortName, "snow report");
+  }
+
+  let msg = '';
+  if (snowReportData.snowFallTwoDay !== 'FAIL') {
+    msg = `In the last two days ${resortName} has received ${snowReportData.snowFallTwoDay} ${inchOrInches(snowReportData.snowFallTwoDay)} of new snow. `;
+  }
+
+  if (snowReportData.snowDepthBase !== 'FAIL') {
+    msg += `The base depth is currently at ${snowReportData.snowDepthBase} inches, `;
+  }
+
+  if (snowReportData.snowDepthMidMtn !== 'FAIL') {
+    msg += `mid mountain is at ${snowReportData.snowDepthMidMtn} inches.`;
+  }
+
+  if (snowReportData.seasonSnowFall !== 'FAIL') {
+    msg += ` The season total is ${snowReportData.seasonSnowFall} inches.`;
+  }
+
+  return msg;
 };
+
+module.exports.snowReportSeasonTotal = (resortName, snowReportData) => {
+  if (snowReportData.seasonSnowFall == 'FAIL') {
+    return dataErrorMessage(resortName, "season total snow fall");
+  } else {
+    return `The season total snow fall at ${resortName} is ${snowReportData.seasonSnowFall} inches.`;
+  }
+};
+
+module.exports.snowReportOneDay = (resortName, snowReportData) => {
+  if (snowReportData.snowFallOneDay == 'FAIL' && snowReportData.snowFallTwoDay == 'FAIL') {
+    return dataErrorMessage(resortName, "yesterdays");
+  } else if (snowReportData.snowFallTwoDay == 'FAIL') {
+    return `${resortName} got ${snowReportData.snowFallOneDay} ${inchOrInches(snowReportData.snowFallOneDay)} of snow yesterday.`;
+  } else if (snowReportData.snowFallOneDay == 'FAIL') {
+    return `${resortName} got ${snowReportData.snowFallTwoDay} ${inchOrInches(snowReportData.snowFallTwoDay)} of snow in the last two days.`;
+  } else {
+    return `${resortName} got ${snowReportData.snowFallOneDay} ${inchOrInches(snowReportData.snowFallOneDay)} of snow yesterday and a total of ${snowReportData.snowFallTwoDay} ${inchOrInches(snowReportData.snowFallTwoDay)} in the last two days`;
+  }
+};
+
+module.exports.snowReportOvernight = (resortName, snowReportData) => {
+  if (snowReportData.snowFallOvernight == 'FAIL') {
+    return dataErrorMessage(resortName, "over night snow fall");
+  } else {
+    return `${resortName} got ${snowReportData.snowFallOvernight} ${inchOrInches(snowReportData.snowFallOvernight)} of snow over night.`;
+  }
+};
+
+const inchOrInches = (data) => {
+  return data == 1 ? "inch" : "inches";
+}
+
+const dataErrorMessage = (resortName, dataType) => {
+  return `Sorry, there was an error getting the ${dataType} for ${resortName}. If this issue persists please contact the developer.`;
+}
