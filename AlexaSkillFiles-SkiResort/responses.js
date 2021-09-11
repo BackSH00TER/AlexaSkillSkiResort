@@ -8,7 +8,16 @@ module.exports.welcome = () =>
 module.exports.helpMessage = () =>
   'You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?';
 
-module.exports.unknownResort = (synonymValue) =>
+module.exports.helpMessageReprompt = () =>
+  'What would you like to know? You can ask me about the forecast, temperature, or snow report for your favorite ski resort.';
+
+module.exports.stopMessage = () =>
+  'Cya later, have fun on the slopes!';
+
+module.exports.didNotUnderstand = () =>
+  "I'm sorry, I didn't understand that. Try asking your question again.";
+
+  module.exports.unknownResort = (synonymValue) =>
   `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
 
 module.exports.unknownResortReprompt = () => 
@@ -124,6 +133,7 @@ module.exports.supportedResorts = (supportedResortsArray) => {
 
   return `The currently supported resorts are: ${supportedResorts}. What else would you like to know?`;
 };
+
 
 const inchOrInches = (data) => {
   return data == 1 ? "inch" : "inches";

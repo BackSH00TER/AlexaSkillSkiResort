@@ -16,6 +16,10 @@ const snowReportSeasonTotalIntent = require('./intent-sample-requests/snow-repor
 const snowReportOvernightIntent = require('./intent-sample-requests/snow-report-overnight.intent');
 const snowReportOneDayIntent = require('./intent-sample-requests/snow-report-one-day.intent');
 const supportedResortsIntent = require('./intent-sample-requests/supported-resorts.intent');
+const cancelIntent = require('./intent-sample-requests/cancel.intent');
+const catchAllIntent = require('./intent-sample-requests/catchall.intent');
+const helpIntent = require('./intent-sample-requests/help.intent');
+const stopIntent = require('./intent-sample-requests/stop.intent');
 
 const NO_REMPROMPT = 'no_reprompt';
 const sanitise = text => text.replace(/\n/g, '');
@@ -1021,6 +1025,54 @@ describe('intents', () => {
       expect(utils.getSupportedResorts).toHaveBeenCalled();
       expect(outputSpeech).toEqual(expectedOutputSpeech);
       expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeFalsy();
+    });
+  });
+
+  describe('basic intents', () => {
+    it('returns the help intent', async () => {
+      expect.assertions(3);
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(helpIntent);
+      const expectedOutputSpeech = responses.helpMessage();
+      const expectedRepromptSpeech = responses.helpMessageReprompt();
+
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(expectedRepromptSpeech);
+      expect(endOfSession).toBeFalsy();
+    });
+
+    it('returns the cancel intent', async () => {
+      expect.assertions(3);
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(cancelIntent);
+      const expectedOutputSpeech = responses.stopMessage();
+
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+
+    it('returns the stop intent', async () => {
+      expect.assertions(3);
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(stopIntent);
+      const expectedOutputSpeech = responses.stopMessage();
+
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(NO_REMPROMPT);
+      expect(endOfSession).toBeTruthy();
+    });
+
+    it('returns the catchall intent', async () => {
+      expect.assertions(3);
+
+      const {outputSpeech, endOfSession, repromptSpeech} = await runIntent(catchAllIntent);
+      const expectedOutputSpeech = responses.didNotUnderstand();
+      const expectedRepromptSpeech = responses.helpMessage();
+
+      expect(outputSpeech).toEqual(expectedOutputSpeech);
+      expect(repromptSpeech).toEqual(expectedRepromptSpeech);
       expect(endOfSession).toBeFalsy();
     });
   });

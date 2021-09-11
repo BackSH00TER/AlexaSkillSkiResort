@@ -295,6 +295,21 @@ const handlers = {
     const supportedResortsArray = await getSupportedResorts();
     
     this.emit(':ask', responses.supportedResorts(supportedResortsArray));
+  },
+  'AMAZON.HelpIntent': function () {
+    this.emit(':ask', responses.helpMessage(), responses.helpMessageReprompt());
+  },
+  'AMAZON.CancelIntent': function () {
+      this.emit(':tell', responses.stopMessage());
+  },
+  'AMAZON.StopIntent': function () {
+      this.emit(':tell', responses.stopMessage());
+  },
+  'Unhandled': function () {
+      this.emit(':ask', responses.didNotUnderstand(), responses.helpMessage());
+  },
+  'CatchAll': function () {
+      this.emit(':ask', responses.didNotUnderstand(), responses.helpMessage());
   }
 };
 
