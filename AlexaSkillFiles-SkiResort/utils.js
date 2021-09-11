@@ -78,34 +78,36 @@ const updateDBUniqueResortCounter = async (resortSlotID, synonymValue) => {
 
 // Weather API related code
 // These are the gridpoints used for the weather API
+// The comment is the LAT, LON used to get the gridpoint
 const resortWeatherGridpoints = {
-  Stevens_Pass: 'SEW/164,66',
-  Snoqualmie_Pass: 'SEW/151,53',
-  Crystal_Mountain: 'SEW/144,30',
-  Mount_Baker: 'SEW/156,122',
-  Mission_Ridge: 'OTX/42,89',
-  Mount_Hood_Meadows: 'PQR/143,88',
-  Mount_Hood_Skibowl: 'PQR/139,87',
-  Timberline_Lodge: 'PQR/135,95',
-  Mount_Bachelor: 'PDT/22,39',
-  Schweitzer: 'OTX/171,120',
-  Sun_Valley: 'PIH/38,93',
-  Mammoth_Mountain: 'REV/56,16',
-  Big_Bear_Mountain: 'SGX/76,78',
-  Breckenridge: 'BOU/24,52',
-  Alta: 'SLC/107,166',
-  Brighton: 'SLC/109,166',
-  Snowbird: 'SLC/107,165',
-  Solitude: 'SLC/109,167',
-  Deer_Valley: 'SLC/113,167',
-  Park_City: 'SLC/112,168',
-  Sundance: 'SLC/108,157',
-  Powder_Mountain: 'SLC/107,202',
-  Snowbasin: 'SLC/103,195',
-  Brian_Head_Resort: 'SLC/48,41',
-  Eagle_Point: 'SLC/68,67',
-  Beaver_Mountain: 'SLC/118,228',
-  Mount_Washington: 'NOT_SUPPORTED'
+  Crystal_Mountain:   'SEW/144,30',   // 46.9291,-121.501
+  Mount_Baker:        'SEW/156,122',  // 48.8541,-121.68
+  Snoqualmie_Pass:    'SEW/151,53',   // 47.4374,-121.4154
+  Stevens_Pass:       'SEW/164,66',   // 47.7459,-121.0891
+  Mission_Ridge:      'OTX/42,89',    // 47.2867,-120.4184
+  Schweitzer:         'OTX/171,120',  // 48.3799,-116.6339
+  Mount_Hood_Meadows: 'PQR/143,88',   // 45.3419,-121.6689
+  Mount_Hood_Skibowl: 'PQR/139,87',   // 45.3017,-121.7725
+  Timberline_Lodge:   'PQR/135,95',   // 45.454350,-121.933136
+  Mount_Bachelor:     'PDT/22,39',    // 43.9889,-121.6818
+  Sun_Valley:         'PIH/38,93',    // 43.6826586,-114.3763201
+  Mammoth_Mountain:   'REV/56,16',    // 37.630768,-119.032631
+  Big_Bear_Mountain:  'SGX/76,78',    // 34.236346,-116.8890035
+  Breckenridge:       'BOU/24,52',    // 39.4802,-106.0667
+  Alta:               'SLC/107,166',  // 40.5902,-111.6391
+  Beaver_Mountain:    'SLC/118,228',  // 41.9681,-111.5441
+  Brian_Head_Resort:  'SLC/48,41',    // 37.7021,-112.8499
+  Brighton:           'SLC/109,166',  // 40.5991,-111.5813
+  Deer_Valley:        'SLC/113,167',  // 40.6374,-111.4783
+  Eagle_Point:        'SLC/68,67',    // 38.3203,-112.3839
+  Nordic_Valley:      'SLC/103,199',  // 41.3104,-111.8648
+  Park_City:          'SLC/112,168',  // 40.6514,-111.5080
+  Powder_Mountain:    'SLC/107,202',  // 41.3790,-111.7807
+  Snowbasin:          'SLC/103,195',  // 41.2160,-111.8569
+  Snowbird:           'SLC/107,165',  // 40.5833,-111.6508
+  Solitude:           'SLC/109,167',  // 40.6211,-111.5933
+  Sundance:           'SLC/108,157',  // 40.3934,-111.5888
+  Mount_Washington:   'NOT_SUPPORTED' // 49.73833,-125.2986
 };
 
 /**
