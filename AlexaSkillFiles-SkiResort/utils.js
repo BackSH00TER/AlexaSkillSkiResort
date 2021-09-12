@@ -107,6 +107,8 @@ const resortWeatherGridpoints = {
   Snowbird:           'SLC/107,165',  // 40.5833,-111.6508
   Solitude:           'SLC/109,167',  // 40.6211,-111.5933
   Sundance:           'SLC/108,157',  // 40.3934,-111.5888
+  Blacktail_Mountain: 'MSO/100,186',  // 48.01420,-114.3692
+  Whitefish_Mountain: 'MSO/104,208',  // 48.4819,-114.3494
   Mount_Washington:   'NOT_SUPPORTED' // 49.73833,-125.2986
 };
 
@@ -121,7 +123,7 @@ const getSupportedResorts = async () => {
     "Stevens Pass",
     "Mission Ridge",
     "Schweitzer",
-    'Mount Hood Meadows',
+    "Mount Hood Meadows",
     "Mount Hood Skibowl",
     "Timberline Lodge",
     "Mount Bachelor",
@@ -142,6 +144,8 @@ const getSupportedResorts = async () => {
     "Snowbird",
     "Solitude",
     "Sundance",
+    "Blacktail Mountain",
+    "Whitefish Mountain",
     "Mount Washington",
   ];
 }
