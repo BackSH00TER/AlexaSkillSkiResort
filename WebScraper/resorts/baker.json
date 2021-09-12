@@ -1,6 +1,7 @@
 {
   "name": "Mount Baker",
-  "url": "https://www.mtbaker.us/snow-report",
+  "id": "Mount_Baker",
+  "url": "https://www.onthesnow.com/washington/mt-baker/historical-snowfall.html",
   "tags": [
     "Washington"
   ],

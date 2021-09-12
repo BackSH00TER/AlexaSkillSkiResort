@@ -11,8 +11,17 @@
   ],
   "author": "Tyler",
   "contributors": [],
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "alexa-sdk": "^1.0.18",
-    "aws-sdk": "^2.145.0"
+    "aws-sdk": "^2.145.0",
+    "node-fetch": "2.6.1"
+  },
+  "devDependencies": {
+    "aws-lambda-mock-context": "^3.2.1",
+    "jest": "^26.6.3",
+    "nock": "^13.0.11"
   }
 }

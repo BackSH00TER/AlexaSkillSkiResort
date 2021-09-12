@@ -1,6 +1,7 @@
 {
     "name": "Big Bear Mountain",
-    "url": "https://www.bigbearmountainresort.com/winter/mountain-information/mountain-info/mountain-report",
+    "id": "Big_Bear_Mountain",
+    "url": "https://www.onthesnow.com/california/bear-mountain/historical-snowfall.html",
     "tags": [
       "California"
     ],

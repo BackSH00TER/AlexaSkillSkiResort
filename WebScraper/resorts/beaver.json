@@ -1,6 +1,7 @@
 {
-    "name": "Beaver",
-    "url": "https://www.skiutah.com/members/beaver-mountain/snowreport",
+    "name": "Beaver Mountain",
+    "id": "Beaver_Mountain",
+    "url": "https://www.onthesnow.com/utah/beaver-mountain/historical-snowfall.html",
     "tags": [
       "Utah",
       "Logan"

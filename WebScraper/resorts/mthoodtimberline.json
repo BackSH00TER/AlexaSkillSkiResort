@@ -1,6 +1,7 @@
 {
-  "name": "Mount Hood Timberline",
-  "url": "https://www.timberlinelodge.com/conditions",
+  "name": "Timberline Lodge",
+  "id": "Timberline_Lodge",
+  "url": "https://www.onthesnow.com/oregon/timberline-lodge/historical-snowfall.html",
   "tags": [
     "Oregon"
   ],

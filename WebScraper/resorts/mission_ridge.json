@@ -1,6 +1,7 @@
 {
   "name": "Mission Ridge",
-  "url": "https://www.missionridge.com/snow-report",
+  "id": "Mission_Ridge",
+  "url": "https://www.onthesnow.com/washington/mission-ridge/historical-snowfall.html",
   "tags": [
     "Washington"
   ],

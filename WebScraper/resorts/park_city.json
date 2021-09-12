@@ -1,6 +1,7 @@
 {
     "name": "Park City",
-    "url": "https://www.skiutah.com/members/park-city-mountain/snowreport",
+    "id": "Park_City",
+    "url": "https://www.onthesnow.com/utah/park-city-mountain-resort/historical-snowfall.html",
     "tags": [
       "Utah",
       "Park City"

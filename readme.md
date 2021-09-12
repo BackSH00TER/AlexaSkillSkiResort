@@ -6,12 +6,20 @@ Two packages to deploy 1. AlexaSkill 2. WebScraper
 Zip files and upload to corresponding Lambda function
 
 ### AlexaSkill
+Before Zipping files:
+- Delete node_modules/ and run `npm install --only=prod`
+  - this is necessary to make sure we dont have devDependencies installed in node_modules/
+  - then when testing and running locally can run `npm install` normally
+
 Files to zip:
 - AWS_Helpers
 - index.js
+- responses.js
+- utils.js
 - intents.json
 - package.json
 - node_modules/
+- secrets/
 
 ### WebScraper
 Files to zip:
@@ -23,18 +31,44 @@ Files to zip:
 
 #### Adding New Resort
 - Add resort file to `resorts/___.json`
-- Add selectors to Scraper.js
-- Add to weather report in index.js as well
-- Add new slot values on Alexa Dashboard
+  - use link to OnTheSnow
+- Validate selectors return data from Scraper.js
+  - should not require changes
+- Add weather report data
+  - Add the gridpoint to utils - resortWeatherGridpoints
+- Add resort name to the `getSupportedResorts()` util function
+- Add new slot values and synonyms on Alexa Dashboard
 
+
+# Weather API
+Documentation for Weather.gov API:
+https://www.weather.gov/documentation/services-web-api
+
+To get a gridpoint to use for a new resort:
+- Get the LAT, LON of the resort (just using google search)
+- Build a URL w/ the lat and long
+  - https://api.weather.gov/points/{latitude},{longitude}/forecast
+  - Enter the url in the browser and it will convert the url to one containing `/gridpoints/{region}/{num1,numb2}/forecast
+  - Copy this and use this in the code
+
+_Note: This Weather API only supports regions in the USA._
 # Testing
-Use scraperTest.js to test that the web scraper selectors are working for each resort 
+
+Once code is ready to test, upload it to the "dev" lambda function (skiResortDev)
+Then in the Alexa console go to Build -> Endpoint and switch the endpoint to `arn:aws:lambda:us-east-1:268293220984:function:skiResortDev`
+
+If the changes are good to go, deploy the changes to the "prod" lambda function (skiResortInfo)
+Then in Alexa console make sure to reset the endpoint to `arn:aws:lambda:us-east-1:268293220984:function:skiResortInfo` for the In Development skill
+#### WebScraper
+Use Scraper.js to test that the web scraper selectors are working for each resort 
+Uncomment the line `executeWebScraper(false, "stevens.json");`. Pass in false (to not update DynamoDB Table) and the name of the resort file (ex: "stevens.json"). 
 
 To test the Util functions locally:
 - Open Integrated Terminal in VS Code
-- Call functions that need to be tested from file
-- Run `node fileName.js`
-   - example `node utilsTest.js`
+- Run `node Scraper.js`
+
+#### Intents
+
 
 
 # TODO

@@ -1,6 +1,7 @@
 {
   "name": "Sun Valley",
-  "url": "https://www.sunvalley.com/mountain-snow-report",
+  "id": "Sun_Valley",
+  "url": "https://www.onthesnow.com/idaho/sun-valley/historical-snowfall.html",
   "tags": [
     "Idaho"
   ],

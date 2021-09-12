@@ -1,6 +1,7 @@
 {
     "name": "Snowbird",
-    "url": "https://www.skiutah.com/members/snowbird/snowreport",
+    "id": "Snowbird",
+    "url": "https://www.onthesnow.com/utah/snowbird/historical-snowfall.html",
     "tags": [
       "Utah",
       "Salt Lake"
