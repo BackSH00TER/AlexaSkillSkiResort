@@ -7,7 +7,7 @@ Zip files and upload to corresponding Lambda function
 
 ### AlexaSkill
 Before Zipping files:
-- run `npm install --only=prod`
+- Delete node_modules/ and run `npm install --only=prod`
   - this is necessary to make sure we dont have devDependencies installed in node_modules/
   - then when testing and running locally can run `npm install` normally
 

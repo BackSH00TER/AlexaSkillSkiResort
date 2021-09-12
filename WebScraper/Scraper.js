@@ -10,11 +10,11 @@ const fs = require('fs');
 /**
  * This function loads a site and then uses a set of selectors to scrape data from the website.
  * @param {string} resortUrl - The URL of the site that is going to be scraped
- * @param {string} pathToResort - The file path to the JSON file that contains additional resort info
- * @param {function} callback - The function to call once this is completed
+ * @param {string} resortId - The ID of the resort
+ * @returns {object} { resort: string, type: {selectorData} }
  */
-const scrapeSite = async (resortUrl, resortName) => {
-  console.log('Scraping site for:', resortName, resortUrl);
+const scrapeSite = async (resortUrl, resortId) => {
+  console.log('Scraping site for:', resortId, resortUrl);
 
   try {
     const $ = await rp({
@@ -35,7 +35,7 @@ const scrapeSite = async (resortUrl, resortName) => {
     };
     
     return {
-      resort: resortName,
+      resort: resortId,
       type: { ...dataSelectors }
     };
   } catch (error) {
@@ -131,7 +131,7 @@ const executeWebScraper = async (shouldUploadToDB, resortFile = null) => {
     const resortMetaData = JSON.parse(resortMetaDataRaw);
 
     // Get data from website
-    const scrapedData = await scrapeSite(resortMetaData.url, resortMetaData.name);
+    const scrapedData = await scrapeSite(resortMetaData.url, resortMetaData.id);
 
     // If we have an error on scrapedData, it means we failed to scrape for this resort
     if (scrapedData.error) {
@@ -153,8 +153,11 @@ const executeWebScraper = async (shouldUploadToDB, resortFile = null) => {
 // Make sure to reset params before uploading!!
 // executeWebScraper(false, "stevens.json");
 
-// This is for prod
-// executeWebScraper(true);
+// For running scraper locally and uploading to DB
+// const testScraper = async () => {
+//   await executeWebScraper(true);
+// }
+// testScraper();
 
 exports.handler = async (event, context) => {
   await executeWebScraper(true);
