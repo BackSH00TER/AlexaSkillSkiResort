@@ -3,7 +3,7 @@
 const { NO_DATA } = require('./utils');
 
 module.exports.welcome = () =>
-  'Welcome to Snow Report. You can ask me about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?';
+  'Welcome to Snow Report. What would you like to know?';
 
 module.exports.helpMessage = () =>
   'You can ask me questions about the temperature, forecast, or snow reports for your favorite ski resorts. What would you like to know?';

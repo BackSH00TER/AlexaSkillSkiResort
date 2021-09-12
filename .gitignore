@@ -52,6 +52,7 @@ Temporary Items
 */node_modules/
 node_modules/
 TestStuff/
+builds/
 */*.zip
 *.docx
 secrets

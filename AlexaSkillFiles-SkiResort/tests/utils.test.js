@@ -244,7 +244,7 @@ describe('test util functions', () => {
     describe('getForecastToday', () => {  
       it('returns the forecast for today when it starts with isDaytime false', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastToday(mockResortSlotID);
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -258,7 +258,7 @@ describe('test util functions', () => {
 
       it('returns the forecast for today when it starts with isDaytime true', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastToday(mockResortSlotID);
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -295,7 +295,7 @@ describe('test util functions', () => {
       describe('returns forecast for the week', () => {
         it('when it starts with isDaytime false', async () => {
           expect.assertions(3);
-          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
           const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
   
           expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -305,7 +305,7 @@ describe('test util functions', () => {
   
         it('when it starts with isDaytime true', async () => {
           expect.assertions(3);
-          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithIsDaytime), error: undefined}));
+          const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
           const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
   
           expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -340,7 +340,7 @@ describe('test util functions', () => {
     describe('getForecastWeekDay', () => {
       it('returns the forecast for the specified day', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "Saturday");
 
         expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -358,7 +358,7 @@ describe('test util functions', () => {
 
       it('returns INVALID_DAY if the day value does not match a day of the week', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "NotADay");
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -368,7 +368,7 @@ describe('test util functions', () => {
 
       it('returns NO_DATA_FOR_DAY if we dont have data for specific day', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         // Note in the mock data we won't have data for Thursday
         const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "Thursday");
         
@@ -381,7 +381,7 @@ describe('test util functions', () => {
     describe('getForecastTomorrow', () => {
       it('returns the forecast for tomorrow when it starts with isDaytime false', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithNotIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastTomorrow(mockResortSlotID);
 
         expect(getWeatherRequestStub).toHaveBeenCalled();
@@ -397,7 +397,7 @@ describe('test util functions', () => {
 
       it('returns the forecast for tomorrow when it starts with isDaytime true', async () => {
         expect.assertions(3);
-        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: JSON.stringify(mockFullForecastStartWithIsDaytime), error: undefined}));
+        const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
         const { forecastData, error } = await utils.getForecastTomorrow(mockResortSlotID);
 
         expect(getWeatherRequestStub).toHaveBeenCalled();

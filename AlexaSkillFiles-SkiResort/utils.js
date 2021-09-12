@@ -197,8 +197,7 @@ const getForecastToday = async (resortID) => {
     return { forecastData: undefined, error };
   }
 
-  const forecast = JSON.parse(data);
-  const forecastPeriods = forecast.properties.periods;
+  const forecastPeriods = data.properties.periods;
 
   // If the first result has isDaytime = false, then it will only have one result for "Tonight", otherwise it will have two results for today
   const isFirstPeriodNight = !forecastPeriods[0].isDaytime;
@@ -234,8 +233,7 @@ const getForecastWeek = async (resortID) => {
     return { forecastDataArray: undefined, error };
   }
 
-  const forecast = JSON.parse(data);
-  const forecastPeriods = forecast.properties.periods;
+  const forecastPeriods = data.properties.periods;
 
   // If the first result has isDaytime = false, then it will only have one result for "Tonight"
   // In addition it means that the very last result will also only return one result, the "day" portion
@@ -312,8 +310,7 @@ const getForecastTomorrow = async (resortID) => {
     return { forecastData: undefined, error };
   }
 
-  const forecast = JSON.parse(data);
-  const forecastPeriods = forecast.properties.periods;
+  const forecastPeriods = data.properties.periods;
 
   // If the first result has isDaytime = false, then it will only have one result for "Tonight", otherwise it will have two results for today
   const isFirstPeriodNight = !forecastPeriods[0].isDaytime;

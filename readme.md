@@ -6,9 +6,16 @@ Two packages to deploy 1. AlexaSkill 2. WebScraper
 Zip files and upload to corresponding Lambda function
 
 ### AlexaSkill
+Before Zipping files:
+- run `npm install --only=prod`
+  - this is necessary to make sure we dont have devDependencies installed in node_modules/
+  - then when testing and running locally can run `npm install` normally
+
 Files to zip:
 - AWS_Helpers
 - index.js
+- responses.js
+- utils.js
 - intents.json
 - package.json
 - node_modules/
@@ -47,6 +54,11 @@ To get a gridpoint to use for a new resort:
 _Note: This Weather API only supports regions in the USA._
 # Testing
 
+Once code is ready to test, upload it to the "dev" lambda function (skiResortDev)
+Then in the Alexa console go to Build -> Endpoint and switch the endpoint to `arn:aws:lambda:us-east-1:268293220984:function:skiResortDev`
+
+If the changes are good to go, deploy the changes to the "prod" lambda function (skiResortInfo)
+Then in Alexa console make sure to reset the endpoint to `arn:aws:lambda:us-east-1:268293220984:function:skiResortInfo` for the In Development skill
 #### WebScraper
 Use Scraper.js to test that the web scraper selectors are working for each resort 
 Uncomment the line `executeWebScraper(false, "stevens.json");`. Pass in false (to not update DynamoDB Table) and the name of the resort file (ex: "stevens.json"). 
