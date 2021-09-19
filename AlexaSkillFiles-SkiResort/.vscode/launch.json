@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Alexa Skill (Node.js)",
+      "type": "node",
+      "request": "launch",
+      "program": "${command:ask.debugAdapterPath}",
+      "args": [
+        "--accessToken",
+        "${command:ask.accessToken}",
+        "--skillId",
+        "${command:ask.skillIdFromWorkspace}",
+        "--handlerName",
+        "handler",
+        "--skillEntryFile",
+        "${workspaceFolder}/lambda/index.js",
+        "--region",
+        "NA"
+      ],
+      "cwd": "${workspaceFolder}/lambda"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${file}"
+    }
+  ]
+}

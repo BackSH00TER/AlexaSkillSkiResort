@@ -1,0 +1,176 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:268293220984:function:skiResortDev"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "containsAds": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": ""
+        },
+        "en-CA": {
+          "privacyPolicyUrl": ""
+        },
+        "en-IN": {
+          "privacyPolicyUrl": ""
+        }
+      },
+      "usesPersonalInfo": false
+    },
+    "publishingInformation": {
+      "automaticDistribution": {
+        "isActive": false
+      },
+      "category": "WEATHER",
+      "distributionCountries": [],
+      "distributionMode": "PUBLIC",
+      "isAvailableWorldwide": true,
+      "locales": {
+        "en-US": {
+          "description": "This skill provides up to date weather conditions and snow reports for your favorite ski and snowboard resorts. \n\nThe current resorts that are supported are: \nStevens Pass, Snoqualmie Pass, Crystal Mountain, Mt Baker, Mission Ridge, Mt Hood* (Meadows, Timberline, and Skibowl), Mt Bachelor, Sun Valley, Schweitzer, Big Bear Mountain, Mammoth Mountain, Breckenridge, Alta, Brighton, Snowbird, Solitude, Deer Valley, Park City, Sundance, Nordic Valley, Powder Mountain, Snowbasin, Brian Head, Eagle Point, Beaver, and Mount Washington**. \n\nMore resorts will be added over time. Feel free to reach out to me to add other resorts that you would like to see in the skill.\n\n\nSome topics you can ask about:\nToday’s Forecast / Temperature\nWeekly Forecast / Forecast for specific day of the week\nSnow report\nSnowfall overnight, in the last 24 hours, season total\n\nContact Me: Please send your feedback on ways to improve this skill.\nhildeapps@gmail.com\n\nWeather information is retrieved from the NOAA Weather API.\n\n*Note: If you just say Mt Hood, the skill will default to Mt Hood Meadows\n**Note: Due to the Weather API used, weather related information is unavailable for resorts outside of the US, however snow report data is still available.",
+          "examplePhrases": [
+            "Alexa open Snow Report",
+            "Give me the snow report for Stevens Pass",
+            "What is the weather going to be like on Friday at Crystal Mountain"
+          ],
+          "keywords": [
+            "snow",
+            "report",
+            "weather",
+            "mountains",
+            "snow",
+            "ski",
+            "snowboard",
+            "ski",
+            "resort",
+            "stevens",
+            "pass",
+            "Snoqualmie",
+            "pass",
+            "crystal",
+            "mountain",
+            "mt",
+            "baker",
+            "mission",
+            "ridge",
+            "mt",
+            "hood",
+            "meadows",
+            "mt",
+            "bachelor",
+            "Schweitzer",
+            "sun",
+            "valley",
+            "Washington",
+            "timberline",
+            "skibowl"
+          ],
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/bdcb/bdc66cf0ca574f26ad61647ade26be85/APP_ICON_LARGE?versionId=bgcqYC9fDCjfTWxh2.0ADka2zyLr3Xn0&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=03410b1eb1e039ed60e307b10f2607294522aacb08bce8394d9b14307d8c08a3",
+          "name": "Snow Report",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/424e/8932bf005ad948a2aba3600275638751/APP_ICON?versionId=Mx36h3OVVqe6ChXeuUIMYDAGh7AX6QSY&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=ce8af0658a2dfaefb31a25f6e7894781f627dc1485c2cccbd6bb877971ef424f",
+          "summary": "Get up to date snow and weather conditions for your favorite Ski and Snowboard Resorts."
+        },
+        "en-CA": {
+          "description": "This skill provides up to date weather conditions and snow reports for your favorite ski and snowboard resorts. \n\nThe current resorts that are supported are: \nStevens Pass, Snoqualmie Pass, Crystal Mountain, Mt Baker, Mission Ridge, Mt Hood* (Meadows, Timberline, and Skibowl), Mt Bachelor, Sun Valley, Schweitzer, Big Bear Mountain, Mammoth Mountain, Breckenridge, Alta, Brighton, Snowbird, Solitude, Deer Valley, Park City, Sundance, Nordic Valley, Powder Mountain, Snowbasin, Brian Head, Eagle Point, Beaver, and Mount Washington**. \n\nMore resorts will be added over time. Feel free to reach out to me to add other resorts that you would like to see in the skill.\n\n\nSome topics you can ask about:\nToday’s Forecast / Temperature\nWeekly Forecast / Forecast for specific day of the week\nSnow report\nSnowfall overnight, in the last 24 hours, season total\n\nContact Me: Please send your feedback on ways to improve this skill.\nhildeapps@gmail.com\n\nWeather information is retrieved from the NOAA Weather API.\n\n*Note: If you just say Mt Hood, the skill will default to Mt Hood Meadows\n**Note: Due to the Weather API used, weather related information is unavailable for resorts outside of the US, however snow report data is still available.",
+          "examplePhrases": [
+            "Alexa open Snow Report",
+            "Give me the snow report for Stevens Pass",
+            "What is the weather going to be like on Friday at Crystal Mountain"
+          ],
+          "keywords": [
+            "snow",
+            "report",
+            "weather",
+            "mountains",
+            "snow",
+            "ski",
+            "snowboard",
+            "ski",
+            "resort",
+            "stevens",
+            "pass",
+            "Snoqualmie",
+            "pass",
+            "crystal",
+            "mountain",
+            "mt",
+            "baker",
+            "mission",
+            "ridge",
+            "mt",
+            "hood",
+            "meadows",
+            "mt",
+            "bachelor",
+            "Schweitzer",
+            "sun",
+            "valley",
+            "Washington",
+            "timberline",
+            "skibowl"
+          ],
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/bdcb/bdc66cf0ca574f26ad61647ade26be85/APP_ICON_LARGE?versionId=bgcqYC9fDCjfTWxh2.0ADka2zyLr3Xn0&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=03410b1eb1e039ed60e307b10f2607294522aacb08bce8394d9b14307d8c08a3",
+          "name": "Snow Report",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/424e/8932bf005ad948a2aba3600275638751/APP_ICON?versionId=Mx36h3OVVqe6ChXeuUIMYDAGh7AX6QSY&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=ce8af0658a2dfaefb31a25f6e7894781f627dc1485c2cccbd6bb877971ef424f",
+          "summary": "Get up to date snow and weather conditions for your favorite Ski and Snowboard Resorts."
+        },
+        "en-IN": {
+          "description": "This skill provides up to date weather conditions and snow reports for your favorite ski and snowboard resorts. \n\nThe current resorts that are supported are: \nStevens Pass, Snoqualmie Pass, Crystal Mountain, Mt Baker, Mission Ridge, Mt Hood* (Meadows, Timberline, and Skibowl), Mt Bachelor, Sun Valley, Schweitzer, Big Bear Mountain, Mammoth Mountain, Breckenridge, Alta, Brighton, Snowbird, Solitude, Deer Valley, Park City, Sundance, Nordic Valley, Powder Mountain, Snowbasin, Brian Head, Eagle Point, Beaver, Mount Washington, Blacktail Mountain and Whitefish Mountain**. \n\nMore resorts will be added over time. Feel free to reach out to me to add other resorts that you would like to see in the skill.\n\n\nSome topics you can ask about:\nToday’s Forecast / Temperature\nWeekly Forecast / Forecast for specific day of the week\nSnow report\nSnowfall overnight, in the last 24 hours, season total\n\nContact Me: Please send your feedback on ways to improve this skill.\nhildeapps@gmail.com\n\nWeather information is retrieved from the NOAA Weather API.\n\n*Note: If you just say Mt Hood, the skill will default to Mt Hood Meadows\n**Note: Due to the Weather API used, weather related information is unavailable for resorts outside of the US, however snow report data is still available.",
+          "examplePhrases": [
+            "Alexa open Snow Report",
+            "Give me the snow report for Stevens Pass",
+            "What is the weather going to be like on Friday at Crystal Mountain"
+          ],
+          "keywords": [
+            "snow",
+            "report",
+            "weather",
+            "mountains",
+            "snow",
+            "ski",
+            "snowboard",
+            "ski",
+            "resort",
+            "stevens",
+            "pass",
+            "Snoqualmie",
+            "pass",
+            "crystal",
+            "mountain",
+            "mt",
+            "baker",
+            "mission",
+            "ridge",
+            "mt",
+            "hood",
+            "meadows",
+            "mt",
+            "bachelor",
+            "Schweitzer",
+            "sun",
+            "valley",
+            "Washington",
+            "timberline",
+            "skibowl"
+          ],
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/bdcb/bdc66cf0ca574f26ad61647ade26be85/APP_ICON_LARGE?versionId=bgcqYC9fDCjfTWxh2.0ADka2zyLr3Xn0&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=03410b1eb1e039ed60e307b10f2607294522aacb08bce8394d9b14307d8c08a3",
+          "name": "Snow Report",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/424e/8932bf005ad948a2aba3600275638751/APP_ICON?versionId=Mx36h3OVVqe6ChXeuUIMYDAGh7AX6QSY&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210918T234926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QFZKKO4PS%2F20210918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=ce8af0658a2dfaefb31a25f6e7894781f627dc1485c2cccbd6bb877971ef424f",
+          "summary": "Get up to date snow and weather conditions for your favorite Ski and Snowboard Resorts.",
+          "updatesDescription": "Added Blacktail Mountain and Whitefish Mountain to the supported resorts."
+        }
+      },
+      "testingInstructions": "Added support for new resorts: Blacktail Mountain and Whitefish Mountain"
+    }
+  }
+}

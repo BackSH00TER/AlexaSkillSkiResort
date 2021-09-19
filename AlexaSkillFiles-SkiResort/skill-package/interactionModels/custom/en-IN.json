@@ -1,0 +1,521 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "snow report",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "forecastToday",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what\u0027s the forecast at {Resort}",
+            "what is the forecast for {Resort}",
+            "what\u0027s today\u0027s forecast at {Resort}",
+            "what is the weather at {Resort} going to be like today",
+            "what is the weather going to be like today at {Resort}",
+            "what is today\u0027s forecast for {Resort}",
+            "give me an update on {Resort} weather conditions",
+            "give me a weather report for {Resort}",
+            "give me today\u0027s weather report for {Resort}"
+          ]
+        },
+        {
+          "name": "forecastTomorrow",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what is the weather going to be like at {Resort} tomorrow",
+            "what\u0027s tomorrows forecast at {Resort}",
+            "what is tomorrows forecast for {Resort}",
+            "what\u0027s the forecast at {Resort} for tomorrow",
+            "what is the weather at {Resort} going to be like tomorrow",
+            "what is the weather going to be like tomorrow at {Resort}",
+            "what is tomorrow\u0027s forecast for {Resort}",
+            "give me tomorrows weather update on {Resort}",
+            "give me tomorrows weather report for {Resort}"
+          ]
+        },
+        {
+          "name": "forecastWeek",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what is the weekly forecast for {Resort}",
+            "what\u0027s the weekly weather forecast for {Resort}",
+            "what is this weeks forecast for {Resort}",
+            "what is the forecast looking like for the week at {Resort}",
+            "what is the weather going to be like this week at {Resort}",
+            "tell me the forecast for {Resort}",
+            "tell me the weekly forecast for {Resort}",
+            "tell me this weeks forecast at {Resort}",
+            "give me this weeks forecast for {Resort}",
+            "give me the weekly forecast for {Resort}",
+            "what is the extended forecast for {Resort}"
+          ]
+        },
+        {
+          "name": "forecastWeekDay",
+          "slots": [
+            {
+              "name": "Day",
+              "type": "AMAZON.DayOfWeek"
+            },
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what\u0027s the forecast at {Resort} on {Day}",
+            "what is the forecast for {Resort} on {Day}",
+            "what\u0027s {Day} forecast at {Resort}",
+            "what is the weather at {Resort} going to be like on {Day}",
+            "what is the weather going to be like on {Day} at {Resort}",
+            "what is {Day} forecast for {Resort}",
+            "what will the weather be at {Resort} on {Day}",
+            "what will the weather be this {Day} at {Resort}",
+            "get the weather for {Resort} on {Day}"
+          ]
+        },
+        {
+          "name": "snowReportDepth",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "how much snow does {Resort} have",
+            "how much snow does {Resort} have at the base",
+            "how much snow does {Resort} have at mid mountain",
+            "how deep is the snow at {Resort}",
+            "tell me how much snow {Resort} has",
+            "give me a snow report on {Resort}",
+            "what is the snow report for {Resort}",
+            "give me the snow report for {Resort}"
+          ]
+        },
+        {
+          "name": "snowReportOneDay",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "how much snow did {Resort} get yesterday",
+            "how much snow did {Resort} get in the last few days",
+            "how much snow did {Resort} get in the last two days",
+            "how much snow fell at {Resort} yesterday",
+            "tell me how much snow {Resort} got yesterday",
+            "what is the two day snow report at {Resort}"
+          ]
+        },
+        {
+          "name": "snowReportOvernight",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "how much snow did {Resort} get last night",
+            "how much snow fell at {Resort} last night",
+            "how much snow did {Resort} get overnight",
+            "tell me how much snow {Resort} got last night",
+            "tell me how much snow {Resort} got overnight",
+            "what was the overnight snow fall at {Resort}"
+          ]
+        },
+        {
+          "name": "snowReportSeasonTotal",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "how much snow has {Resort} got this season",
+            "how much snow has {Resort} received this season",
+            "how much snow fell at {Resort} this season",
+            "how much snow has {Resort} got this year",
+            "tell me how much snow {Resort} has gotten this season",
+            "tell me how much snow {Resort} has gotten this year",
+            "what is the season total snow fall at {Resort}",
+            "what is the season total for snow at {Resort}"
+          ]
+        },
+        {
+          "name": "supportedResorts",
+          "slots": [],
+          "samples": [
+            "what resorts do you support",
+            "what resorts are supported",
+            "which resorts are supported",
+            "which resorts can i ask about"
+          ]
+        },
+        {
+          "name": "temperatureToday",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what is the current temperature at {Resort}",
+            "what\u0027s the temperature at {Resort}",
+            "tell me the temperature right now at {Resort}",
+            "tell me the temperature at {Resort}",
+            "get me the temp at {Resort}",
+            "what is the temperature at {Resort} right now",
+            "what is today\u0027s temperature at {Resort}",
+            "what is the temperature going to be for {Resort}"
+          ]
+        },
+        {
+          "name": "temperatureTonight",
+          "slots": [
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what is the temperature at {Resort} going to be tonight",
+            "what\u0027s the temperature going to be tonight at {Resort}",
+            "tell me tonights temperature for {Resort}",
+            "tell me the night time temperature for {Resort}",
+            "what is the temperature going to be tonight at {Resort}"
+          ]
+        },
+        {
+          "name": "temperatureWeekDay",
+          "slots": [
+            {
+              "name": "Day",
+              "type": "AMAZON.DayOfWeek"
+            },
+            {
+              "name": "Resort",
+              "type": "LIST_OF_RESORTS"
+            }
+          ],
+          "samples": [
+            "what is the temperature going to be on {Day} at {Resort}",
+            "what\u0027s the temperature going to be this {Day} at {Resort}",
+            "tell me what the temperature will be on {Day} at {Resort}",
+            "what will the temperature at {Resort} be on {Day}",
+            "what will the temperature be on {Day} at {Resort}",
+            "what will the temperature be next {Day} at {Resort}",
+            "what is the temperature going to be at {Resort} on {Day}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "id": "Whitefish_Mountain",
+              "name": {
+                "value": "Whitefish Mountain",
+                "synonyms": [
+                  "whitefish",
+                  "whitefish mountain ski resort",
+                  "white fish mountain"
+                ]
+              }
+            },
+            {
+              "id": "Blacktail_Mountain",
+              "name": {
+                "value": "Blacktail Mountain",
+                "synonyms": [
+                  "black tail mountain",
+                  "blacktail mountain ski resort",
+                  "blacktail"
+                ]
+              }
+            },
+            {
+              "id": "Beaver_Mountain",
+              "name": {
+                "value": "Beaver Mountain",
+                "synonyms": [
+                  "beaver",
+                  "beaver utah",
+                  "beaver mountain"
+                ]
+              }
+            },
+            {
+              "id": "Eagle_Point",
+              "name": {
+                "value": "Eagle Point"
+              }
+            },
+            {
+              "id": "Brian_Head_Resort",
+              "name": {
+                "value": "Brian Head Resort",
+                "synonyms": [
+                  "brian head",
+                  "Brian Head Resort"
+                ]
+              }
+            },
+            {
+              "id": "Snowbasin",
+              "name": {
+                "value": "Snowbasin",
+                "synonyms": [
+                  "snow basin"
+                ]
+              }
+            },
+            {
+              "id": "Powder_Mountain",
+              "name": {
+                "value": "Powder Mountain"
+              }
+            },
+            {
+              "id": "Nordic_Valley",
+              "name": {
+                "value": "Nordic Valley"
+              }
+            },
+            {
+              "id": "Sundance",
+              "name": {
+                "value": "Sundance"
+              }
+            },
+            {
+              "id": "Park_City",
+              "name": {
+                "value": "Park City",
+                "synonyms": [
+                  "park city mountain",
+                  "park city utah"
+                ]
+              }
+            },
+            {
+              "id": "Deer_Valley",
+              "name": {
+                "value": "Deer Valley"
+              }
+            },
+            {
+              "id": "Solitude",
+              "name": {
+                "value": "Solitude"
+              }
+            },
+            {
+              "id": "Snowbird",
+              "name": {
+                "value": "Snowbird"
+              }
+            },
+            {
+              "id": "Brighton",
+              "name": {
+                "value": "Brighton"
+              }
+            },
+            {
+              "id": "Alta",
+              "name": {
+                "value": "Alta"
+              }
+            },
+            {
+              "id": "Mount_Washington",
+              "name": {
+                "value": "Mount Washington",
+                "synonyms": [
+                  "mt washington",
+                  "mount washington"
+                ]
+              }
+            },
+            {
+              "id": "Breckenridge",
+              "name": {
+                "value": "Breckenridge"
+              }
+            },
+            {
+              "id": "Big_Bear_Mountain",
+              "name": {
+                "value": "Big Bear Mountain",
+                "synonyms": [
+                  "big bear"
+                ]
+              }
+            },
+            {
+              "id": "Mammoth_Mountain",
+              "name": {
+                "value": "Mammoth Mountain",
+                "synonyms": [
+                  "mammoth"
+                ]
+              }
+            },
+            {
+              "id": "Stevens_Pass",
+              "name": {
+                "value": "Stevens Pass",
+                "synonyms": [
+                  "Stevens"
+                ]
+              }
+            },
+            {
+              "id": "Snoqualmie_Pass",
+              "name": {
+                "value": "Snoqualmie Pass",
+                "synonyms": [
+                  "the summit at snoqualmie",
+                  "the summit at snoqualmie pass",
+                  "Snoqualmie",
+                  "summit at snoqualmie"
+                ]
+              }
+            },
+            {
+              "id": "Crystal_Mountain",
+              "name": {
+                "value": "Crystal Mountain",
+                "synonyms": [
+                  "Crystal"
+                ]
+              }
+            },
+            {
+              "id": "Mount_Baker",
+              "name": {
+                "value": "Mount Baker",
+                "synonyms": [
+                  "mt baker",
+                  "mount baker",
+                  "baker"
+                ]
+              }
+            },
+            {
+              "id": "Mission_Ridge",
+              "name": {
+                "value": "Mission Ridge"
+              }
+            },
+            {
+              "id": "Mount_Hood_Meadows",
+              "name": {
+                "value": "Mount Hood Meadows",
+                "synonyms": [
+                  "mt hood meadows",
+                  "mount hood meadows",
+                  "meadows",
+                  "mt hood",
+                  "mount hood"
+                ]
+              }
+            },
+            {
+              "id": "Mount_Bachelor",
+              "name": {
+                "value": "Mount Bachelor",
+                "synonyms": [
+                  "mt bachelor",
+                  "mount bachelor",
+                  "bachelor"
+                ]
+              }
+            },
+            {
+              "id": "Schweitzer",
+              "name": {
+                "value": "Schweitzer",
+                "synonyms": [
+                  "schweitzer mountain"
+                ]
+              }
+            },
+            {
+              "id": "Sun_Valley",
+              "name": {
+                "value": "Sun Valley"
+              }
+            },
+            {
+              "id": "Mount_Hood_Skibowl",
+              "name": {
+                "value": "Mount Hood Ski Bowl",
+                "synonyms": [
+                  "mt hood ski bowl",
+                  "mt hood skibowl",
+                  "ski bowl",
+                  "skibowl",
+                  "mount hood ski bowl",
+                  "mount hood skibowl"
+                ]
+              }
+            },
+            {
+              "id": "Timberline_Lodge",
+              "name": {
+                "value": "Timberline Lodge",
+                "synonyms": [
+                  "mount hood timberline lodge",
+                  "mt hood timberline",
+                  "mount hood timberline",
+                  "timberline lodge",
+                  "timberline"
+                ]
+              }
+            }
+          ],
+          "name": "LIST_OF_RESORTS"
+        }
+      ]
+    }
+  },
+  "version": "4"
+}
