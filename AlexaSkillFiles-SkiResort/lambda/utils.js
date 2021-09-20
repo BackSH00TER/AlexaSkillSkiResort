@@ -194,7 +194,7 @@ const getWeatherRequest = async (resortID) => {
  * Returns the detailedForecast for today on success
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastToday = async (resortID) => {
+const getForecastToday = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
   if (error) {
@@ -225,16 +225,16 @@ const getForecastToday = async (resortID) => {
  * @param {string} resortID 
  * @returns {object} Object containing an array of forecast data or an error
  * {
- *   forecastDataArray?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
+ *   forecastData?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
  *   error?: string
  * }
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastWeek = async (resortID) => {
+const getForecastWeek = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
   if (error) {
-    return { forecastDataArray: undefined, error };
+    return { forecastData: undefined, error };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -259,7 +259,7 @@ const getForecastWeek = async (resortID) => {
   }
 
   return {
-    forecastDataArray: forecastData,
+    forecastData,
     error: undefined
   };
 };
@@ -276,8 +276,8 @@ const getForecastWeek = async (resortID) => {
  * Returns any errors that are returned from getWeatherRequest
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
-const getForecastWeekDay = async (resortID, day) => {
-  const { forecastDataArray, error } = await exportFunctions.getForecastWeek(resortID);
+const getForecastWeekDay = async ({resortID, daySlotValue: day}) => {
+  const { forecastData, error } = await exportFunctions.getForecastWeek(resortID);
 
   if (error) {
     return { forecastData: undefined, error };
@@ -289,7 +289,7 @@ const getForecastWeekDay = async (resortID, day) => {
     return { forecastData: undefined, error: INVALID_DAY };
   }
 
-  const forecastDataForSpecificDay = forecastDataArray.find(data => data.day.toLowerCase() === day.toLowerCase());
+  const forecastDataForSpecificDay = forecastData.find(data => data.day.toLowerCase() === day.toLowerCase());
   // Make sure we have data for the specified day
   // Ex: If they ask for Friday and today is Friday, we only have up to next Thursday
   const noDataForDayError = !forecastDataForSpecificDay ? NO_DATA_FOR_DAY : undefined;
@@ -307,7 +307,7 @@ const getForecastWeekDay = async (resortID, day) => {
  * Returns the forecastData for tomorrow on success
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastTomorrow = async (resortID) => {
+const getForecastTomorrow = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
   if (error) {
