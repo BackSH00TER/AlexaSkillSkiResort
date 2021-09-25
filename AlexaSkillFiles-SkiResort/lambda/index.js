@@ -23,12 +23,101 @@ const { AlexaAppId } = require('./secrets/credentials');
 //=========================================================================================================================================
 // Handlers
 //=========================================================================================================================================
-// exports.handler = function (event, context) {
-//   var alexa = Alexa.handler(event, context);
-//   alexa.appId = AlexaAppId;
-//   alexa.registerHandlers(handlers);
-//   alexa.execute();
-// };
+
+// TOOD: Move this to responses and then import?
+/**
+ * Returns the response for the correct error
+ * @param {object} isDataDefined - boolean
+ * @param {object} error - string
+ * @returns {string} - error response to return based on error passed in
+ */
+ const getErrorResponse = ({
+  isDataDefined,
+  error,
+  daySlotValue
+}) => {
+  let response;
+  if (!isDataDefined) {
+    response = responses.weatherServiceTerminalError();
+  }
+
+  switch (error) {
+    case NOT_SUPPORTED:
+      response = responses.weatherServiceNotSupported();
+      break;
+    case INVALID_DAY:
+      response = responses.dayNotRecognized();
+      break;
+    case NO_DATA_FOR_DAY:
+      response = responses.noExtendedForecast(daySlotValue);
+      break;
+    case TERMINAL_ERROR:
+      response = responses.weatherServiceTerminalError();
+      break;
+    case DB_READ_ERROR:
+      response = responses.snowReportTerminalError();
+      break;
+    default:
+      response = responses.weatherServiceTerminalError();
+      break;
+  };
+
+  return response;
+};
+
+/**
+ * Returns the resort data from the "Resort" slot
+ * resortDataErrorResponse - is only defined if the resortName or Id were undefined
+ * @returns {object} {resortSlotID, resortName, synonymValue, resortDataErrorResponse}
+ */
+const getResortDataFromSlot = async (handlerInput) => {
+  const slot = Alexa.getSlot(handlerInput.requestEnvelope, "Resort");
+  
+  const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(slot);
+
+  let resortDataErrorResponse;
+  if (!resortSlotID || !resortName) {
+    console.warn(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+
+    resortDataErrorResponse = handlerInput.responseBuilder
+      .speak(responses.unknownResort(synonymValue))
+      .reprompt(responses.unknownResortReprompt())
+      .getResponse();
+  }
+
+  return {
+    resortSlotID,
+    resortName,
+    resortDataErrorResponse
+  };
+};
+
+const getForecastGenericHandler = async ({
+  handlerInput,
+  getForecastDataFn,
+  getForecastDataFnArgs,
+  successResponseFn,
+  successResponseFnArgs = {}
+}) => {
+  const {resortSlotID, resortName, resortDataErrorResponse} = await getResortDataFromSlot(handlerInput);
+
+  if (resortDataErrorResponse) {
+    return resortDataErrorResponse;
+  }
+
+  const {forecastData, error} = await getForecastDataFn({resortID: resortSlotID, ...getForecastDataFnArgs});
+  
+  if (error || !forecastData) {
+    const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
+    return handlerInput.responseBuilder
+      .speak(errorResponse)
+      .reprompt(errorResponse)
+      .getResponse();
+  }
+
+  return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
+};
+
 
 // V2 - Handlers
 
@@ -38,49 +127,87 @@ const LaunchRequestHandler = {
   },
   async handle(handlerInput) {
     return handlerInput.responseBuilder
-      // .speak(responses.welcome())
-      .speak('Hello this is from the local skill')
+      .speak(responses.welcome())
       .reprompt(responses.helpMessage())
       .getResponse();
   }
 };
 
-// TODO Might be able to use this to be a generic forecast handler and based on intentname then do the different parts?
 const ForecastTodayHandler = {
   canHandle(handlerInput) {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastToday';
   },
   async handle(handlerInput) {
-    // TODO: need to find the equivalent utility function to getSlot values i think its getSLot or getSlotValue
-    const slotValue = Alexa.getSlotValue(handlerInput.requestEnvelope, "Resort") // this is likely theone i will need to use, need to test tho
-    const slot = Alexa.getSlot(handlerInput.requestEnvelope, "Resort")
-    console.log('slotValue', slotValue)
-    console.log('slot', slot);
-    // const {resortSlotID, resortName, synonymValue} = await getResortSlotIdAndName(this.event.request.intent.slots.Resort);
-
-    // if (!resortSlotID || !resortName) {
-    //   console.log(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
-    //   // TODO: Return a responseBuilder for unknown (should be a reusable function)
-    //   // this.emit(':ask', responses.unknownResort(synonymValue), responses.unknownResortReprompt());
-    // }
-
-    // const { forecastData, error } = await getForecastToday(resortSlotID);
-
-    // if (error || !forecastData) {
-    //   const response = getErrorResponse({isDataDefined: !!forecastData, error});
-    //   // TODO: Return a responseBuilder for unknown (should be a reusable function)
-    //   // this.emit(':ask', response);
-    // }
-
-    return handlerInput.responseBuilder
-      .speak('This is a test response?!')
-      // .speak(responses.forecastToday(resortName, forecastData))
-      // .withSimpleCard('Forecast', responses.forecastToday(resortName, forecastData))
-      // .withStandardCard(cardTitle: string, cardContent: string, smallImageUrl?: string, largeImageUrl?: string)
+    const successResponseFn = ({resortName, forecastData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.forecastToday(resortName, forecastData))
       .getResponse();
+    
+    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastToday, successResponseFn});
+    return response;
   }
-}
+};
+
+const ForecastTomorrowHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastTomorrow';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, forecastData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.forecastTomorrow(resortName, forecastData))
+      .getResponse();
+    
+    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastTomorrow, successResponseFn});
+    return response;
+  }
+};
+
+const ForecastWeekDayHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeekDay';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, forecastData, daySlotValue}) =>
+      handlerInput.responseBuilder
+      .speak(responses.forecastWeekDay(resortName, daySlotValue, forecastData))
+      .getResponse();
+    
+    const daySlotValue = Alexa.getSlotValue(handlerInput.requestEnvelope, "Day");
+
+    const response = await getForecastGenericHandler({
+      handlerInput,
+      getForecastDataFn: getForecastWeekDay,
+      getForecastDataFnArgs: {daySlotValue},
+      successResponseFn,
+      successResponseFnArgs: {daySlotValue}
+    });
+    return response;
+  }
+};
+
+const ForecastWeekHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeek';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, forecastData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.forecastWeek(resortName, forecastData))
+      .getResponse();
+
+    const response = await getForecastGenericHandler({
+      handlerInput,
+      getForecastDataFn: getForecastWeek,
+      successResponseFn,
+    });
+    return response;
+  }
+};
 
 /**
  * This handler acts as the entry point for the skill, routing all request and response
@@ -90,49 +217,13 @@ const ForecastTodayHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
-    ForecastTodayHandler
+    ForecastTodayHandler,
+    ForecastTomorrowHandler,
+    ForecastWeekHandler,
+    ForecastWeekDayHandler,
   )
   .lambda();
 
-/**
- * Returns the response for the correct error
- * @param {object} isDataDefined - boolean
- * @param {object} error - string
- * @returns {string} - error response to return based on error passed in
- */
-// const getErrorResponse = ({
-//   isDataDefined,
-//   error,
-//   daySlotValue
-// }) => {
-//   let response;
-//   if (!isDataDefined) {
-//     response = responses.weatherServiceTerminalError();
-//   }
-
-//   switch (error) {
-//     case NOT_SUPPORTED:
-//       response = responses.weatherServiceNotSupported();
-//       break;
-//     case INVALID_DAY:
-//       response = responses.dayNotRecognized();
-//       break;
-//     case NO_DATA_FOR_DAY:
-//       response = responses.noExtendedForecast(daySlotValue);
-//       break;
-//     case TERMINAL_ERROR:
-//       response = responses.weatherServiceTerminalError();
-//       break;
-//     case DB_READ_ERROR:
-//       response = responses.snowReportTerminalError();
-//       break;
-//     default:
-//       response = responses.weatherServiceTerminalError();
-//       break;
-//   };
-
-//   return response;
-// };
 
 // const handlers = {
 //   'LaunchRequest': function () {
