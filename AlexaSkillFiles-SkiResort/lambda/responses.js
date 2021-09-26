@@ -46,7 +46,7 @@ module.exports.forecastWeek = (resortName, forecastDataArray) => {
 }
 
 module.exports.forecastWeekDay = (resortName, day, forecastData) =>
-  `At ${resortName} on ${day} there will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
+  `The temperature at ${resortName} on ${day} will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
 
 module.exports.forecastTomorrow = (resortName, forecastData) =>
   `Tomorrow at ${resortName} there will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`

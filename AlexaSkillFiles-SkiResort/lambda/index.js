@@ -92,6 +92,7 @@ const getResortDataFromSlot = async (handlerInput) => {
   };
 };
 
+// Generic handler used for the Forecast handlers
 const getForecastGenericHandler = async ({
   handlerInput,
   getForecastDataFn,
@@ -99,13 +100,13 @@ const getForecastGenericHandler = async ({
   successResponseFn,
   successResponseFnArgs = {}
 }) => {
-  const {resortSlotID, resortName, resortDataErrorResponse} = await getResortDataFromSlot(handlerInput);
+  const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
 
   if (resortDataErrorResponse) {
     return resortDataErrorResponse;
   }
 
-  const {forecastData, error} = await getForecastDataFn({resortID: resortSlotID, ...getForecastDataFnArgs});
+  const { forecastData, error } = await getForecastDataFn({resortID: resortSlotID, ...getForecastDataFnArgs});
   
   if (error || !forecastData) {
     const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
@@ -118,8 +119,36 @@ const getForecastGenericHandler = async ({
   return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
 };
 
+// Generic handler used for the SnowReport handlers
+const getSnowReportGenericHandler = async ({
+  handlerInput,
+  successResponseFn,
+  successResponseFnArgs = {}
+}) => {
+  const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
 
-// V2 - Handlers
+  if (resortDataErrorResponse) {
+    return resortDataErrorResponse;
+  }
+
+  const { snowReportData, error } = await getSnowReportData(resortSlotID);
+  
+  if (error || !snowReportData) {
+    const errorResponse = getErrorResponse({isDataDefined: !!snowReportData, error});
+    return handlerInput.responseBuilder
+      .speak(errorResponse)
+      .reprompt(errorResponse)
+      .getResponse();
+  }
+
+  return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
+};
+
+/**
+ * ----------------------------------
+ * Default Handlers
+ * ----------------------------------
+ */
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -133,10 +162,17 @@ const LaunchRequestHandler = {
   }
 };
 
+/**
+ * ----------------------------------
+ * Forecast Handlers
+ * ----------------------------------
+ */
+
 const ForecastTodayHandler = {
   canHandle(handlerInput) {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastToday';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastToday' ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureToday';
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) =>
@@ -168,7 +204,8 @@ const ForecastTomorrowHandler = {
 const ForecastWeekDayHandler = {
   canHandle(handlerInput) {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeekDay';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeekDay' ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureWeekDay';
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData, daySlotValue}) =>
@@ -209,6 +246,99 @@ const ForecastWeekHandler = {
   }
 };
 
+
+/**
+ * ----------------------------------
+ * Temperature Handlers
+ * ----------------------------------
+ */
+
+const TemperatureTonightHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureTonight';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, forecastData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.temperatureTonight(resortName, forecastData))
+      .getResponse();
+    
+    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastToday, successResponseFn});
+    return response;
+  }
+};
+
+/**
+ * ----------------------------------
+ * Snow Report Handlers
+ * ----------------------------------
+ */
+
+const SnowReportDepthHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportDepth';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, snowReportData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.snowReportDepth(resortName, snowReportData))
+      .getResponse();
+    
+    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    return response;
+  }
+};
+
+const SnowReportSeasonTotalHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportSeasonTotal';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, snowReportData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.snowReportSeasonTotal(resortName, snowReportData))
+      .getResponse();
+    
+    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    return response;
+  }
+};
+
+const SnowReportOneDayHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportOneDay';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, snowReportData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.snowReportOneDay(resortName, snowReportData))
+      .getResponse();
+    
+    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    return response;
+  }
+};
+
+const SnowReportOvernightHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportOvernight';
+  },
+  async handle(handlerInput) {
+    const successResponseFn = ({resortName, snowReportData}) =>
+      handlerInput.responseBuilder
+      .speak(responses.snowReportOvernight(resortName, snowReportData))
+      .getResponse();
+    
+    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    return response;
+  }
+};
+
 /**
  * This handler acts as the entry point for the skill, routing all request and response
  * payloads to the handlers. Make sure any new handlers or interceptors are included below.
@@ -221,6 +351,11 @@ exports.handler = Alexa.SkillBuilders.custom()
     ForecastTomorrowHandler,
     ForecastWeekHandler,
     ForecastWeekDayHandler,
+    TemperatureTonightHandler,
+    SnowReportDepthHandler,
+    SnowReportOneDayHandler,
+    SnowReportOvernightHandler,
+    SnowReportSeasonTotalHandler
   )
   .lambda();
 
