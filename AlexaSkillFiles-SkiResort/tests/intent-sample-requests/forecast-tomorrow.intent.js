@@ -1,4 +1,4 @@
-const { AlexaAppId } = require('../../secrets/credentials');
+const { AlexaAppId } = require('../../lambda/secrets/credentials');
 
 module.exports = {
 	"version": "1.0",
@@ -16,9 +16,9 @@ module.exports = {
 		"type": "IntentRequest",
 		"requestId": "requestId123",
 		"locale": "en-US",
-		"timestamp": "2021-05-04T04:19:25Z",
+		"timestamp": "2021-04-08T03:33:50Z",
 		"intent": {
-			"name": "temperatureToday",
+			"name": "forecastTomorrow",
 			"confirmationStatus": "NONE",
 			"slots": {
 				"Resort": {

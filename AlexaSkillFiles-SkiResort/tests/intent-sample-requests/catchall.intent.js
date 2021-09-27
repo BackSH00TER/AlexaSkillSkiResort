@@ -1,6 +1,6 @@
-const { AlexaAppId } = require('../../secrets/credentials');
+const { AlexaAppId } = require('../../lambda/secrets/credentials');
 
-module.exports = {
+module.exports =  {
 	"version": "1.0",
 	"session": {
 		"new": false,
@@ -16,9 +16,9 @@ module.exports = {
 		"type": "IntentRequest",
 		"requestId": "requestId123",
 		"locale": "en-US",
-		"timestamp": "2021-09-11T23:48:38Z",
+		"timestamp": "2021-09-11T23:51:00Z",
 		"intent": {
-			"name": "AMAZON.HelpIntent",
+			"name": "CatchAll",
 			"confirmationStatus": "NONE"
 		}
 	}

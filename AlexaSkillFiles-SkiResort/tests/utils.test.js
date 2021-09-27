@@ -1,5 +1,5 @@
-const utils = require('../utils');
-const db = require('../AWS_Helpers');
+const utils = require('../lambda/utils');
+const db = require('../lambda/AWS_Helpers');
 
 const mockResortName = "Stevens Pass";
 const mockResortSlotID = "Stevens_Pass";

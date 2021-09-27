@@ -1,4 +1,4 @@
-const { AlexaAppId } = require('../../secrets/credentials');
+const { AlexaAppId } = require('../../lambda/secrets/credentials');
 
 module.exports = {
 	"version": "1.0",
@@ -16,21 +16,11 @@ module.exports = {
 		"type": "IntentRequest",
 		"requestId": "requestId123",
 		"locale": "en-US",
-		"timestamp": "2021-04-08T02:57:13Z",
+		"timestamp": "2021-05-04T04:19:25Z",
 		"intent": {
-			"name": "forecastWeekDay",
+			"name": "temperatureToday",
 			"confirmationStatus": "NONE",
 			"slots": {
-				"Day": {
-					"name": "Day",
-					"value": "friday",
-					"confirmationStatus": "NONE",
-					"source": "USER",
-					"slotValue": {
-						"type": "Simple",
-						"value": "friday"
-					}
-				},
 				"Resort": {
 					"name": "Resort",
 					"value": "Stevens pass",
@@ -80,4 +70,4 @@ module.exports = {
 			}
 		}
 	}
-}
+};

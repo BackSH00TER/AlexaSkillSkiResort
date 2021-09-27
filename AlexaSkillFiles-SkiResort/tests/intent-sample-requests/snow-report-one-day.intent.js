@@ -1,24 +1,25 @@
-const { AlexaAppId } = require('../../secrets/credentials');
+const { AlexaAppId } = require('../../lambda/secrets/credentials');
 
-module.exports = {
+module.exports =  {
 	"version": "1.0",
 	"session": {
-		"new": true,
-		"sessionId": "sessionId123",
-		"application": {
-			"applicationId": AlexaAppId
-		},
-		"user": {
-			"userId": "userId123"
-		}
-	},
+    "new": true,
+    "sessionId": "sessionId123",
+    "application": {
+      "applicationId": AlexaAppId
+    },
+    "attributes": {},
+    "user": {
+      "userId": "userId123"
+    }
+  },
 	"request": {
 		"type": "IntentRequest",
 		"requestId": "requestId123",
-		"locale": "en-US",
-		"timestamp": "2021-05-04T04:49:23Z",
+    "locale": "en-US",
+		"timestamp": "2021-09-11T20:28:48Z",
 		"intent": {
-			"name": "temperatureTonight",
+			"name": "snowReportOneDay",
 			"confirmationStatus": "NONE",
 			"slots": {
 				"Resort": {
@@ -28,7 +29,7 @@ module.exports = {
 						"resolutionsPerAuthority": [
 							{
 								"authority": "authorityID.LIST_OF_RESORTS",
-								"status": {
+                "status": {
 									"code": "ER_SUCCESS_MATCH"
 								},
 								"values": [
@@ -51,7 +52,7 @@ module.exports = {
 							"resolutionsPerAuthority": [
 								{
 									"authority": "authorityID.LIST_OF_RESORTS",
-									"status": {
+                  "status": {
 										"code": "ER_SUCCESS_MATCH"
 									},
 									"values": [
@@ -70,4 +71,4 @@ module.exports = {
 			}
 		}
 	}
-};
+}
