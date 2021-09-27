@@ -1,4 +1,4 @@
-const { AlexaAppId } = require('../../secrets/credentials');
+const { AlexaAppId } = require('../../lambda/secrets/credentials');
 
 module.exports = {
   "version": "1.0",
