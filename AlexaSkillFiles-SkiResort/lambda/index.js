@@ -162,6 +162,48 @@ const LaunchRequestHandler = {
   }
 };
 
+const CancelAndStopIntentHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+        && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
+            || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+      return handlerInput.responseBuilder
+          .speak(responses.stopMessage())
+          .getResponse();
+  }
+};
+
+const HelpIntentHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+        && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+  },
+  handle(handlerInput) {
+      return handlerInput.responseBuilder
+          .speak(responses.helpMessage())
+          .reprompt(responses.helpMessageReprompt())
+          .getResponse();
+  }
+};
+
+/* *
+ * FallbackIntent triggers when a customer says something that doesn’t map to any intents in the skill
+ * */
+const FallbackIntentHandler = {
+  canHandle(handlerInput) {
+      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+          && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+      return handlerInput.responseBuilder
+          .speak(responses.didNotUnderstand())
+          .reprompt(responses.helpMessage())
+          .getResponse();
+  }
+};
+
 /**
  * ----------------------------------
  * Forecast Handlers
@@ -339,6 +381,20 @@ const SnowReportOvernightHandler = {
   }
 };
 
+const SupportedResortsHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'supportedResorts';
+  },
+  async handle(handlerInput) {
+    const supportedResortsArray = await getSupportedResorts();
+
+    return handlerInput.responseBuilder
+      .speak(responses.supportedResorts(supportedResortsArray))
+      .getResponse();
+  }
+};
+
 /**
  * This handler acts as the entry point for the skill, routing all request and response
  * payloads to the handlers. Make sure any new handlers or interceptors are included below.
@@ -355,7 +411,11 @@ exports.handler = Alexa.SkillBuilders.custom()
     SnowReportDepthHandler,
     SnowReportOneDayHandler,
     SnowReportOvernightHandler,
-    SnowReportSeasonTotalHandler
+    SnowReportSeasonTotalHandler,
+    SupportedResortsHandler,
+    CancelAndStopIntentHandler,
+    HelpIntentHandler,
+    FallbackIntentHandler
   )
   .lambda();
 
@@ -580,7 +640,7 @@ exports.handler = Alexa.SkillBuilders.custom()
 //   'AMAZON.StopIntent': function () {
 //       this.emit(':tell', responses.stopMessage());
 //   },
-//   'Unhandled': function () {
+//   'Unhandled': function () { // dont carry this over
 //       this.emit(':ask', responses.didNotUnderstand(), responses.helpMessage());
 //   },
 //   'CatchAll': function () {

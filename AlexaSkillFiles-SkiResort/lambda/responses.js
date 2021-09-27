@@ -69,8 +69,6 @@ module.exports.noExtendedForecast = (day) =>
   `Sorry, I don't have the extended forecast for ${day}.`
 
 module.exports.snowReportDepth = (resortName, snowReportData) => {
-  // TODO: Revist and try to make this less wordy. Also consider if this should return anything forecast related?? - yes
-  // TODO: Try seeing what alexa does by default when ask for snowreport
   if (
     snowReportData.snowFallTwoDay === 'FAIL' &&
     snowReportData.snowDepthBase === 'FAIL' &&
