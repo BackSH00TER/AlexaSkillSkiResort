@@ -15,10 +15,16 @@ const {
   getForecastWeekDay,
   getForecastTomorrow,
   getSnowReportData,
-  getSupportedResorts
+  getSupportedResorts,
+  addAPLIfSupported,
+  getIconUrl,
+  getSubtitleTextForHandler
 } = require('./utils');
 
 const { AlexaAppId } = require('./secrets/credentials');
+
+// Read in the APL documents for use in handlers
+const { snowReportForecastDocument, snowReportForecastData} = require('./renderDocuments/snowReportForecastDocument');
 
 //=========================================================================================================================================
 // Handlers
@@ -88,21 +94,38 @@ const getResortDataFromSlot = async (handlerInput) => {
   return {
     resortSlotID,
     resortName,
-    resortDataErrorResponse
+    resortDataErrorResponse,
+    synonymValue
   };
 };
 
 // Generic handler used for the Forecast handlers
 const getForecastGenericHandler = async ({
   handlerInput,
+  handlerName,
   getForecastDataFn,
   getForecastDataFnArgs,
   successResponseFn,
   successResponseFnArgs = {}
 }) => {
-  const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
+  const { resortSlotID, resortName, resortDataErrorResponse, synonymValue } = await getResortDataFromSlot(handlerInput);
+  const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
 
   if (resortDataErrorResponse) {
+    addAPLIfSupported({
+      handlerInput,
+      token: "ForecastError",
+      document: snowReportForecastDocument,
+      data: snowReportForecastData({
+        subtitle: subtitleText,
+        resortName,
+        iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg",
+        tempHigh: "N/A",
+        tempLow: "N/A",
+        showAsError: true,
+        forecastDetail: responses.unknownResort(synonymValue)
+      })
+    });
     return resortDataErrorResponse;
   }
 
@@ -110,11 +133,40 @@ const getForecastGenericHandler = async ({
   
   if (error || !forecastData) {
     const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
+    addAPLIfSupported({
+      handlerInput,
+      token: "ForecastError",
+      document: snowReportForecastDocument,
+      data: snowReportForecastData({
+        subtitle: subtitleText,
+        resortName,
+        iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg",
+        tempHigh: "N/A",
+        tempLow: "N/A",
+        showAsError: true,
+        forecastDetail: errorResponse
+      })
+    });
+
     return handlerInput.responseBuilder
       .speak(errorResponse)
       .reprompt(errorResponse)
       .getResponse();
   }
+
+  addAPLIfSupported({
+    handlerInput,
+    token: `Forecast-${handlerName}-${resortName}`,
+    document: snowReportForecastDocument,
+    data: snowReportForecastData({
+      subtitle: subtitleText,
+      resortName,
+      iconUrl: getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl}), //"https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg", // TODO: function to map icons to what is returned by forecast api
+      tempHigh: forecastData.tempHigh,
+      tempLow: forecastData.tempLow,
+      forecastDetail: forecastData.detailedForecast
+    })
+  });
 
   return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
 };
@@ -197,6 +249,7 @@ const FallbackIntentHandler = {
           && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
   },
   handle(handlerInput) {
+    console.log('!!! FallbackIntent handler called')
       return handlerInput.responseBuilder
           .speak(responses.didNotUnderstand())
           .reprompt(responses.helpMessage())
@@ -222,7 +275,13 @@ const ForecastTodayHandler = {
       .speak(responses.forecastToday(resortName, forecastData))
       .getResponse();
     
-    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastToday, successResponseFn});
+    const response = await getForecastGenericHandler({
+      handlerInput,
+      handlerName: "forecastToday",
+      getForecastDataFn: getForecastToday,
+      successResponseFn
+    });
+
     return response;
   }
 };
@@ -238,7 +297,13 @@ const ForecastTomorrowHandler = {
       .speak(responses.forecastTomorrow(resortName, forecastData))
       .getResponse();
     
-    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastTomorrow, successResponseFn});
+    const response = await getForecastGenericHandler({
+      handlerInput,
+      handlerName: "forecastTomorrow",
+      getForecastDataFn: getForecastTomorrow,
+      successResponseFn
+    });
+
     return response;
   }
 };
@@ -259,6 +324,7 @@ const ForecastWeekDayHandler = {
 
     const response = await getForecastGenericHandler({
       handlerInput,
+      handlerName: "forecastWeekDay",
       getForecastDataFn: getForecastWeekDay,
       getForecastDataFnArgs: {daySlotValue},
       successResponseFn,
@@ -281,6 +347,7 @@ const ForecastWeekHandler = {
 
     const response = await getForecastGenericHandler({
       handlerInput,
+      handlerName: "forecastWeek",
       getForecastDataFn: getForecastWeek,
       successResponseFn,
     });
@@ -306,7 +373,13 @@ const TemperatureTonightHandler = {
       .speak(responses.temperatureTonight(resortName, forecastData))
       .getResponse();
     
-    const response = await getForecastGenericHandler({handlerInput, getForecastDataFn: getForecastToday, successResponseFn});
+    const response = await getForecastGenericHandler({
+      handlerInput,
+      handlerName: "temperatureTonight",
+      getForecastDataFn: getForecastToday,
+      successResponseFn
+    });
+
     return response;
   }
 };
@@ -396,6 +469,21 @@ const SupportedResortsHandler = {
   }
 };
 
+// This is used to log errors for debugging
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log('SessionEndedRequestHandler...')
+    if(handlerInput.requestEnvelope.request.error) {
+      console.log('ERROR: ', JSON.stringify(handlerInput.requestEnvelope.request.error));
+    }
+    
+    return handlerInput.responseBuilder.getResponse();
+  }
+};
+
 /**
  * This handler acts as the entry point for the skill, routing all request and response
  * payloads to the handlers. Make sure any new handlers or interceptors are included below.
@@ -416,6 +504,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     SupportedResortsHandler,
     CancelAndStopIntentHandler,
     HelpIntentHandler,
-    FallbackIntentHandler
+    FallbackIntentHandler,
+    SessionEndedRequestHandler
   )
   .lambda();

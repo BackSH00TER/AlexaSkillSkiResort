@@ -1,11 +1,12 @@
 const db = require('./AWS_Helpers');
+const Alexa = require('ask-sdk');
 const fetch = require('node-fetch');
 
 const NOT_SUPPORTED = "NOT_SUPPORTED";
 const TERMINAL_ERROR = "TERMINAL_ERROR";
 const INVALID_DAY = "INVALID_DAY";
 const NO_DATA_FOR_DAY = "NO_DATA_FOR_DAY";
-const NO_DATA = "NO_DATA";
+const NO_DATA = "N/A";
 const DB_READ_ERROR = "DB_READ_ERROR";
 
 
@@ -211,7 +212,8 @@ const getForecastToday = async ({resortID}) => {
     tempHigh: isFirstPeriodNight ? NO_DATA : forecastPeriods[0].temperature,
     tempLow: isFirstPeriodNight ? forecastPeriods[0].temperature : forecastPeriods[1].temperature,
     shortForecast: forecastPeriods[0].shortForecast,
-    detailedForecast: forecastPeriods[0].detailedForecast
+    detailedForecast: forecastPeriods[0].detailedForecast,
+    iconUrl: forecastPeriods[0].icon
   };
 
   return {
@@ -254,7 +256,8 @@ const getForecastWeek = async ({resortID}) => {
       tempHigh: forecastPeriods[i].temperature,
       tempLow: forecastPeriods[i + 1].temperature,
       shortForecast: forecastPeriods[i].shortForecast,
-      detailedForecast: forecastPeriods[i].detailedForecast
+      detailedForecast: forecastPeriods[i].detailedForecast,
+      iconUrl: forecastPeriods[i].icon
     });
   }
 
@@ -277,7 +280,7 @@ const getForecastWeek = async ({resortID}) => {
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
 const getForecastWeekDay = async ({resortID, daySlotValue: day}) => {
-  const { forecastData, error } = await exportFunctions.getForecastWeek(resortID);
+  const { forecastData, error } = await exportFunctions.getForecastWeek({resortID});
 
   if (error) {
     return { forecastData: undefined, error };
@@ -325,7 +328,8 @@ const getForecastTomorrow = async ({resortID}) => {
     tempHigh: forecastPeriods[startIndex].temperature,
     tempLow: forecastPeriods[startIndex + 1].temperature,
     shortForecast: forecastPeriods[startIndex].shortForecast,
-    detailedForecast: forecastPeriods[startIndex].detailedForecast
+    detailedForecast: forecastPeriods[startIndex].detailedForecast,
+    iconUrl: forecastPeriods[startIndex].icon
   };
 
   return {
@@ -366,6 +370,189 @@ const getSnowReportData = async (resortID) => {
   };
 };
 
+/**
+ * Adds the APL directive (visual part) to the response if the users device supports APL
+ */
+const addAPLIfSupported = ({handlerInput, token, document, data = {}}) => {
+  if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
+    handlerInput.responseBuilder
+      .addDirective({
+        "type": "Alexa.Presentation.APL.RenderDocument",
+        "token": token,
+        "document": document,
+        "datasources": {
+          "data": data
+        }
+      });
+  }
+};
+
+/**
+ * Returns the subtitle text based on the handlerName
+ */
+const getSubtitleTextForHandler = ({handlerName, data}) => {
+  let subtitle;
+
+  switch(handlerName) {
+    case 'forecastToday':
+    case 'temperatureToday':
+      subtitle = "Today's Forecast";
+      break;
+    case 'forecastTomorrow':
+      subtitle = "Tomorrow's Forecast";
+      break;
+    case 'forecastWeekDay':
+    case 'temperatureWeekDay':
+      const day = data.daySlotValue;
+      subtitle = `${day}'s Forecast`;
+      break;
+    case 'forecastWeek':
+      subtitle = "7 Day Forecast";
+      break;
+    default:
+      subtitle = "Forecast";
+      break;
+  };
+
+  return subtitle;
+};
+
+/**
+ * Returns the URL of the correct icon to display based on the weather
+ * Takes the iconUrl from the weather API and maps it to the corresponding icon from my set
+ * Example url: https://api.weather.gov/icons/land/day/rain_showers,20/tsra_sct,40?size=medium
+ * The URL could contain two different types of weather, we check for a match and only return
+ * one result based on order of importance
+ */
+const getIconUrl = ({iconUrlFromWeatherAPI}) => {
+  const assetUrl = "https://snowreportskill-assets.s3.amazonaws.com";
+
+  /**
+   * These are the various weatherTypes returned by Weather API that this app is supporting
+   * The array is sorted in order of importance, the first match will be used
+   * Full set of icons can be found at: https://api.weather.gov/icons
+   */
+  const weatherTypes = [
+    // Snow
+    "snow",
+    "blizzard",
+    "cold",
+    // Sleet (mixed rain/snow)
+    "rain_snow",
+    "rain_sleet",
+    "snow_sleet",
+    "rain_fzra",
+    "snow_fzra",
+    "fzra",
+    "sleet",
+    // Rain-heavy
+    "rain_showers_hi",
+    // Rain-light
+    "rain_showers",
+    "rain",
+    // Thunderstorm
+    "tsra",
+    "tsra_sct",
+    "tsra_hi",
+    // Wind
+    "wind_skc",
+    "wind_few",
+    "wind_sct",
+    "wind_bkn",
+    "wind_ovc",
+    // Sunny
+    "skc",
+    "few",
+    "hot",
+    // Partly-sunny
+    "sct",
+    // Cloudy
+    "bkn",
+    "ovc",
+    // Fog
+    "fog"
+  ];
+
+  // Returns the first matched variable from weatherTypes
+  const firstMatchedWeatherType = weatherTypes.find(type => iconUrlFromWeatherAPI.includes(type));
+
+  // Get the path / svg name for the given weatherType
+  const getIconPath = (weatherType) => {
+    let path;
+
+    switch (weatherType) {
+    // Snow
+    case "snow":
+    case "blizzard":
+    case "cold":
+      path = "icon-snow.svg";
+      break;
+    // Sleet (mixed rain/snow)
+    case "rain_snow":
+    case "rain_sleet":
+    case "snow_sleet":
+    case "rain_fzra":
+    case "snow_fzra":
+    case "fzra":
+    case "sleet":
+      path = "icon-sleet.svg";
+      break;
+    // Rain-heavy
+    case "rain_showers_hi":
+      path = "icon-rain-heavy.svg";
+      break;
+    // Rain-light
+    case "rain_showers":
+    case "rain":
+      path = "icon-rain-light.svg";
+      break;
+    // Thunderstorm
+    case "tsra":
+    case "tsra_sct":
+    case "tsra_hi":
+      path = "icon-thunderstorm.svg";
+      break;
+    // Wind
+    case "wind_skc":
+    case "wind_few":
+    case "wind_sct":
+    case "wind_bkn":
+    case "wind_ovc":
+      path = "icon-wind.svg";
+      break;
+    // Sunny
+    case "skc":
+    case "few":
+    case "hot":
+      path = "icon-sunny.svg";
+      break;
+    // Partly-sunny
+    case "sct":
+      path = "icon-cloud-sun.svg";
+      break;
+    // Cloudy
+    case "bkn":
+    case "ovc":
+      path = "icon-cloud.svg";
+      break;
+    // Fog
+    case "fog":
+      path = "icon-fog.svg";
+      break;
+    default:
+      path = "icon-cloud.svg";
+      break;
+    }
+
+    return path;
+  }
+
+  const path = getIconPath(firstMatchedWeatherType);
+  console.log("Provided IconURL: ", iconUrlFromWeatherAPI);
+  console.log("Generated IconURL: ", `${assetUrl}/${path}`);
+
+  return `${assetUrl}/${path}`;
+};
 
 // For testing
 // getWeatherRequest("Stevens_Pass");
@@ -395,7 +582,10 @@ const exportFunctions = {
   getSnowReportData: getSnowReportData,
   // Exported for unit tests only
   updateDBUniqueResortCounter: updateDBUniqueResortCounter,
-  getWeatherRequest: getWeatherRequest
+  getWeatherRequest: getWeatherRequest,
+  addAPLIfSupported: addAPLIfSupported,
+  getIconUrl: getIconUrl,
+  getSubtitleTextForHandler: getSubtitleTextForHandler
 };
 
 module.exports = exportFunctions;
