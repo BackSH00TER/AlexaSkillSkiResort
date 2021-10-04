@@ -24,7 +24,9 @@ const {
 const { AlexaAppId } = require('./secrets/credentials');
 
 // Read in the APL documents for use in handlers
+// TODO: put a index.js file in renderDocuments (import all the docs ther and then export), then I can import from one place here
 const { snowReportForecastDocument, snowReportForecastData} = require('./renderDocuments/snowReportForecastDocument');
+const { snowReportWeekForecastDocument, snowReportWeekForecastData: snowReportWeekForecastDataFn } = require('./renderDocuments/snowReportWeekForecastDocument');
 
 //=========================================================================================================================================
 // Handlers
@@ -106,7 +108,9 @@ const getForecastGenericHandler = async ({
   getForecastDataFn,
   getForecastDataFnArgs,
   successResponseFn,
-  successResponseFnArgs = {}
+  successResponseFnArgs = {},
+  aplDocument,
+  aplDocumentDataFn
 }) => {
   const { resortSlotID, resortName, resortDataErrorResponse, synonymValue } = await getResortDataFromSlot(handlerInput);
   const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
@@ -116,14 +120,11 @@ const getForecastGenericHandler = async ({
       handlerInput,
       token: "ForecastError",
       document: snowReportForecastDocument,
-      data: snowReportForecastData({
+      data: snowReportForecastDataFn({
         subtitle: subtitleText,
         resortName,
-        iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg",
-        tempHigh: "N/A",
-        tempLow: "N/A",
         showAsError: true,
-        forecastDetail: responses.unknownResort(synonymValue)
+        errorResponse: responses.unknownResort(synonymValue)
       })
     });
     return resortDataErrorResponse;
@@ -137,14 +138,11 @@ const getForecastGenericHandler = async ({
       handlerInput,
       token: "ForecastError",
       document: snowReportForecastDocument,
-      data: snowReportForecastData({
+      data: snowReportForecastDataFn({
         subtitle: subtitleText,
         resortName,
-        iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg",
-        tempHigh: "N/A",
-        tempLow: "N/A",
         showAsError: true,
-        forecastDetail: errorResponse
+        errorResponse
       })
     });
 
@@ -157,14 +155,11 @@ const getForecastGenericHandler = async ({
   addAPLIfSupported({
     handlerInput,
     token: `Forecast-${handlerName}-${resortName}`,
-    document: snowReportForecastDocument,
-    data: snowReportForecastData({
+    document: aplDocument,
+    data: aplDocumentDataFn({
       subtitle: subtitleText,
       resortName,
-      iconUrl: getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl}), //"https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg", // TODO: function to map icons to what is returned by forecast api
-      tempHigh: forecastData.tempHigh,
-      tempLow: forecastData.tempLow,
-      forecastDetail: forecastData.detailedForecast
+      forecastData
     })
   });
 
@@ -194,6 +189,24 @@ const getSnowReportGenericHandler = async ({
   }
 
   return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
+};
+
+/**
+ * Function returns the data for the snowReportForecast APL document
+ * This function is also used to handle the snowReportForecast errors
+ */
+const snowReportForecastDataFn = ({subtitle, resortName, forecastData, showAsError, errorResponse}) => {
+  const iconUrl = getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl, showAsError});
+  
+  return snowReportForecastData({
+    subtitle,
+    resortName,
+    iconUrl,
+    tempHigh: showAsError ? "N/A" : forecastData.tempHigh,
+    tempLow: showAsError ? "N/A" : forecastData.tempLow,
+    forecastDetail: showAsError ? errorResponse : forecastData.detailedForecast,
+    showAsError
+  });
 };
 
 /**
@@ -279,7 +292,9 @@ const ForecastTodayHandler = {
       handlerInput,
       handlerName: "forecastToday",
       getForecastDataFn: getForecastToday,
-      successResponseFn
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportForecastDataFn
     });
 
     return response;
@@ -301,7 +316,9 @@ const ForecastTomorrowHandler = {
       handlerInput,
       handlerName: "forecastTomorrow",
       getForecastDataFn: getForecastTomorrow,
-      successResponseFn
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportForecastDataFn
     });
 
     return response;
@@ -328,7 +345,9 @@ const ForecastWeekDayHandler = {
       getForecastDataFn: getForecastWeekDay,
       getForecastDataFnArgs: {daySlotValue},
       successResponseFn,
-      successResponseFnArgs: {daySlotValue}
+      successResponseFnArgs: {daySlotValue},
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportForecastDataFn
     });
     return response;
   }
@@ -350,6 +369,8 @@ const ForecastWeekHandler = {
       handlerName: "forecastWeek",
       getForecastDataFn: getForecastWeek,
       successResponseFn,
+      aplDocument: snowReportWeekForecastDocument,
+      aplDocumentDataFn: snowReportWeekForecastDataFn
     });
     return response;
   }
@@ -377,7 +398,9 @@ const TemperatureTonightHandler = {
       handlerInput,
       handlerName: "temperatureTonight",
       getForecastDataFn: getForecastToday,
-      successResponseFn
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportForecastDataFn
     });
 
     return response;

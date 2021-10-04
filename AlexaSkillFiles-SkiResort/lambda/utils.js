@@ -424,8 +424,12 @@ const getSubtitleTextForHandler = ({handlerName, data}) => {
  * The URL could contain two different types of weather, we check for a match and only return
  * one result based on order of importance
  */
-const getIconUrl = ({iconUrlFromWeatherAPI}) => {
+const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
   const assetUrl = "https://snowreportskill-assets.s3.amazonaws.com";
+
+  if (showAsError) {
+    return `${assetUrl}/icon-cloud-slash.svg`;
+  }
 
   /**
    * These are the various weatherTypes returned by Weather API that this app is supporting
