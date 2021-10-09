@@ -28,14 +28,14 @@ const { AlexaAppId } = require('./secrets/credentials');
 const {
   snowReportForecastDocument,
   snowReportForecastData,
+  snowReportData,
   snowReportWeekForecastDocument,
   snowReportWeekForecastData: snowReportWeekForecastDataFn,
   snowReportForecastSmallDocument,
-  snowReportForecastSmallData: snowReportForecastSmallDataFn
+  snowReportForecastSmallData: snowReportForecastSmallDataFn,
+  snowReportHeadlineDocument,
+  snowReportHeadlineData
 } = require('./renderDocuments');
-// const { snowReportForecastDocument, snowReportForecastData} = require('./renderDocuments/snowReportForecastDocument');
-// const { snowReportWeekForecastDocument, snowReportWeekForecastData: snowReportWeekForecastDataFn } = require('./renderDocuments/snowReportWeekForecastDocument');
-// const { snowReportForecastSmallDocument, snowReportForecastSmallData: snowReportForecastSmallDataFn } = require('./renderDocuments/snowReportForecastSmallDocument');
 
 //=========================================================================================================================================
 // Handlers
@@ -142,6 +142,7 @@ const getForecastGenericHandler = async ({
   
   if (error || !forecastData) {
     const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
+    
     addAPLIfSupported({
       handlerInput,
       token: "ForecastError",
@@ -177,12 +178,27 @@ const getForecastGenericHandler = async ({
 // Generic handler used for the SnowReport handlers
 const getSnowReportGenericHandler = async ({
   handlerInput,
+  handlerName,
   successResponseFn,
-  successResponseFnArgs = {}
+  successResponseFnArgs = {},
+  aplDocument,
+  aplDocumentDataFn
 }) => {
   const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
+  const subtitleText = getSubtitleTextForHandler({handlerName});
 
   if (resortDataErrorResponse) {
+    addAPLIfSupported({
+      handlerInput,
+      token: "ForecastError",
+      document: snowReportForecastDocument,
+      data: snowReportForecastDataFn({
+        subtitle: subtitleText,
+        resortName,
+        showAsError: true,
+        errorResponse: responses.unknownResort(synonymValue)
+      })
+    });
     return resortDataErrorResponse;
   }
 
@@ -190,11 +206,41 @@ const getSnowReportGenericHandler = async ({
   
   if (error || !snowReportData) {
     const errorResponse = getErrorResponse({isDataDefined: !!snowReportData, error});
+    
+    addAPLIfSupported({
+      handlerInput,
+      token: "ForecastError",
+      document: snowReportForecastDocument,
+      data: snowReportForecastDataFn({
+        subtitle: subtitleText,
+        resortName,
+        showAsError: true,
+        errorResponse
+      })
+    });
+
     return handlerInput.responseBuilder
       .speak(errorResponse)
       .reprompt(errorResponse)
       .getResponse();
   }
+
+  addAPLIfSupported({
+    handlerInput,
+    token: `Forecast-${handlerName}-${resortName}`,
+    document: aplDocument,
+    data: aplDocumentDataFn({
+      subtitle: subtitleText,
+      resortName,
+      iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg",
+      primaryText: `
+        Total: ${snowReportData.seasonSnowFall == 'FAIL' ? 'N/A' : snowReportData.seasonSnowFall}" <br />
+        Overnight: ${snowReportData.snowFallOvernight == 'FAIL' ? 'N/A' : snowReportData.snowFallOvernight}" <br />
+        Last 2 days: ${snowReportData.snowFallTwoDay == 'FAIL' ? 'N/A' : snowReportData.snowFallTwoDay}" <br />
+      `,
+      bodyText: ''
+    })
+  });
 
   return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
 };
@@ -228,6 +274,13 @@ const LaunchRequestHandler = {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
   },
   async handle(handlerInput) {
+    addAPLIfSupported({
+      handlerInput,
+      token: "SnowReportLaunch",
+      document: snowReportHeadlineDocument,
+      data: snowReportHeadlineData
+    });
+
     return handlerInput.responseBuilder
       .speak(responses.welcome())
       .reprompt(responses.helpMessage())
@@ -432,7 +485,14 @@ const SnowReportDepthHandler = {
       .speak(responses.snowReportDepth(resortName, snowReportData))
       .getResponse();
     
-    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    const response = await getSnowReportGenericHandler({
+      handlerInput,
+      handlerName: "snowReportDepth",
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportData
+    });
+
     return response;
   }
 };
@@ -448,7 +508,14 @@ const SnowReportSeasonTotalHandler = {
       .speak(responses.snowReportSeasonTotal(resortName, snowReportData))
       .getResponse();
     
-    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    const response = await getSnowReportGenericHandler({
+      handlerInput,
+      handlerName: "snowReportSeasonTotal",
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportData
+    });
+
     return response;
   }
 };
@@ -464,7 +531,14 @@ const SnowReportOneDayHandler = {
       .speak(responses.snowReportOneDay(resortName, snowReportData))
       .getResponse();
     
-    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    const response = await getSnowReportGenericHandler({
+      handlerInput,
+      handlerName: "snowReportOneDay",
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportData
+    });
+
     return response;
   }
 };
@@ -480,7 +554,14 @@ const SnowReportOvernightHandler = {
       .speak(responses.snowReportOvernight(resortName, snowReportData))
       .getResponse();
     
-    const response = await getSnowReportGenericHandler({handlerInput, successResponseFn});
+    const response = await getSnowReportGenericHandler({
+      handlerInput,
+      handlerName: "snowReportOvernight",
+      successResponseFn,
+      aplDocument: snowReportForecastDocument,
+      aplDocumentDataFn: snowReportData
+    });
+
     return response;
   }
 };

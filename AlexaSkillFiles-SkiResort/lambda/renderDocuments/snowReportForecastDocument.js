@@ -42,7 +42,7 @@ const snowReportForecastDocument = {
 };
 
 /**
- * Returns object containing all the data needed by the APL document
+ * Returns object containing all the data needed by the APL document for Forecast intents
  */ 
 const snowReportForecastData = ({subtitle, resortName, iconUrl, tempHigh, tempLow, forecastDetail, showAsError}) => {
   let primaryText = `${tempHigh !== "N/A" ? `High: ${tempHigh}° F <br />` : ''} Low: ${tempLow}° F`;
@@ -95,7 +95,57 @@ const snowReportForecastData = ({subtitle, resortName, iconUrl, tempHigh, tempLo
   }
 };
 
+/**
+ * Returns object containing all the data needed by the APL document for Snow Report intents
+ */ 
+const snowReportData = ({subtitle, resortName, iconUrl, primaryText, secondaryText, bodyText}) => {
+  return {
+    "type": "object",
+    "objectId": "detailImageRightSample",
+    "backgroundImage": {
+      "contentDescription": null,
+      "smallSourceUrl": null,
+      "largeSourceUrl": null,
+      "sources": [
+        {
+          "url": "https://snowreportskill-assets.s3.amazonaws.com/mountain-range.jpg",
+          "size": "large"
+        }
+      ]
+    },
+    "title": "Snow Report",
+    "subtitle": `${subtitle}: ${resortName}`,
+    "image": {
+      "contentDescription": "",
+      "smallSourceUrl": null,
+      "largeSourceUrl": null,
+      "sources": [
+        {
+          "url": `${iconUrl}`,
+          "size": "large"
+          }
+      ]
+    },
+    "textContent": {
+      "primaryText": {
+        "type": "PlainText",
+        "text": primaryText
+      },
+      "secondaryText": {
+        "type": "PlainText",
+        "text": ""
+      },
+      "bodyText": {
+        "type": "PlainText",
+        "text": bodyText
+      }
+    },
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg"
+  }
+};
+
 module.exports = {
   snowReportForecastDocument: snowReportForecastDocument,
-  snowReportForecastData: snowReportForecastData
+  snowReportForecastData: snowReportForecastData,
+  snowReportData: snowReportData
 };

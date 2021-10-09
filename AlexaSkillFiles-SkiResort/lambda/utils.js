@@ -408,9 +408,17 @@ const getSubtitleTextForHandler = ({handlerName, data}) => {
       break;
     case 'forecastWeek':
       subtitle = "6 Day Forecast";
+      break;    
+    case 'snowReportDepth':
+    case 'snowReportOneDay':
+    case 'snowReportOvernight':
+      subtitle = "Snow Report";
+      break;
+    case 'snowReportSeasonTotal':
+      subtitle = "Season Total";
       break;
     default:
-      subtitle = "Forecast";
+      subtitle = "Snow Report";
       break;
   };
 
