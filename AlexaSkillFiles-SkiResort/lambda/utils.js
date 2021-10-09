@@ -407,7 +407,7 @@ const getSubtitleTextForHandler = ({handlerName, data}) => {
       subtitle = `${day}'s Forecast`;
       break;
     case 'forecastWeek':
-      subtitle = "7 Day Forecast";
+      subtitle = "6 Day Forecast";
       break;
     default:
       subtitle = "Forecast";
@@ -528,7 +528,11 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
     case "skc":
     case "few":
     case "hot":
-      path = "icon-sunny.svg";
+      if (iconUrlFromWeatherAPI.includes("night")) {
+        path = "icon-night.svg";
+      } else {
+        path = "icon-sunny.svg";
+      }      
       break;
     // Partly-sunny
     case "sct":
@@ -557,6 +561,8 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
 
   return `${assetUrl}/${path}`;
 };
+
+const isSmallViewport = (handlerInput) => handlerInput.requestEnvelope.context.Viewport.shape === "ROUND";
 
 // For testing
 // getWeatherRequest("Stevens_Pass");
@@ -589,7 +595,8 @@ const exportFunctions = {
   getWeatherRequest: getWeatherRequest,
   addAPLIfSupported: addAPLIfSupported,
   getIconUrl: getIconUrl,
-  getSubtitleTextForHandler: getSubtitleTextForHandler
+  getSubtitleTextForHandler: getSubtitleTextForHandler,
+  isSmallViewport: isSmallViewport
 };
 
 module.exports = exportFunctions;

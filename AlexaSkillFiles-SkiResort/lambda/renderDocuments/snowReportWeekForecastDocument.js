@@ -399,7 +399,6 @@ const snowReportWeekForecastDocument = {
 };
     
 const snowReportWeekForecastData = ({subtitle, resortName, forecastData}) => {
-  // TODO: Map forecastData array to listItems
   const listItems = forecastData.map((forecast) => {
     console.log('forecast item: ', forecast.day, forecast)
     return {

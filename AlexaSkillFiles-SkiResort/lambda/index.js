@@ -18,21 +18,29 @@ const {
   getSupportedResorts,
   addAPLIfSupported,
   getIconUrl,
-  getSubtitleTextForHandler
+  getSubtitleTextForHandler,
+  isSmallViewport
 } = require('./utils');
 
 const { AlexaAppId } = require('./secrets/credentials');
 
 // Read in the APL documents for use in handlers
-// TODO: put a index.js file in renderDocuments (import all the docs ther and then export), then I can import from one place here
-const { snowReportForecastDocument, snowReportForecastData} = require('./renderDocuments/snowReportForecastDocument');
-const { snowReportWeekForecastDocument, snowReportWeekForecastData: snowReportWeekForecastDataFn } = require('./renderDocuments/snowReportWeekForecastDocument');
+const {
+  snowReportForecastDocument,
+  snowReportForecastData,
+  snowReportWeekForecastDocument,
+  snowReportWeekForecastData: snowReportWeekForecastDataFn,
+  snowReportForecastSmallDocument,
+  snowReportForecastSmallData: snowReportForecastSmallDataFn
+} = require('./renderDocuments');
+// const { snowReportForecastDocument, snowReportForecastData} = require('./renderDocuments/snowReportForecastDocument');
+// const { snowReportWeekForecastDocument, snowReportWeekForecastData: snowReportWeekForecastDataFn } = require('./renderDocuments/snowReportWeekForecastDocument');
+// const { snowReportForecastSmallDocument, snowReportForecastSmallData: snowReportForecastSmallDataFn } = require('./renderDocuments/snowReportForecastSmallDocument');
 
 //=========================================================================================================================================
 // Handlers
 //=========================================================================================================================================
 
-// TOOD: Move this to responses and then import?
 /**
  * Returns the response for the correct error
  * @param {object} isDataDefined - boolean
@@ -293,8 +301,8 @@ const ForecastTodayHandler = {
       handlerName: "forecastToday",
       getForecastDataFn: getForecastToday,
       successResponseFn,
-      aplDocument: snowReportForecastDocument,
-      aplDocumentDataFn: snowReportForecastDataFn
+      aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
     });
 
     return response;
@@ -317,8 +325,8 @@ const ForecastTomorrowHandler = {
       handlerName: "forecastTomorrow",
       getForecastDataFn: getForecastTomorrow,
       successResponseFn,
-      aplDocument: snowReportForecastDocument,
-      aplDocumentDataFn: snowReportForecastDataFn
+      aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
     });
 
     return response;
@@ -346,8 +354,8 @@ const ForecastWeekDayHandler = {
       getForecastDataFnArgs: {daySlotValue},
       successResponseFn,
       successResponseFnArgs: {daySlotValue},
-      aplDocument: snowReportForecastDocument,
-      aplDocumentDataFn: snowReportForecastDataFn
+      aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
     });
     return response;
   }
@@ -369,8 +377,8 @@ const ForecastWeekHandler = {
       handlerName: "forecastWeek",
       getForecastDataFn: getForecastWeek,
       successResponseFn,
-      aplDocument: snowReportWeekForecastDocument,
-      aplDocumentDataFn: snowReportWeekForecastDataFn
+      aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportWeekForecastDocument,
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportWeekForecastDataFn
     });
     return response;
   }
@@ -399,8 +407,8 @@ const TemperatureTonightHandler = {
       handlerName: "temperatureTonight",
       getForecastDataFn: getForecastToday,
       successResponseFn,
-      aplDocument: snowReportForecastDocument,
-      aplDocumentDataFn: snowReportForecastDataFn
+      aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
     });
 
     return response;
