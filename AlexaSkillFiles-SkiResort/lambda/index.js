@@ -34,7 +34,9 @@ const {
   snowReportForecastSmallDocument,
   snowReportForecastSmallData: snowReportForecastSmallDataFn,
   snowReportHeadlineDocument,
-  snowReportHeadlineData
+  snowReportHeadlineData,
+  snowReportSupportedResortsDocument,
+  snowReportSupportedResortsData
 } = require('./renderDocuments');
 
 //=========================================================================================================================================
@@ -573,6 +575,13 @@ const SupportedResortsHandler = {
   },
   async handle(handlerInput) {
     const supportedResortsArray = await getSupportedResorts();
+
+    addAPLIfSupported({
+      handlerInput,
+      token: `SupportedResortsList`,
+      document: snowReportSupportedResortsDocument,
+      data: snowReportSupportedResortsData(supportedResortsArray)
+    });
 
     return handlerInput.responseBuilder
       .speak(responses.supportedResorts(supportedResortsArray))
