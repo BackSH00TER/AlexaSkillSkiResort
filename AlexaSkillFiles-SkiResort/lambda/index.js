@@ -1,6 +1,4 @@
 'use strict';
-// const Alexa = require('alexa-sdk');
-// TODO: Might need to add the backwards compatible library for now until its all moved over?
 const Alexa = require('ask-sdk');
 const responses = require('./responses');
 const {
@@ -21,8 +19,6 @@ const {
   getSubtitleTextForHandler,
   isSmallViewport
 } = require('./utils');
-
-const { AlexaAppId } = require('./secrets/credentials');
 
 // Read in the APL documents for use in handlers
 const {

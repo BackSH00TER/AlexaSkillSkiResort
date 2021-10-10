@@ -15,7 +15,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "alexa-sdk": "^1.0.18",
     "ask-sdk": "^2.11.0",
     "aws-sdk": "^2.145.0",
     "node-fetch": "2.6.1"

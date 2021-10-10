@@ -177,12 +177,10 @@ const snowReportForecastSmallDocument = {
     ]
   }
 };
-    
-// TODO: This needs to be tested out - should work...
+
 const snowReportForecastSmallData = ({subtitle, resortName, forecastData}) => {
-      // TODO: need to make the small APL document handle forecastData that is not an array as well to get listItem of 1
-  // forecastData is an array if its being called from the forecastWeek,
-  // otherwise forecastData is an object w/ the same properties
+  // forecastData could be an array or an object. If its being passed in from forecastWeek it will be an array,
+  // otherwise it will be an object. Either way the listItems will be returned as an array.
   let listItems;
   if (Array.isArray(forecastData)) {
     // Handles the case where forecastData is an array

@@ -108,7 +108,7 @@ module.exports.snowReportSeasonTotal = (resortName, snowReportData) => {
 
 module.exports.snowReportOneDay = (resortName, snowReportData) => {
   if (snowReportData.snowFallOneDay == 'FAIL' && snowReportData.snowFallTwoDay == 'FAIL') {
-    return dataErrorMessage(resortName, "yesterdays");
+    return dataErrorMessage(resortName, "snow report");
   } else if (snowReportData.snowFallTwoDay == 'FAIL') {
     return `${resortName} got ${snowReportData.snowFallOneDay} ${inchOrInches(snowReportData.snowFallOneDay)} of snow yesterday.`;
   } else if (snowReportData.snowFallOneDay == 'FAIL') {
