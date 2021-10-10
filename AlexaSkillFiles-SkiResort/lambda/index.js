@@ -263,6 +263,13 @@ const snowReportForecastDataFn = ({subtitle, resortName, forecastData, showAsErr
   });
 };
 
+// Sets the response onto sessionAttributes.lastSpeechOutput (to be used by RepeatIntentHandler)
+const setSessionAttributeLastSpeechOutput = (handlerInput, response) => {
+  const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+  sessionAttributes.lastSpeechOutput = response;
+  return;
+};
+
 /**
  * ----------------------------------
  * Default Handlers
@@ -315,6 +322,20 @@ const HelpIntentHandler = {
   }
 };
 
+const RepeatIntentHandler = {
+  canHandle(handlerInput) {
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+      && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    return handlerInput.responseBuilder
+      .speak(sessionAttributes.lastSpeechOutput)
+      .reprompt(sessionAttributes.lastSpeechOutput)
+      .getResponse();
+  }
+};
+
 /* *
  * FallbackIntent triggers when a customer says something that doesn’t map to any intents in the skill
  * */
@@ -345,11 +366,15 @@ const ForecastTodayHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureToday';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, forecastData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.forecastToday(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse())
-      .withShouldEndSession(false)
-      .getResponse();
+    const successResponseFn = ({resortName, forecastData}) => {
+      const outputSpeech = responses.forecastToday(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+        .speak(outputSpeech)
+        .withShouldEndSession(false)
+        .getResponse();
+      };
     
     const response = await getForecastGenericHandler({
       handlerInput,
@@ -370,11 +395,15 @@ const ForecastTomorrowHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastTomorrow';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, forecastData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.forecastTomorrow(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, forecastData}) => {
+      const outputSpeech = responses.forecastTomorrow(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getForecastGenericHandler({
       handlerInput,
@@ -396,11 +425,15 @@ const ForecastWeekDayHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureWeekDay';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, forecastData, daySlotValue}) =>
-      handlerInput.responseBuilder
-      .speak(responses.forecastWeekDay(resortName, daySlotValue, forecastData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, forecastData, daySlotValue}) => {
+      const outputSpeech = responses.forecastWeekDay(resortName, daySlotValue, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const daySlotValue = Alexa.getSlotValue(handlerInput.requestEnvelope, "Day");
 
@@ -424,11 +457,15 @@ const ForecastWeekHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeek';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, forecastData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.forecastWeek(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, forecastData}) => {
+      const outputSpeech = responses.forecastWeek(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
 
     const response = await getForecastGenericHandler({
       handlerInput,
@@ -455,11 +492,15 @@ const TemperatureTonightHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureTonight';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, forecastData}) =>
+    const successResponseFn = ({resortName, forecastData}) => {
+      const outputSpeech = responses.temperatureTonight(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
       handlerInput.responseBuilder
-      .speak(responses.temperatureTonight(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse())
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getForecastGenericHandler({
       handlerInput,
@@ -486,11 +527,15 @@ const SnowReportDepthHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportDepth';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, snowReportData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.snowReportDepth(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, snowReportData}) => {
+      const outputSpeech = responses.snowReportDepth(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getSnowReportGenericHandler({
       handlerInput,
@@ -510,11 +555,15 @@ const SnowReportSeasonTotalHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportSeasonTotal';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, snowReportData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.snowReportSeasonTotal(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, snowReportData}) => {
+      const outputSpeech = responses.snowReportSeasonTotal(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getSnowReportGenericHandler({
       handlerInput,
@@ -534,11 +583,15 @@ const SnowReportOneDayHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportOneDay';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, snowReportData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.snowReportOneDay(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, snowReportData}) => {
+      const outputSpeech = responses.snowReportOneDay(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getSnowReportGenericHandler({
       handlerInput,
@@ -558,11 +611,15 @@ const SnowReportOvernightHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportOvernight';
   },
   async handle(handlerInput) {
-    const successResponseFn = ({resortName, snowReportData}) =>
-      handlerInput.responseBuilder
-      .speak(responses.snowReportOvernight(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse())
+    const successResponseFn = ({resortName, snowReportData}) => {
+      const outputSpeech = responses.snowReportOvernight(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
+      return handlerInput.responseBuilder
+      .speak(outputSpeech)
       .withShouldEndSession(false)
       .getResponse();
+    };
     
     const response = await getSnowReportGenericHandler({
       handlerInput,
@@ -591,9 +648,12 @@ const SupportedResortsHandler = {
       data: snowReportSupportedResortsData(supportedResortsArray)
     });
 
+    const outputSpeech = responses.supportedResorts(supportedResortsArray);
+    setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
     return handlerInput.responseBuilder
-      .speak(responses.supportedResorts(supportedResortsArray))
-      .reprompt(responses.supportedResorts(supportedResortsArray) )
+      .speak(outputSpeech)
+      .reprompt(outputSpeech)
       .getResponse();
   }
 };
@@ -632,6 +692,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     SnowReportSeasonTotalHandler,
     SupportedResortsHandler,
     CancelAndStopIntentHandler,
+    RepeatIntentHandler,
     HelpIntentHandler,
     FallbackIntentHandler,
     SessionEndedRequestHandler
