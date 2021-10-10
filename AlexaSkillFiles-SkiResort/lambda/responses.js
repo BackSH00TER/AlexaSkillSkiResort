@@ -11,6 +11,9 @@ module.exports.helpMessage = () =>
 module.exports.helpMessageReprompt = () =>
   'What would you like to know? You can ask me about the forecast, temperature, or snow report for your favorite ski resort.';
 
+module.exports.wantToKnowAnythingElse = () =>
+  'Would you like to know anything else?';
+
 module.exports.stopMessage = () =>
   'Cya later, have fun on the slopes!';
 
