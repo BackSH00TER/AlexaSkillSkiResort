@@ -248,7 +248,9 @@ const getSnowReportGenericHandler = async ({
  * This function is also used to handle the snowReportForecast errors
  */
 const snowReportForecastDataFn = ({subtitle, resortName, forecastData, showAsError, errorResponse}) => {
-  const iconUrl = getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl, showAsError});
+  const iconUrl = showAsError ?
+    "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg" :
+    getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl, showAsError});
   
   return snowReportForecastData({
     subtitle,
