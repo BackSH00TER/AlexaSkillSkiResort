@@ -232,9 +232,11 @@ const getSnowReportGenericHandler = async ({
       resortName,
       iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg",
       primaryText: `
-        Total: ${snowReportData.seasonSnowFall == 'FAIL' ? 'N/A' : snowReportData.seasonSnowFall}" <br />
-        Overnight: ${snowReportData.snowFallOvernight == 'FAIL' ? 'N/A' : snowReportData.snowFallOvernight}" <br />
-        Last 2 days: ${snowReportData.snowFallTwoDay == 'FAIL' ? 'N/A' : snowReportData.snowFallTwoDay}" <br />
+        ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall} <br />`} 
+        ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight} <br />`} 
+        ${snowReportData.snowFallTwoDay ==    'FAIL' ? '' : `Last 2 days: ${snowReportData.snowFallTwoDay} <br />`} 
+        ${snowReportData.snowDepthBase ==     'FAIL' ? '' : `Base: ${snowReportData.snowDepthBase} <br />`} 
+        ${snowReportData.snowDepthMidMtn ==   'FAIL' ? '' : `Mid: ${snowReportData.snowDepthMidMtn} <br />`}
       `,
       bodyText: ''
     })
@@ -524,7 +526,8 @@ const TemperatureTonightHandler = {
 const SnowReportDepthHandler = {
   canHandle(handlerInput) {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportDepth';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportDepth' ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportSeasonTotal';
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
@@ -689,7 +692,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     SnowReportDepthHandler,
     SnowReportOneDayHandler,
     SnowReportOvernightHandler,
-    SnowReportSeasonTotalHandler,
+    // SnowReportSeasonTotalHandler, // Disabling for now since SeasonTotal is not supported on OnTheSnow
     SupportedResortsHandler,
     CancelAndStopIntentHandler,
     RepeatIntentHandler,
