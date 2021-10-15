@@ -1,6 +1,7 @@
 {
     "name": "Snowbird",
     "id": "Snowbird",
+    "onTheSnowResortId": 404,
     "url": "https://www.onthesnow.com/utah/snowbird/historical-snowfall.html",
     "tags": [
       "Utah",

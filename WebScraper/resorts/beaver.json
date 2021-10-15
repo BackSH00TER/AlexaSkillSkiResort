@@ -1,6 +1,7 @@
 {
     "name": "Beaver Mountain",
     "id": "Beaver_Mountain",
+    "onTheSnowResortId": 37,
     "url": "https://www.onthesnow.com/utah/beaver-mountain/historical-snowfall.html",
     "tags": [
       "Utah",

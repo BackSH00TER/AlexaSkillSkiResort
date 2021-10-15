@@ -1,6 +1,7 @@
 {
     "name": "Park City",
     "id": "Park_City",
+    "onTheSnowResortId": 314,
     "url": "https://www.onthesnow.com/utah/park-city-mountain-resort/historical-snowfall.html",
     "tags": [
       "Utah",

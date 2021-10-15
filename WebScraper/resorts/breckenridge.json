@@ -1,6 +1,7 @@
 {
     "name": "Breckenridge",
     "id": "Breckenridge",
+    "onTheSnowResortId": 77,
     "url": "https://www.onthesnow.com/colorado/breckenridge/historical-snowfall.html?q=base",
     "tags": [
       "Colorado"
