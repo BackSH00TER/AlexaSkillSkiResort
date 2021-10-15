@@ -232,11 +232,11 @@ const getSnowReportGenericHandler = async ({
       resortName,
       iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg",
       primaryText: `
-        ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall} <br />`} 
-        ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight} <br />`} 
-        ${snowReportData.snowFallTwoDay ==    'FAIL' ? '' : `Last 2 days: ${snowReportData.snowFallTwoDay} <br />`} 
-        ${snowReportData.snowDepthBase ==     'FAIL' ? '' : `Base: ${snowReportData.snowDepthBase} <br />`} 
-        ${snowReportData.snowDepthMidMtn ==   'FAIL' ? '' : `Mid: ${snowReportData.snowDepthMidMtn} <br />`}
+        ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall}" <br />`} 
+        ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight}" <br />`} 
+        ${snowReportData.snowFallTwoDay ==    'FAIL' ? '' : `Last 2 days: ${snowReportData.snowFallTwoDay}" <br />`} 
+        ${snowReportData.snowDepthBase ==     'FAIL' ? '' : `Base: ${snowReportData.snowDepthBase}" <br />`} 
+        ${snowReportData.snowDepthMidMtn ==   'FAIL' ? '' : `Mid: ${snowReportData.snowDepthMidMtn}" <br />`}
       `,
       bodyText: ''
     })
@@ -299,10 +299,11 @@ const LaunchRequestHandler = {
 
 const CancelAndStopIntentHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-      && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
-      || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent'
-      || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent');
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' && (
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent' ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent' ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent'
+    );
   },
   handle(handlerInput) {
     return handlerInput.responseBuilder
@@ -313,8 +314,8 @@ const CancelAndStopIntentHandler = {
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-      && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
     return handlerInput.responseBuilder
@@ -326,8 +327,8 @@ const HelpIntentHandler = {
 
 const RepeatIntentHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-      && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
   },
   handle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -343,8 +344,8 @@ const RepeatIntentHandler = {
  * */
 const FallbackIntentHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-      && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
   },
   handle(handlerInput) {
     console.log('!!! FallbackIntent handler called')
@@ -363,9 +364,10 @@ const FallbackIntentHandler = {
 
 const ForecastTodayHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' && (
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastToday' ||
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureToday';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureToday'
+    );
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) => {
@@ -422,9 +424,10 @@ const ForecastTomorrowHandler = {
 
 const ForecastWeekDayHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' && (
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'forecastWeekDay' ||
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureWeekDay';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'temperatureWeekDay'
+    );
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData, daySlotValue}) => {
@@ -525,9 +528,10 @@ const TemperatureTonightHandler = {
 
 const SnowReportDepthHandler = {
   canHandle(handlerInput) {
-    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' && (
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportDepth' ||
-      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportSeasonTotal';
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'snowReportSeasonTotal'
+    );
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
@@ -667,8 +671,9 @@ const SessionEndedRequestHandler = {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
   },
   handle(handlerInput) {
-    console.log('SessionEndedRequestHandler...')
-    if(handlerInput.requestEnvelope.request.error) {
+    console.log('Session Ended with reason:', handlerInput.requestEnvelope.request.reason);
+
+    if (handlerInput.requestEnvelope.request.error) {
       console.log('ERROR: ', JSON.stringify(handlerInput.requestEnvelope.request.error));
     }
     
