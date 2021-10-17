@@ -478,8 +478,8 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
     "hot",
     // Partly-sunny
     "sct",
-    // Cloudy
     "bkn",
+    // Cloudy
     "ovc",
     // Fog
     "fog"
@@ -544,10 +544,10 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
       break;
     // Partly-sunny
     case "sct":
+    case "bkn":
       path = "icon-cloud-sun.png";
       break;
     // Cloudy
-    case "bkn":
     case "ovc":
       path = "icon-cloud.png";
       break;
