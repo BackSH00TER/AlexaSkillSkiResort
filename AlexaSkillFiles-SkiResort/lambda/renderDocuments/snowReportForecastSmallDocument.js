@@ -76,7 +76,7 @@ const snowReportForecastSmallDocument = {
                 "paddingBottom": "12dp"
             },
             {
-                "source": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg",
+                "source": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png",
                 "scale": "best-fit-down",
                 "align": "bottom",
                 "type": "Image",

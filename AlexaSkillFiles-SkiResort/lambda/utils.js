@@ -436,7 +436,7 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
   const assetUrl = "https://snowreportskill-assets.s3.amazonaws.com";
 
   if (showAsError) {
-    return `${assetUrl}/icon-cloud-slash.svg`;
+    return `${assetUrl}/icon-cloud-slash.png`;
   }
 
   /**
@@ -488,7 +488,7 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
   // Returns the first matched variable from weatherTypes
   const firstMatchedWeatherType = weatherTypes.find(type => iconUrlFromWeatherAPI.includes(type));
 
-  // Get the path / svg name for the given weatherType
+  // Get the path / png name for the given weatherType
   const getIconPath = (weatherType) => {
     let path;
 
@@ -497,7 +497,7 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
     case "snow":
     case "blizzard":
     case "cold":
-      path = "icon-snow.svg";
+      path = "icon-snow.png";
       break;
     // Sleet (mixed rain/snow)
     case "rain_snow":
@@ -507,22 +507,22 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
     case "snow_fzra":
     case "fzra":
     case "sleet":
-      path = "icon-sleet.svg";
+      path = "icon-sleet.png";
       break;
     // Rain-heavy
     case "rain_showers_hi":
-      path = "icon-rain-heavy.svg";
+      path = "icon-rain-heavy.png";
       break;
     // Rain-light
     case "rain_showers":
     case "rain":
-      path = "icon-rain-light.svg";
+      path = "icon-rain-light.png";
       break;
     // Thunderstorm
     case "tsra":
     case "tsra_sct":
     case "tsra_hi":
-      path = "icon-thunderstorm.svg";
+      path = "icon-thunderstorm.png";
       break;
     // Wind
     case "wind_skc":
@@ -530,33 +530,33 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
     case "wind_sct":
     case "wind_bkn":
     case "wind_ovc":
-      path = "icon-wind.svg";
+      path = "icon-wind.png";
       break;
     // Sunny
     case "skc":
     case "few":
     case "hot":
       if (iconUrlFromWeatherAPI.includes("night")) {
-        path = "icon-night.svg";
+        path = "icon-night.png";
       } else {
-        path = "icon-sunny.svg";
+        path = "icon-sunny.png";
       }      
       break;
     // Partly-sunny
     case "sct":
-      path = "icon-cloud-sun.svg";
+      path = "icon-cloud-sun.png";
       break;
     // Cloudy
     case "bkn":
     case "ovc":
-      path = "icon-cloud.svg";
+      path = "icon-cloud.png";
       break;
     // Fog
     case "fog":
-      path = "icon-fog.svg";
+      path = "icon-fog.png";
       break;
     default:
-      path = "icon-cloud.svg";
+      path = "icon-cloud.png";
       break;
     }
 

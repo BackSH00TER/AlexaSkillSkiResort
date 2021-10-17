@@ -52,7 +52,7 @@ const snowReportSupportedResortsDocument = {
     "title": "Snow Report",
     "subtitle": "Supported Resorts",
     "listItems": listItems,
-    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg"
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png"
   };
 };
 

@@ -91,7 +91,7 @@ const snowReportForecastData = ({subtitle, resortName, iconUrl, tempHigh, tempLo
         "text": `${forecastDetail}`
       }
     },
-    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg"
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png"
   }
 };
 
@@ -140,7 +140,7 @@ const snowReportData = ({subtitle, resortName, iconUrl, primaryText, secondaryTe
         "text": bodyText
       }
     },
-    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg"
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png"
   }
 };
 

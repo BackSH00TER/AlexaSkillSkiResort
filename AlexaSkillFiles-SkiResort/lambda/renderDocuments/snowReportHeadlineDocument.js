@@ -50,7 +50,7 @@ const snowReportHeadlineData = {
         "text": "Welcome to Snow Report"
       }
     },
-    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg",
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png",
     "hintText": "Try, \"Alexa, what is the snow report for Mission Ridge?\""
   }
 };

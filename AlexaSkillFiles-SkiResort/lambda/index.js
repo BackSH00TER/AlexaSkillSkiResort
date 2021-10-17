@@ -230,7 +230,7 @@ const getSnowReportGenericHandler = async ({
     data: aplDocumentDataFn({
       subtitle: subtitleText,
       resortName,
-      iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.svg",
+      iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.png",
       primaryText: `
         ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall}" <br />`} 
         ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight}" <br />`} 
@@ -251,7 +251,7 @@ const getSnowReportGenericHandler = async ({
  */
 const snowReportForecastDataFn = ({subtitle, resortName, forecastData, showAsError, errorResponse}) => {
   const iconUrl = showAsError ?
-    "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.svg" :
+    "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.png" :
     getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl, showAsError});
   
   return snowReportForecastData({

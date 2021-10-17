@@ -426,7 +426,7 @@ const snowReportWeekForecastData = ({subtitle, resortName, forecastData}) => {
     "title": "Snow Report",
     "subtitle": `${subtitle}: ${resortName}`,
     "listItems": listItems,
-    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.svg",
+    "logoUrl": "https://snowreportskill-assets.s3.amazonaws.com/skiresort-logo.png",
     "hintText": "Try, \"Alexa, what is the snow report for Stevens pass?\""
   };
 }
