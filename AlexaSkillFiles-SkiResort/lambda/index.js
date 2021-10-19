@@ -118,35 +118,73 @@ const getForecastGenericHandler = async ({
   aplDocument,
   aplDocumentDataFn
 }) => {
-  const { resortSlotID, resortName, resortDataErrorResponse, synonymValue } = await getResortDataFromSlot(handlerInput);
-  const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
+  try {
+    console.log('Invoking getForecastGenericHandler for handler: ', handlerName);
+    const { resortSlotID, resortName, resortDataErrorResponse, synonymValue } = await getResortDataFromSlot(handlerInput);
+    const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
 
-  if (resortDataErrorResponse) {
+    if (resortDataErrorResponse) {
+      console.error('Resort data error');
+      addAPLIfSupported({
+        handlerInput,
+        token: "ForecastError",
+        document: snowReportForecastDocument,
+        data: snowReportForecastDataFn({
+          subtitle: subtitleText,
+          resortName,
+          showAsError: true,
+          errorResponse: responses.unknownResort(synonymValue)
+        })
+      });
+      return resortDataErrorResponse;
+    }
+
+    const { forecastData, error } = await getForecastDataFn({resortID: resortSlotID, ...getForecastDataFnArgs});
+    
+    if (error || !forecastData) {
+      console.log('Error getting forecast data. Error: ', error, 'forecastData: ', forecastData);
+      const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
+      
+      addAPLIfSupported({
+        handlerInput,
+        token: "ForecastError",
+        document: snowReportForecastDocument,
+        data: snowReportForecastDataFn({
+          subtitle: subtitleText,
+          resortName,
+          showAsError: true,
+          errorResponse
+        })
+      });
+
+      return handlerInput.responseBuilder
+        .speak(errorResponse)
+        .reprompt(errorResponse)
+        .getResponse();
+    }
+
     addAPLIfSupported({
       handlerInput,
-      token: "ForecastError",
-      document: snowReportForecastDocument,
-      data: snowReportForecastDataFn({
+      token: `Forecast-${handlerName}-${resortName}`,
+      document: aplDocument,
+      data: aplDocumentDataFn({
         subtitle: subtitleText,
         resortName,
-        showAsError: true,
-        errorResponse: responses.unknownResort(synonymValue)
+        forecastData
       })
     });
-    return resortDataErrorResponse;
-  }
 
-  const { forecastData, error } = await getForecastDataFn({resortID: resortSlotID, ...getForecastDataFnArgs});
-  
-  if (error || !forecastData) {
-    const errorResponse = getErrorResponse({isDataDefined: !!forecastData, error});
-    
+    return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
+  } catch (err) {
+    console.error('ERROR: Something went wrong. ', err);
+    const errorResponse = responses.weatherServiceTerminalError();
+      
     addAPLIfSupported({
       handlerInput,
       token: "ForecastError",
       document: snowReportForecastDocument,
       data: snowReportForecastDataFn({
-        subtitle: subtitleText,
+        subtitle: "Error",
         resortName,
         showAsError: true,
         errorResponse
@@ -158,19 +196,6 @@ const getForecastGenericHandler = async ({
       .reprompt(errorResponse)
       .getResponse();
   }
-
-  addAPLIfSupported({
-    handlerInput,
-    token: `Forecast-${handlerName}-${resortName}`,
-    document: aplDocument,
-    data: aplDocumentDataFn({
-      subtitle: subtitleText,
-      resortName,
-      forecastData
-    })
-  });
-
-  return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
 };
 
 // Generic handler used for the SnowReport handlers
@@ -250,6 +275,7 @@ const getSnowReportGenericHandler = async ({
  * This function is also used to handle the snowReportForecast errors
  */
 const snowReportForecastDataFn = ({subtitle, resortName, forecastData, showAsError, errorResponse}) => {
+  console.log('snowReportForecastDataFn', {subtitle, resortName, showAsError, forecastData, errorResponse})
   const iconUrl = showAsError ?
     "https://snowreportskill-assets.s3.amazonaws.com/icon-cloud-slash.png" :
     getIconUrl({iconUrlFromWeatherAPI: forecastData.iconUrl, showAsError});
@@ -290,8 +316,11 @@ const LaunchRequestHandler = {
       data: snowReportHeadlineData
     });
 
+    const outputSpeech = responses.welcome();
+    setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
     return handlerInput.responseBuilder
-      .speak(responses.welcome())
+      .speak(outputSpeech)
       .reprompt(responses.helpMessage())
       .getResponse();
   }
@@ -318,8 +347,11 @@ const HelpIntentHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
+    const outputSpeech = responses.helpMessage();
+    setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
     return handlerInput.responseBuilder
-      .speak(responses.helpMessage())
+      .speak(outputSpeech)
       .reprompt(responses.helpMessageReprompt())
       .getResponse();
   }
@@ -349,8 +381,11 @@ const FallbackIntentHandler = {
   },
   handle(handlerInput) {
     console.log('!!! FallbackIntent handler called')
+    const outputSpeech = responses.didNotUnderstand();
+    setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+
     return handlerInput.responseBuilder
-      .speak(responses.didNotUnderstand())
+      .speak(outputSpeech)
       .reprompt(responses.helpMessage())
       .getResponse();
   }
@@ -371,7 +406,7 @@ const ForecastTodayHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) => {
-      const outputSpeech = responses.forecastToday(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.forecastToday(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -400,7 +435,7 @@ const ForecastTomorrowHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) => {
-      const outputSpeech = responses.forecastTomorrow(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.forecastTomorrow(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -431,7 +466,7 @@ const ForecastWeekDayHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData, daySlotValue}) => {
-      const outputSpeech = responses.forecastWeekDay(resortName, daySlotValue, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.forecastWeekDay(resortName, daySlotValue, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -463,7 +498,7 @@ const ForecastWeekHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) => {
-      const outputSpeech = responses.forecastWeek(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.forecastWeek(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -498,13 +533,13 @@ const TemperatureTonightHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, forecastData}) => {
-      const outputSpeech = responses.temperatureTonight(resortName, forecastData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.temperatureTonight(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
-      handlerInput.responseBuilder
-      .speak(outputSpeech)
-      .withShouldEndSession(false)
-      .getResponse();
+      return handlerInput.responseBuilder
+        .speak(outputSpeech)
+        .withShouldEndSession(false)
+        .getResponse();
     };
     
     const response = await getForecastGenericHandler({
@@ -535,7 +570,7 @@ const SnowReportDepthHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
-      const outputSpeech = responses.snowReportDepth(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.snowReportDepth(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -563,7 +598,7 @@ const SnowReportSeasonTotalHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
-      const outputSpeech = responses.snowReportSeasonTotal(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.snowReportSeasonTotal(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -591,7 +626,7 @@ const SnowReportOneDayHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
-      const outputSpeech = responses.snowReportOneDay(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.snowReportOneDay(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder
@@ -619,7 +654,7 @@ const SnowReportOvernightHandler = {
   },
   async handle(handlerInput) {
     const successResponseFn = ({resortName, snowReportData}) => {
-      const outputSpeech = responses.snowReportOvernight(resortName, snowReportData) + ' ' + responses.wantToKnowAnythingElse();
+      const outputSpeech = responses.snowReportOvernight(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
 
       return handlerInput.responseBuilder

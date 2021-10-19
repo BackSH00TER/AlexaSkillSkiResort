@@ -181,12 +181,17 @@ const getWeatherRequest = async (resortID) => {
   try {
     const data = await fetch(`https://api.weather.gov${path}`, options);
     const jsonData = await data.json();
+    console.log('getWeatherRequest response: ', jsonData);
     return { data: jsonData, error: undefined };
   } catch (error) {
-    console.log(`Error fetching Weather info for ${resortID}: ${error}`);
+    console.error(`Error fetching Weather info for ${resortID}: ${error}`);
     return { data: undefined, error: TERMINAL_ERROR };
   }
 };
+
+const isValidForecastData = (forecastData) => {
+  return !!(forecastData && forecastData.properties && forecastData.properties.periods);
+}
 
 /**
  * Gets the weather for today
@@ -197,9 +202,9 @@ const getWeatherRequest = async (resortID) => {
  */
 const getForecastToday = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
-  
-  if (error) {
-    return { forecastData: undefined, error };
+
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -235,8 +240,8 @@ const getForecastToday = async ({resortID}) => {
 const getForecastWeek = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
-  if (error) {
-    return { forecastData: undefined, error };
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -313,8 +318,8 @@ const getForecastWeekDay = async ({resortID, daySlotValue: day}) => {
 const getForecastTomorrow = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
-  if (error) {
-    return { forecastData: undefined, error };
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
