@@ -26,8 +26,8 @@ const isValidDayOfTheWeek = (day) => {
  * @returns {object} {resortSlotID, synonymValue}
  */
 const getResortSlotIdAndName = async (resortSlot) => {
-  console.log('Attempting to get resortSlotIdAndName...');
-  let synonymValue = resortSlot.value;
+  console.log('Attempting to get resortSlotIdAndName for:', resortSlot);
+  let synonymValue = resortSlot && resortSlot.value || "Unknown";
   let resortSlotID;
   let resortName;
 
@@ -294,6 +294,7 @@ const getForecastWeekDay = async ({resortID, daySlotValue: day}) => {
   // Make sure user said a valid day
   // Ex: In some cases a holiday name could replace the name of the day in the field
   if (!isValidDayOfTheWeek(day)) {
+    console.warn("Invalid day of the week used: ", day);
     return { forecastData: undefined, error: INVALID_DAY };
   }
 

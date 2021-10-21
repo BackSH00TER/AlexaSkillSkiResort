@@ -131,7 +131,7 @@ const getForecastGenericHandler = async ({
         document: snowReportForecastDocument,
         data: snowReportForecastDataFn({
           subtitle: subtitleText,
-          resortName,
+          resortName: resortName || "Unknown",
           showAsError: true,
           errorResponse: responses.unknownResort(synonymValue)
         })
@@ -185,7 +185,7 @@ const getForecastGenericHandler = async ({
       document: snowReportForecastDocument,
       data: snowReportForecastDataFn({
         subtitle: "Error",
-        resortName,
+        resortName: resortName || "Unknown",
         showAsError: true,
         errorResponse
       })
@@ -207,36 +207,80 @@ const getSnowReportGenericHandler = async ({
   aplDocument,
   aplDocumentDataFn
 }) => {
-  const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
-  const subtitleText = getSubtitleTextForHandler({handlerName});
+  try {
+    console.log('Invoking getSnowReportGenericHandler for handler: ', handlerName);
+    const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
+    const subtitleText = getSubtitleTextForHandler({handlerName});
 
-  if (resortDataErrorResponse) {
+    if (resortDataErrorResponse) {
+      addAPLIfSupported({
+        handlerInput,
+        token: "ForecastError",
+        document: snowReportForecastDocument,
+        data: snowReportForecastDataFn({
+          subtitle: subtitleText,
+          resortName: resortName || "Unknown",
+          showAsError: true,
+          errorResponse: responses.unknownResort(synonymValue)
+        })
+      });
+      return resortDataErrorResponse;
+    }
+
+    const { snowReportData, error } = await getSnowReportData(resortSlotID);
+    
+    if (error || !snowReportData) {
+      const errorResponse = getErrorResponse({isDataDefined: !!snowReportData, error});
+      
+      addAPLIfSupported({
+        handlerInput,
+        token: "ForecastError",
+        document: snowReportForecastDocument,
+        data: snowReportForecastDataFn({
+          subtitle: subtitleText,
+          resortName,
+          showAsError: true,
+          errorResponse
+        })
+      });
+
+      return handlerInput.responseBuilder
+        .speak(errorResponse)
+        .reprompt(errorResponse)
+        .getResponse();
+    }
+
     addAPLIfSupported({
       handlerInput,
-      token: "ForecastError",
-      document: snowReportForecastDocument,
-      data: snowReportForecastDataFn({
+      token: `Forecast-${handlerName}-${resortName}`,
+      document: aplDocument,
+      data: aplDocumentDataFn({
         subtitle: subtitleText,
         resortName,
-        showAsError: true,
-        errorResponse: responses.unknownResort(synonymValue)
+        iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.png",
+        primaryText: `
+          ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall}" <br />`} 
+          ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight}" <br />`} 
+          ${snowReportData.snowFallTwoDay ==    'FAIL' ? '' : `Last 2 days: ${snowReportData.snowFallTwoDay}" <br />`} 
+          ${snowReportData.snowDepthBase ==     'FAIL' ? '' : `Base: ${snowReportData.snowDepthBase}" <br />`} 
+          ${snowReportData.snowDepthMidMtn ==   'FAIL' ? '' : `Mid: ${snowReportData.snowDepthMidMtn}" <br />`}
+        `,
+        bodyText: ''
       })
     });
-    return resortDataErrorResponse;
-  }
 
-  const { snowReportData, error } = await getSnowReportData(resortSlotID);
-  
-  if (error || !snowReportData) {
-    const errorResponse = getErrorResponse({isDataDefined: !!snowReportData, error});
-    
+    return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
+  } catch (err) {
+    console.error('ERROR: Something went wrong. ', err);
+    const errorResponse = responses.snowReportTerminalError();
+      
     addAPLIfSupported({
       handlerInput,
-      token: "ForecastError",
+      token: "SnowReportError",
       document: snowReportForecastDocument,
       data: snowReportForecastDataFn({
-        subtitle: subtitleText,
-        resortName,
+        subtitle: "Error",
+        resortName: resortName || "Unknown",
         showAsError: true,
         errorResponse
       })
@@ -247,27 +291,6 @@ const getSnowReportGenericHandler = async ({
       .reprompt(errorResponse)
       .getResponse();
   }
-
-  addAPLIfSupported({
-    handlerInput,
-    token: `Forecast-${handlerName}-${resortName}`,
-    document: aplDocument,
-    data: aplDocumentDataFn({
-      subtitle: subtitleText,
-      resortName,
-      iconUrl: "https://snowreportskill-assets.s3.amazonaws.com/icon-snow.png",
-      primaryText: `
-        ${snowReportData.seasonSnowFall ==    'FAIL' ? '' : `Total: ${snowReportData.seasonSnowFall}" <br />`} 
-        ${snowReportData.snowFallOvernight == 'FAIL' ? '' : `Overnight: ${snowReportData.snowFallOvernight}" <br />`} 
-        ${snowReportData.snowFallTwoDay ==    'FAIL' ? '' : `Last 2 days: ${snowReportData.snowFallTwoDay}" <br />`} 
-        ${snowReportData.snowDepthBase ==     'FAIL' ? '' : `Base: ${snowReportData.snowDepthBase}" <br />`} 
-        ${snowReportData.snowDepthMidMtn ==   'FAIL' ? '' : `Mid: ${snowReportData.snowDepthMidMtn}" <br />`}
-      `,
-      bodyText: ''
-    })
-  });
-
-  return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
 };
 
 /**
