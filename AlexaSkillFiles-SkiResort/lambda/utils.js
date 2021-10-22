@@ -33,6 +33,7 @@ const getResortSlotIdAndName = async (resortSlot) => {
 
   // Attempt to get resortSlotID
   if (
+    resortSlot &&
     resortSlot.resolutions &&
     resortSlot.resolutions.resolutionsPerAuthority &&
     resortSlot.resolutions.resolutionsPerAuthority[0] &&
@@ -73,7 +74,7 @@ const updateDBUniqueResortCounter = async (resortSlotID, synonymValue) => {
     ReturnValues: "UPDATED_NEW"
   }
 
-  console.log('Updating DB Resort Counter...');
+  console.log('Updating DB Resort Counter for ', resort);
   await db.updateResortCount(params);
 }
 
@@ -576,7 +577,15 @@ const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
   return `${assetUrl}/${path}`;
 };
 
-const isSmallViewport = (handlerInput) => handlerInput.requestEnvelope.context.Viewport.shape === "ROUND";
+// Returns true if they have a viewport and it is Round
+// Returns false in all other cases
+const isSmallViewport = (handlerInput) => {
+  return handlerInput &&
+  handlerInput.requestEnvelope &&
+  handlerInput.requestEnvelope.context &&
+  handlerInput.requestEnvelope.context.Viewport &&
+  handlerInput.requestEnvelope.context.Viewport.shape === "ROUND"
+};
 
 // For testing
 // getWeatherRequest("Stevens_Pass");

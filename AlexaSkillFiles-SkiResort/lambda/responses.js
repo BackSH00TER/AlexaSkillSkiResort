@@ -20,8 +20,13 @@ module.exports.stopMessage = () =>
 module.exports.didNotUnderstand = () =>
   "I'm sorry, I didn't understand that. Try asking your question again.";
 
-  module.exports.unknownResort = (synonymValue) =>
-  `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
+module.exports.unknownResort = (synonymValue) => {
+  if (synonymValue === "Unknown" || !synonymValue) {
+    return `I was unable to match the resort with one of the supported resorts. Please try asking again with a supported resort.`;
+  } else {
+    return `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
+  }
+};
 
 module.exports.unknownResortReprompt = () => 
   "Sorry, I don't recognize the resort you are asking about. Try asking the question again using one of the supported resorts.";

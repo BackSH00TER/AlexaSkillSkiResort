@@ -91,7 +91,7 @@ const getResortDataFromSlot = async (handlerInput) => {
 
   let resortDataErrorResponse;
   if (!resortSlotID || !resortName) {
-    console.warn(`Error: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+    console.warn(`Warning: Missing resortSlotID. Synonym value used: ${synonymValue}`);
 
     resortDataErrorResponse = handlerInput.responseBuilder
       .speak(responses.unknownResort(synonymValue))
@@ -124,7 +124,7 @@ const getForecastGenericHandler = async ({
     const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
 
     if (resortDataErrorResponse) {
-      console.error('Resort data error');
+      console.error('Error getting resort name data. Using error response');
       addAPLIfSupported({
         handlerInput,
         token: "ForecastError",
@@ -151,7 +151,7 @@ const getForecastGenericHandler = async ({
         document: snowReportForecastDocument,
         data: snowReportForecastDataFn({
           subtitle: subtitleText,
-          resortName,
+          resortName: resortName || "Unknown",
           showAsError: true,
           errorResponse
         })
@@ -174,6 +174,7 @@ const getForecastGenericHandler = async ({
       })
     });
 
+    console.log('Returning a success response');
     return successResponseFn({resortName, forecastData, ...successResponseFnArgs});
   } catch (err) {
     console.error('ERROR: Something went wrong. ', err);
@@ -185,7 +186,7 @@ const getForecastGenericHandler = async ({
       document: snowReportForecastDocument,
       data: snowReportForecastDataFn({
         subtitle: "Error",
-        resortName: resortName || "Unknown",
+        resortName: "Unknown",
         showAsError: true,
         errorResponse
       })
@@ -209,7 +210,7 @@ const getSnowReportGenericHandler = async ({
 }) => {
   try {
     console.log('Invoking getSnowReportGenericHandler for handler: ', handlerName);
-    const { resortSlotID, resortName, resortDataErrorResponse } = await getResortDataFromSlot(handlerInput);
+    const { resortSlotID, resortName, resortDataErrorResponse, synonymValue } = await getResortDataFromSlot(handlerInput);
     const subtitleText = getSubtitleTextForHandler({handlerName});
 
     if (resortDataErrorResponse) {
@@ -238,7 +239,7 @@ const getSnowReportGenericHandler = async ({
         document: snowReportForecastDocument,
         data: snowReportForecastDataFn({
           subtitle: subtitleText,
-          resortName,
+          resortName: resortName || "Unknown",
           showAsError: true,
           errorResponse
         })
@@ -269,6 +270,7 @@ const getSnowReportGenericHandler = async ({
       })
     });
 
+    console.log('Returning a success response');
     return successResponseFn({resortName, snowReportData, ...successResponseFnArgs});
   } catch (err) {
     console.error('ERROR: Something went wrong. ', err);
@@ -280,7 +282,7 @@ const getSnowReportGenericHandler = async ({
       document: snowReportForecastDocument,
       data: snowReportForecastDataFn({
         subtitle: "Error",
-        resortName: resortName || "Unknown",
+        resortName: "Unknown",
         showAsError: true,
         errorResponse
       })
@@ -341,6 +343,7 @@ const LaunchRequestHandler = {
 
     const outputSpeech = responses.welcome();
     setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+    console.log('Output speech: ', outputSpeech);
 
     return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -372,6 +375,7 @@ const HelpIntentHandler = {
   handle(handlerInput) {
     const outputSpeech = responses.helpMessage();
     setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+    console.log('Output speech: ', outputSpeech);
 
     return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -406,6 +410,7 @@ const FallbackIntentHandler = {
     console.log('!!! FallbackIntent handler called')
     const outputSpeech = responses.didNotUnderstand();
     setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+    console.log('Output speech: ', outputSpeech);
 
     return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -431,6 +436,7 @@ const ForecastTodayHandler = {
     const successResponseFn = ({resortName, forecastData}) => {
       const outputSpeech = responses.forecastToday(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
         .speak(outputSpeech)
@@ -444,7 +450,7 @@ const ForecastTodayHandler = {
       getForecastDataFn: getForecastToday,
       successResponseFn,
       aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
-      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn : snowReportForecastDataFn
     });
 
     return response;
@@ -460,6 +466,7 @@ const ForecastTomorrowHandler = {
     const successResponseFn = ({resortName, forecastData}) => {
       const outputSpeech = responses.forecastTomorrow(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -473,7 +480,7 @@ const ForecastTomorrowHandler = {
       getForecastDataFn: getForecastTomorrow,
       successResponseFn,
       aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
-      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn : snowReportForecastDataFn
     });
 
     return response;
@@ -491,6 +498,7 @@ const ForecastWeekDayHandler = {
     const successResponseFn = ({resortName, forecastData, daySlotValue}) => {
       const outputSpeech = responses.forecastWeekDay(resortName, daySlotValue, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -508,7 +516,7 @@ const ForecastWeekDayHandler = {
       successResponseFn,
       successResponseFnArgs: {daySlotValue},
       aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
-      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn : snowReportForecastDataFn
     });
     return response;
   }
@@ -523,6 +531,7 @@ const ForecastWeekHandler = {
     const successResponseFn = ({resortName, forecastData}) => {
       const outputSpeech = responses.forecastWeek(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -536,7 +545,7 @@ const ForecastWeekHandler = {
       getForecastDataFn: getForecastWeek,
       successResponseFn,
       aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportWeekForecastDocument,
-      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportWeekForecastDataFn
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn : snowReportWeekForecastDataFn
     });
     return response;
   }
@@ -558,6 +567,7 @@ const TemperatureTonightHandler = {
     const successResponseFn = ({resortName, forecastData}) => {
       const outputSpeech = responses.temperatureTonight(resortName, forecastData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
         .speak(outputSpeech)
@@ -571,7 +581,7 @@ const TemperatureTonightHandler = {
       getForecastDataFn: getForecastToday,
       successResponseFn,
       aplDocument: isSmallViewport(handlerInput) ? snowReportForecastSmallDocument : snowReportForecastDocument,
-      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn :  snowReportForecastDataFn
+      aplDocumentDataFn: isSmallViewport(handlerInput) ? snowReportForecastSmallDataFn : snowReportForecastDataFn
     });
 
     return response;
@@ -595,6 +605,7 @@ const SnowReportDepthHandler = {
     const successResponseFn = ({resortName, snowReportData}) => {
       const outputSpeech = responses.snowReportDepth(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -623,6 +634,7 @@ const SnowReportSeasonTotalHandler = {
     const successResponseFn = ({resortName, snowReportData}) => {
       const outputSpeech = responses.snowReportSeasonTotal(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -651,6 +663,7 @@ const SnowReportOneDayHandler = {
     const successResponseFn = ({resortName, snowReportData}) => {
       const outputSpeech = responses.snowReportOneDay(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -679,6 +692,7 @@ const SnowReportOvernightHandler = {
     const successResponseFn = ({resortName, snowReportData}) => {
       const outputSpeech = responses.snowReportOvernight(resortName, snowReportData) + '. ' + responses.wantToKnowAnythingElse();
       setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+      console.log('Output speech: ', outputSpeech);
 
       return handlerInput.responseBuilder
       .speak(outputSpeech)
@@ -715,6 +729,7 @@ const SupportedResortsHandler = {
 
     const outputSpeech = responses.supportedResorts(supportedResortsArray);
     setSessionAttributeLastSpeechOutput(handlerInput, outputSpeech);
+    console.log('Output speech: ', outputSpeech);
 
     return handlerInput.responseBuilder
       .speak(outputSpeech)
