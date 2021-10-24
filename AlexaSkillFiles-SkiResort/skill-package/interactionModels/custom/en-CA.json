@@ -24,15 +24,22 @@
             }
           ],
           "samples": [
-            "what\u0027s the forecast at {Resort}",
+            "what is the weather in {Resort}",
+            "what's the weather for today in {Resort}",
+            "tell me a weather forecast for {Resort}",
+            "what is the weather going to be like at {Resort}",
+            "what is the forecast at {Resort}",
+            "what's the weather like at {Resort}",
+            "what is todays forecast for {Resort}",
+            "what's the forecast at {Resort}",
             "what is the forecast for {Resort}",
-            "what\u0027s today\u0027s forecast at {Resort}",
+            "what's today's forecast at {Resort}",
             "what is the weather at {Resort} going to be like today",
             "what is the weather going to be like today at {Resort}",
-            "what is today\u0027s forecast for {Resort}",
+            "what is today's forecast for {Resort}",
             "give me an update on {Resort} weather conditions",
             "give me a weather report for {Resort}",
-            "give me today\u0027s weather report for {Resort}"
+            "give me today's weather report for {Resort}"
           ]
         },
         {
@@ -44,13 +51,25 @@
             }
           ],
           "samples": [
+            "what's the weather for tomorrow in {Resort}",
+            "can you get me tomorrows weather update on {Resort}",
+            "tell tomorrows weather report for {Resort}",
+            "can you get me tomorrows weather report for {Resort}",
+            "give tomorrows weather report for {Resort}",
+            "get tomorrows weather report for {Resort}",
+            "can you tell me tomorrows weather report for {Resort}",
+            "tell tomorrows weather update on {Resort}",
+            "can you give me tomorrows weather report for {Resort}",
+            "give tomorrows weather update on {Resort}",
+            "get me tomorrows weather update on {Resort}",
+            "can you give tomorrows weather update on {Resort}",
             "what is the weather going to be like at {Resort} tomorrow",
-            "what\u0027s tomorrows forecast at {Resort}",
+            "what's tomorrows forecast at {Resort}",
             "what is tomorrows forecast for {Resort}",
-            "what\u0027s the forecast at {Resort} for tomorrow",
+            "what's the forecast at {Resort} for tomorrow",
             "what is the weather at {Resort} going to be like tomorrow",
             "what is the weather going to be like tomorrow at {Resort}",
-            "what is tomorrow\u0027s forecast for {Resort}",
+            "what is tomorrow's forecast for {Resort}",
             "give me tomorrows weather update on {Resort}",
             "give me tomorrows weather report for {Resort}"
           ]
@@ -64,8 +83,21 @@
             }
           ],
           "samples": [
+            "what is the week forecast at {Resort}",
+            "can you give me the weekly forecast for {Resort}",
+            "can you give me the extended forecast for {Resort}",
+            "tell the weekly weather forecast for {Resort}",
+            "can you get the weekly forecast for {Resort}",
+            "get the weekly weather forecast for {Resort}",
+            "give the weekly weather forecast for {Resort}",
+            "can you tell me the weekly forecast for {Resort}",
+            "can you give me the weekly forecast at {Resort}",
+            "get the extended forecast for {Resort}",
+            "give the extended forecast for {Resort}",
+            "can you tell me the weekly forecast at {Resort}",
+            "can you tell me the extended forecast at {Resort}",
             "what is the weekly forecast for {Resort}",
-            "what\u0027s the weekly weather forecast for {Resort}",
+            "what's the weekly weather forecast for {Resort}",
             "what is this weeks forecast for {Resort}",
             "what is the forecast looking like for the week at {Resort}",
             "what is the weather going to be like this week at {Resort}",
@@ -90,9 +122,16 @@
             }
           ],
           "samples": [
-            "what\u0027s the forecast at {Resort} on {Day}",
+            "what's the weather like in {Resort} on {Day}",
+            "what is the weather at {Resort} on {Day}",
+            "what is the weather for {Resort} on {Day}",
+            "what's the weather going to be on {Day} at {Resort}",
+            "what's the weather going to be like at {Resort} on {Day}",
+            "what is the forecast {Day} at {Resort}",
+            "what is the forecast {Day} for {Resort}",
+            "what's the forecast at {Resort} on {Day}",
             "what is the forecast for {Resort} on {Day}",
-            "what\u0027s {Day} forecast at {Resort}",
+            "what's {Day} forecast at {Resort}",
             "what is the weather at {Resort} going to be like on {Day}",
             "what is the weather going to be like on {Day} at {Resort}",
             "what is {Day} forecast for {Resort}",
@@ -110,6 +149,7 @@
             }
           ],
           "samples": [
+            "how much snow is there at {Resort}",
             "how much snow does {Resort} have",
             "how much snow does {Resort} have at the base",
             "how much snow does {Resort} have at mid mountain",
@@ -192,13 +232,17 @@
             }
           ],
           "samples": [
+            "what is the temperature in {Resort}",
+            "tell me the temperature of {Resort}",
+            "whats the temperature of {Resort}",
+            "tell me the temperature in {Resort}",
             "what is the current temperature at {Resort}",
-            "what\u0027s the temperature at {Resort}",
+            "what's the temperature at {Resort}",
             "tell me the temperature right now at {Resort}",
             "tell me the temperature at {Resort}",
             "get me the temp at {Resort}",
             "what is the temperature at {Resort} right now",
-            "what is today\u0027s temperature at {Resort}",
+            "what is today's temperature at {Resort}",
             "what is the temperature going to be for {Resort}"
           ]
         },
@@ -211,8 +255,13 @@
             }
           ],
           "samples": [
+            "tell me the night temperature in {Resort}",
+            "give me the night temperature in {Resort}",
+            "what is the temperature in {Resort} tonight",
+            "what is the temperature for {Resort} going to be tonight",
+            "what is the temperature tonight at {Resort}",
             "what is the temperature at {Resort} going to be tonight",
-            "what\u0027s the temperature going to be tonight at {Resort}",
+            "what's the temperature going to be tonight at {Resort}",
             "tell me tonights temperature for {Resort}",
             "tell me the night time temperature for {Resort}",
             "what is the temperature going to be tonight at {Resort}"
@@ -232,7 +281,7 @@
           ],
           "samples": [
             "what is the temperature going to be on {Day} at {Resort}",
-            "what\u0027s the temperature going to be this {Day} at {Resort}",
+            "what's the temperature going to be this {Day} at {Resort}",
             "tell me what the temperature will be on {Day} at {Resort}",
             "what will the temperature at {Resort} be on {Day}",
             "what will the temperature be on {Day} at {Resort}",
@@ -243,16 +292,58 @@
         {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.RepeatIntent",
+          "samples": []
         }
       ],
       "types": [
         {
           "values": [
             {
-              "id": "Beaver",
+              "id": "Whitefish_Mountain",
               "name": {
-                "value": "Beaver",
+                "value": "Whitefish Mountain",
                 "synonyms": [
+                  "whitefish mountain resort",
+                  "white fish",
+                  "whitefish mountain ski resort",
+                  "whitefish ski resort",
+                  "whitefish mountain",
+                  "whitefish"
+                ]
+              }
+            },
+            {
+              "id": "Blacktail_Mountain",
+              "name": {
+                "value": "Blacktail Mountain",
+                "synonyms": [
+                  "black tail resort",
+                  "black tail ski resort",
+                  "blacktail ski resort",
+                  "blacktail mountain",
+                  "blacktail"
+                ]
+              }
+            },
+            {
+              "id": "Beaver_Mountain",
+              "name": {
+                "value": "Beaver Mountain",
+                "synonyms": [
+                  "beaver mountain resort",
+                  "beaver mountain ski resort",
+                  "beaver",
                   "beaver utah",
                   "beaver mountain"
                 ]
@@ -261,13 +352,25 @@
             {
               "id": "Eagle_Point",
               "name": {
-                "value": "Eagle Point"
+                "value": "Eagle Point",
+                "synonyms": [
+                  "eagle mountain",
+                  "eagle point resort",
+                  "eagle point ski resort"
+                ]
               }
             },
             {
-              "id": "Brian_Head",
+              "id": "Brian_Head_Resort",
               "name": {
-                "value": "Brian Head"
+                "value": "Brian Head Resort",
+                "synonyms": [
+                  "brianhead",
+                  "brian head resort",
+                  "brian head ski resort",
+                  "brian head",
+                  "Brian Head Resort"
+                ]
               }
             },
             {
@@ -275,6 +378,9 @@
               "name": {
                 "value": "Snowbasin",
                 "synonyms": [
+                  "snowbasin resort",
+                  "snow basin ski resort",
+                  "snowbasin ski resort",
                   "snow basin"
                 ]
               }
@@ -282,19 +388,33 @@
             {
               "id": "Powder_Mountain",
               "name": {
-                "value": "Powder Mountain"
+                "value": "Powder Mountain",
+                "synonyms": [
+                  "powder mountain resort",
+                  "powder mountain ski resort"
+                ]
               }
             },
             {
               "id": "Nordic_Valley",
               "name": {
-                "value": "Nordic Valley"
+                "value": "Nordic Valley",
+                "synonyms": [
+                  "nordic valley resort",
+                  "nordic valley ski resort"
+                ]
               }
             },
             {
               "id": "Sundance",
               "name": {
-                "value": "Sundance"
+                "value": "Sundance",
+                "synonyms": [
+                  "sundance utah",
+                  "sundance resort",
+                  "sun dance",
+                  "sundance ski resort"
+                ]
               }
             },
             {
@@ -302,6 +422,8 @@
               "name": {
                 "value": "Park City",
                 "synonyms": [
+                  "park city resort",
+                  "park city ski resort",
                   "park city mountain",
                   "park city utah"
                 ]
@@ -310,38 +432,64 @@
             {
               "id": "Deer_Valley",
               "name": {
-                "value": "Deer Valley"
+                "value": "Deer Valley",
+                "synonyms": [
+                  "deer valley utah",
+                  "deer valley resort",
+                  "deer valley ski resort"
+                ]
               }
             },
             {
               "id": "Solitude",
               "name": {
-                "value": "Solitude"
+                "value": "Solitude",
+                "synonyms": [
+                  "solitude resort",
+                  "solitude ski resort"
+                ]
               }
             },
             {
               "id": "Snowbird",
               "name": {
-                "value": "Snowbird"
+                "value": "Snowbird",
+                "synonyms": [
+                  "snowbird resort",
+                  "snowbird ski resort"
+                ]
               }
             },
             {
               "id": "Brighton",
               "name": {
-                "value": "Brighton"
+                "value": "Brighton",
+                "synonyms": [
+                  "brighton utah",
+                  "brighton resort",
+                  "brighton ski resort"
+                ]
               }
             },
             {
               "id": "Alta",
               "name": {
-                "value": "Alta"
+                "value": "Alta",
+                "synonyms": [
+                  "alta utah",
+                  "alta resort",
+                  "alta ski resort"
+                ]
               }
             },
             {
-              "id": "Mt_Washington",
+              "id": "Mount_Washington",
               "name": {
-                "value": "Mt Washington",
+                "value": "Mount Washington",
                 "synonyms": [
+                  "mount washington resort",
+                  "mount washington ski resort",
+                  "mt washington",
                   "mount washington"
                 ]
               }
@@ -349,14 +497,25 @@
             {
               "id": "Breckenridge",
               "name": {
-                "value": "Breckenridge"
+                "value": "Breckenridge",
+                "synonyms": [
+                  "breckenridge colorado",
+                  "breckenridge mountain",
+                  "breckinridge",
+                  "breckenridge resort",
+                  "breckenridge ski resort"
+                ]
               }
             },
             {
-              "id": "Big_Bear",
+              "id": "Big_Bear_Mountain",
               "name": {
                 "value": "Big Bear Mountain",
                 "synonyms": [
+                  "bear mountain",
+                  "big bear resort",
+                  "big bear mountain ski resort",
+                  "big bear ski resort",
                   "big bear"
                 ]
               }
@@ -366,6 +525,10 @@
               "name": {
                 "value": "Mammoth Mountain",
                 "synonyms": [
+                  "mammoth resort",
+                  "mammoth ski resort",
+                  "mammoth mountain resort",
+                  "mammoth mountain ski resort",
                   "mammoth"
                 ]
               }
@@ -375,6 +538,8 @@
               "name": {
                 "value": "Stevens Pass",
                 "synonyms": [
+                  "stevens pass resort",
+                  "stevens pass ski resort",
                   "Stevens"
                 ]
               }
@@ -384,6 +549,12 @@
               "name": {
                 "value": "Snoqualmie Pass",
                 "synonyms": [
+                  "snoqualmie summit",
+                  "snoqualmie pass resort",
+                  "snoqualmie pass ski resort",
+                  "snoqualmie ski resort",
+                  "the summit at snoqualmie",
+                  "the summit at snoqualmie pass",
                   "Snoqualmie",
                   "summit at snoqualmie"
                 ]
@@ -394,15 +565,21 @@
               "name": {
                 "value": "Crystal Mountain",
                 "synonyms": [
+                  "crystal mountain resort",
+                  "crystal mountain ski resort",
                   "Crystal"
                 ]
               }
             },
             {
-              "id": "Mt_Baker",
+              "id": "Mount_Baker",
               "name": {
-                "value": "Mt Baker",
+                "value": "Mount Baker",
                 "synonyms": [
+                  "mount baker ski area",
+                  "mount baker resort",
+                  "mount baker ski resort",
+                  "mt baker",
                   "mount baker",
                   "baker"
                 ]
@@ -411,14 +588,21 @@
             {
               "id": "Mission_Ridge",
               "name": {
-                "value": "Mission Ridge"
+                "value": "Mission Ridge",
+                "synonyms": [
+                  "mission ridge resort",
+                  "mission ridge ski resort"
+                ]
               }
             },
             {
-              "id": "Mt_Hood_Meadows",
+              "id": "Mount_Hood_Meadows",
               "name": {
-                "value": "Mt Hood Meadows",
+                "value": "Mount Hood Meadows",
                 "synonyms": [
+                  "mount hood meadows resort",
+                  "mout hood meadows ski resort",
+                  "mt hood meadows",
                   "mount hood meadows",
                   "meadows",
                   "mt hood",
@@ -427,10 +611,13 @@
               }
             },
             {
-              "id": "Mt_Bachelor",
+              "id": "Mount_Bachelor",
               "name": {
-                "value": "Mt Bachelor",
+                "value": "Mount Bachelor",
                 "synonyms": [
+                  "mount bachelor resort",
+                  "mount bachelor ski resort",
+                  "mt bachelor",
                   "mount bachelor",
                   "bachelor"
                 ]
@@ -441,6 +628,10 @@
               "name": {
                 "value": "Schweitzer",
                 "synonyms": [
+                  "sweitzer mountain",
+                  "schweitzer mountain resort",
+                  "schweitzer mountain ski resort",
+                  "schweitzer ski resort",
                   "schweitzer mountain"
                 ]
               }
@@ -448,14 +639,23 @@
             {
               "id": "Sun_Valley",
               "name": {
-                "value": "Sun Valley"
+                "value": "Sun Valley",
+                "synonyms": [
+                  "sun valley resort",
+                  "sun valley ski resort"
+                ]
               }
             },
             {
-              "id": "Mt_Hood_Skibowl",
+              "id": "Mount_Hood_Skibowl",
               "name": {
-                "value": "Mt Hood Ski Bowl",
+                "value": "Mount Hood Ski Bowl",
                 "synonyms": [
+                  "skibowl resort",
+                  "mount hood skibowl resort",
+                  "mount hood ski bowl ski resort",
+                  "mt hood ski bowl",
+                  "mt hood skibowl",
                   "ski bowl",
                   "skibowl",
                   "mount hood ski bowl",
@@ -464,10 +664,16 @@
               }
             },
             {
-              "id": "Mt_Hood_Timberline",
+              "id": "Timberline_Lodge",
               "name": {
-                "value": "Mt Hood Timberline",
+                "value": "Timberline Lodge",
                 "synonyms": [
+                  "mount hood timberline resort",
+                  "timerbline ski resort",
+                  "timberline resort",
+                  "timberline lodge ski resort",
+                  "mount hood timberline lodge",
+                  "mt hood timberline",
                   "mount hood timberline",
                   "timberline lodge",
                   "timberline"
@@ -480,5 +686,5 @@
       ]
     }
   },
-  "version": "1"
+  "version": "14"
 }
