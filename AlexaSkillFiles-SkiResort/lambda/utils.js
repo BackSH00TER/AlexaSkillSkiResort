@@ -180,7 +180,9 @@ const getWeatherRequest = async (resortID) => {
   };
 
   try {
+    console.log('Requesting weather data...');
     const data = await fetch(`https://api.weather.gov${path}`, options);
+    console.log('Weather data retreived...');
     const jsonData = await data.json();
     console.log('getWeatherRequest response: ', jsonData);
     return { data: jsonData, error: undefined };

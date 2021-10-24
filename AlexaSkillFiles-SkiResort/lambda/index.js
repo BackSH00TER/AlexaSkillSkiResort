@@ -92,9 +92,12 @@ const getResortDataFromSlot = async (handlerInput) => {
   let resortDataErrorResponse;
   if (!resortSlotID || !resortName) {
     console.warn(`Warning: Missing resortSlotID. Synonym value used: ${synonymValue}`);
+    const outputSpeech = responses.unknownResort(synonymValue);
+
+    console.log('Output speech (error response): ', outputSpeech);
 
     resortDataErrorResponse = handlerInput.responseBuilder
-      .speak(responses.unknownResort(synonymValue))
+      .speak(outputSpeech)
       .reprompt(responses.unknownResortReprompt())
       .getResponse();
   }
@@ -124,7 +127,7 @@ const getForecastGenericHandler = async ({
     const subtitleText = getSubtitleTextForHandler({handlerName, data: getForecastDataFnArgs});
 
     if (resortDataErrorResponse) {
-      console.error('Error getting resort name data. Using error response');
+      console.error('Error getting resort name data. Using error response for failed to get resort name.');
       addAPLIfSupported({
         handlerInput,
         token: "ForecastError",
@@ -156,6 +159,8 @@ const getForecastGenericHandler = async ({
           errorResponse
         })
       });
+
+      console.log('Output speech: ', errorResponse);
 
       return handlerInput.responseBuilder
         .speak(errorResponse)
@@ -191,6 +196,8 @@ const getForecastGenericHandler = async ({
         errorResponse
       })
     });
+
+    console.log('Output speech: ', errorResponse);
 
     return handlerInput.responseBuilder
       .speak(errorResponse)
@@ -245,6 +252,8 @@ const getSnowReportGenericHandler = async ({
         })
       });
 
+      console.log('Output speech: ', errorResponse);
+
       return handlerInput.responseBuilder
         .speak(errorResponse)
         .reprompt(errorResponse)
@@ -287,6 +296,8 @@ const getSnowReportGenericHandler = async ({
         errorResponse
       })
     });
+
+    console.log('Output speech: ', errorResponse);
 
     return handlerInput.responseBuilder
       .speak(errorResponse)
