@@ -1,0 +1,22 @@
+{
+  "askToolkitResourcesVersion": "2020-04-15",
+  "profiles": {
+    "default": {
+      "skillMetadata": {
+        "src": "./skill-package"
+      },
+      "code": {
+        "default": {
+          "src": "./lambda"
+        }
+      },
+      "skillInfrastructure": {
+        "userConfig": {
+          "runtime": "nodejs12.x",
+          "handler": "index.handler"
+        }
+      },
+      "skillId": "amzn1.ask.skill.e5412491-db0b-43bc-a0c0-80e97c784009"
+    }
+  }
+}

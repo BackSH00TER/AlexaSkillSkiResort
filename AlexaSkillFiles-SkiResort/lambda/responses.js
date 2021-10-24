@@ -11,14 +11,22 @@ module.exports.helpMessage = () =>
 module.exports.helpMessageReprompt = () =>
   'What would you like to know? You can ask me about the forecast, temperature, or snow report for your favorite ski resort.';
 
+module.exports.wantToKnowAnythingElse = () =>
+  'Would you like to know anything else?';
+
 module.exports.stopMessage = () =>
   'Cya later, have fun on the slopes!';
 
 module.exports.didNotUnderstand = () =>
   "I'm sorry, I didn't understand that. Try asking your question again.";
 
-  module.exports.unknownResort = (synonymValue) =>
-  `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
+module.exports.unknownResort = (synonymValue) => {
+  if (synonymValue === "Unknown" || !synonymValue) {
+    return `I was unable to match the resort with one of the supported resorts. Please try asking again with a supported resort.`;
+  } else {
+    return `I was unable to match the resort, ${synonymValue}, with one of the supported resorts. Please try asking again with a supported resort.`;
+  }
+};
 
 module.exports.unknownResortReprompt = () => 
   "Sorry, I don't recognize the resort you are asking about. Try asking the question again using one of the supported resorts.";
@@ -46,7 +54,7 @@ module.exports.forecastWeek = (resortName, forecastDataArray) => {
 }
 
 module.exports.forecastWeekDay = (resortName, day, forecastData) =>
-  `At ${resortName} on ${day} there will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
+  `The temperature at ${resortName} on ${day} will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
 
 module.exports.forecastTomorrow = (resortName, forecastData) =>
   `Tomorrow at ${resortName} there will be a low of ${forecastData.tempLow} with a high of ${forecastData.tempHigh}. The forecast calls for, ${forecastData.detailedForecast}.`
@@ -69,8 +77,6 @@ module.exports.noExtendedForecast = (day) =>
   `Sorry, I don't have the extended forecast for ${day}.`
 
 module.exports.snowReportDepth = (resortName, snowReportData) => {
-  // TODO: Revist and try to make this less wordy. Also consider if this should return anything forecast related?? - yes
-  // TODO: Try seeing what alexa does by default when ask for snowreport
   if (
     snowReportData.snowFallTwoDay === 'FAIL' &&
     snowReportData.snowDepthBase === 'FAIL' &&
@@ -110,7 +116,7 @@ module.exports.snowReportSeasonTotal = (resortName, snowReportData) => {
 
 module.exports.snowReportOneDay = (resortName, snowReportData) => {
   if (snowReportData.snowFallOneDay == 'FAIL' && snowReportData.snowFallTwoDay == 'FAIL') {
-    return dataErrorMessage(resortName, "yesterdays");
+    return dataErrorMessage(resortName, "snow report");
   } else if (snowReportData.snowFallTwoDay == 'FAIL') {
     return `${resortName} got ${snowReportData.snowFallOneDay} ${inchOrInches(snowReportData.snowFallOneDay)} of snow yesterday.`;
   } else if (snowReportData.snowFallOneDay == 'FAIL') {

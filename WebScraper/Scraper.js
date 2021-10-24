@@ -1,7 +1,8 @@
-const rp = require('request-promise');
-const cheerio = require('cheerio');
+// const rp = require('request-promise');
+// const cheerio = require('cheerio');
 const db = require('./AWS_Helpers');
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 //--------------CALL LAMBDA TEST TO RUN exports.handler locally--------------------
 // TODO: If stuff doesnt work when this is uploaded ther used to be an exports.handled = { ... }
@@ -13,37 +14,70 @@ const fs = require('fs');
  * @param {string} resortId - The ID of the resort
  * @returns {object} { resort: string, type: {selectorData} }
  */
-const scrapeSite = async (resortUrl, resortId) => {
-  console.log('Scraping site for:', resortId, resortUrl);
+// const scrapeSite = async (resortUrl, resortId) => {
+//   console.log('Scraping site for:', resortId, resortUrl);
+
+//   try {
+//     const $ = await rp({
+//       uri: resortUrl,
+//       transform: function (body) {
+//         return cheerio.load(body);
+//       }
+//     });
+
+//     // Data selectors for the OnTheSnow site
+//     const dataSelectors = {
+//       overNightSnowFall:  $($('.snow_report_content.src_left .currentSnowAmt')).text().slice(0, -1),
+//       snowFallOneDay:     $($('.snow_report_content.src_left .currentSnowAmt')).text().slice(0, -1),
+//       snowFallTwoDay:     $($('.snow_report_content.src_middle .currentSnowAmt')).text().slice(0, -1),
+//       snowDepthBase:      $($('#view .item strong')[2]).text().slice(0, -1).trim(),
+//       snowDepthMidMtn:    $($('#view .item strong')[4]).text().slice(0, -1).trim(),
+//       seasonSnowFall:     $($('#view .item strong')[0]).text().slice(0, -1).trim()
+//     };
+    
+//     return {
+//       resort: resortId,
+//       type: { ...dataSelectors }
+//     };
+//   } catch (error) {
+//     const errMsg = `WebScraper failed with error: ${error}`
+//     console.log(errMsg);
+//     return { error: errMsg };
+//   }
+// };
+
+const fetchSnowReportData = async (onTheSnowResortId, resortId) => {
+  console.log(`Fetching snow report data for ${resortId}`);
+  const endpointUrl = `https://api.onthesnow.com/api/v2/resort/${onTheSnowResortId}/snowreport`;
+  const options = {
+    method: 'GET'
+  };
 
   try {
-    const $ = await rp({
-      uri: resortUrl,
-      transform: function (body) {
-        return cheerio.load(body);
-      }
-    });
+    const rawData = await fetch(endpointUrl, options);
+    const data = await rawData.json();
 
-    // Data selectors for the OnTheSnow site
+    // Convert centimeters to inches (divide cm by 2.54)
+    const convertToImperial = (num) => Math.round(num / 2.54);
+
     const dataSelectors = {
-      overNightSnowFall:  $($('.snow_report_content.src_left .currentSnowAmt')).text().slice(0, -1),
-      snowFallOneDay:     $($('.snow_report_content.src_left .currentSnowAmt')).text().slice(0, -1),
-      snowFallTwoDay:     $($('.snow_report_content.src_middle .currentSnowAmt')).text().slice(0, -1),
-      snowDepthBase:      $($('#view .item strong')[2]).text().slice(0, -1).trim(),
-      snowDepthMidMtn:    $($('#view .item strong')[4]).text().slice(0, -1).trim(),
-      seasonSnowFall:     $($('#view .item strong')[0]).text().slice(0, -1).trim()
+      overNightSnowFall:  data && data.snow && convertToImperial(data.snow.last24),
+      snowFallOneDay:     data && data.snow && convertToImperial(data.snow.last24),
+      snowFallTwoDay:     data && data.snow && convertToImperial(data.snow.last72),
+      snowDepthBase:      data && data.snow && convertToImperial(data.snow.base),
+      snowDepthMidMtn:    data && data.snow && convertToImperial(data.snow.summit),
+      seasonSnowFall:     "", // Doesnt appear to be a part of the API
     };
-    
+
     return {
       resort: resortId,
       type: { ...dataSelectors }
-    };
+    }
   } catch (error) {
-    const errMsg = `WebScraper failed with error: ${error}`
-    console.log(errMsg);
-    return { error: errMsg };
+    console.log('Error fetching snow report data for: ', resortId, error);
+    return { error };
   }
-}
+};
 
 /**
  * Returns file name for each resort
@@ -69,7 +103,7 @@ const markInvalidData = (data) => {
   // Before sending data, loop over and check for blank value
   // A blank value indicates selector failed to get value from website (probably broken selector)
   for (var res in data.type) {
-    if(data.type[res] === "") {
+    if(data.type[res] === "" || data.type[res] === undefined) {
       console.log("Data of : " + data.resort + " " + res + " is blank, setting it to 'FAIL'"); //TODO find way to alert of this
       data.type[res] = "FAIL";
     }
@@ -131,7 +165,8 @@ const executeWebScraper = async (shouldUploadToDB, resortFile = null) => {
     const resortMetaData = JSON.parse(resortMetaDataRaw);
 
     // Get data from website
-    const scrapedData = await scrapeSite(resortMetaData.url, resortMetaData.id);
+    // const scrapedData = await scrapeSite(resortMetaData.url, resortMetaData.id);
+    const scrapedData = await fetchSnowReportData(resortMetaData.onTheSnowResortId, resortMetaData.id);
 
     // If we have an error on scrapedData, it means we failed to scrape for this resort
     if (scrapedData.error) {
@@ -161,4 +196,4 @@ const executeWebScraper = async (shouldUploadToDB, resortFile = null) => {
 
 exports.handler = async (event, context) => {
   await executeWebScraper(true);
-}
+};

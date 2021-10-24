@@ -1,7 +1,7 @@
 const context = require('aws-lambda-mock-context');
-const skill = require('../index');
-const responses = require('../responses');
-const utils = require('../utils');
+const skill = require('../lambda/index');
+const responses = require('../lambda/responses');
+const utils = require('../lambda/utils');
 
 const sessionStartIntent = require('./intent-sample-requests/new-session/session-start.intent');
 const forecastTodayIntent = require('./intent-sample-requests/forecastToday/forecast-today.intent');

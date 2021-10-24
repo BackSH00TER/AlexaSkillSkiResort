@@ -1,5 +1,5 @@
-const utils = require('../utils');
-const db = require('../AWS_Helpers');
+const utils = require('../lambda/utils');
+const db = require('../lambda/AWS_Helpers');
 
 const mockResortName = "Stevens Pass";
 const mockResortSlotID = "Stevens_Pass";
@@ -245,7 +245,7 @@ describe('test util functions', () => {
       it('returns the forecast for today when it starts with isDaytime false', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastToday(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastToday({resortID: mockResortSlotID});
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toEqual({
@@ -259,7 +259,7 @@ describe('test util functions', () => {
       it('returns the forecast for today when it starts with isDaytime true', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastToday(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastToday({resortID: mockResortSlotID});
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toEqual({
@@ -273,7 +273,7 @@ describe('test util functions', () => {
         expect.assertions(3);
         // Mount Washington currently is a resort that isn't supported
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
-        const { forecastData, error } = await utils.getForecastToday('Mount_Washington');
+        const { forecastData, error } = await utils.getForecastToday({resortID: 'Mount_Washington'});
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toBeUndefined();
@@ -283,7 +283,7 @@ describe('test util functions', () => {
       it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
-        const { forecastData, error } = await utils.getForecastToday(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastToday({resortID: mockResortSlotID});
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toBeUndefined();
@@ -296,20 +296,20 @@ describe('test util functions', () => {
         it('when it starts with isDaytime false', async () => {
           expect.assertions(3);
           const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
-          const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
+          const { forecastData, error } = await utils.getForecastWeek({resortID: mockResortSlotID});
   
           expect(getWeatherRequestStub).toHaveBeenCalled();
-          expect(forecastDataArray).toEqual(expectedFullForecastStartWithNotIsDaytime);
+          expect(forecastData).toEqual(expectedFullForecastStartWithNotIsDaytime);
           expect(error).toBeUndefined();
         });
   
         it('when it starts with isDaytime true', async () => {
           expect.assertions(3);
           const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
-          const { forecastDataArray, error } = await utils.getForecastWeek(mockResortSlotID);
+          const { forecastData, error } = await utils.getForecastWeek({resortID: mockResortSlotID});
   
           expect(getWeatherRequestStub).toHaveBeenCalled();
-          expect(forecastDataArray).toEqual(expectedFullForecastStartWithIsDaytime);
+          expect(forecastData).toEqual(expectedFullForecastStartWithIsDaytime);
           expect(error).toBeUndefined();
         });
       });
@@ -318,10 +318,10 @@ describe('test util functions', () => {
         expect.assertions(3);
         // Mount Washington currently is a resort that isn't supported
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.NOT_SUPPORTED}));
-        const { forecastDataArray, error } = await utils.getForecastWeek('Mount_Washington');
+        const { forecastData, error } = await utils.getForecastWeek({resortID: 'Mount_Washington'});
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
-        expect(forecastDataArray).toBeUndefined();
+        expect(forecastData).toBeUndefined();
         expect(error).toEqual(utils.NOT_SUPPORTED);
       });
 
@@ -329,10 +329,10 @@ describe('test util functions', () => {
         expect.assertions(3);
         // Mount Washington currently is a resort that isn't supported
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
-        const { forecastDataArray, error } = await utils.getForecastWeek('Mount_Washington');
+        const { forecastData, error } = await utils.getForecastWeek({resortID: 'Mount_Washington'});
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
-        expect(forecastDataArray).toBeUndefined();
+        expect(forecastData).toBeUndefined();
         expect(error).toEqual(utils.TERMINAL_ERROR);
       });
     });
@@ -341,7 +341,7 @@ describe('test util functions', () => {
       it('returns the forecast for the specified day', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "Saturday");
+        const { forecastData, error } = await utils.getForecastWeekDay({resortID: mockResortSlotID, daySlotValue: "Saturday"});
 
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toEqual({
@@ -359,7 +359,7 @@ describe('test util functions', () => {
       it('returns INVALID_DAY if the day value does not match a day of the week', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "NotADay");
+        const { forecastData, error } = await utils.getForecastWeekDay({resortID: mockResortSlotID, daySlotValue: "NotADay"});
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toBeUndefined();
@@ -370,7 +370,7 @@ describe('test util functions', () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
         // Note in the mock data we won't have data for Thursday
-        const { forecastData, error } = await utils.getForecastWeekDay(mockResortSlotID, "Thursday");
+        const { forecastData, error } = await utils.getForecastWeekDay({resortID: mockResortSlotID, daySlotValue: "Thursday"});
         
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toBeUndefined();
@@ -382,7 +382,7 @@ describe('test util functions', () => {
       it('returns the forecast for tomorrow when it starts with isDaytime false', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithNotIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastTomorrow(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastTomorrow({resortID: mockResortSlotID});
 
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toEqual({
@@ -398,7 +398,7 @@ describe('test util functions', () => {
       it('returns the forecast for tomorrow when it starts with isDaytime true', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: mockFullForecastStartWithIsDaytime, error: undefined}));
-        const { forecastData, error } = await utils.getForecastTomorrow(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastTomorrow({resortID: mockResortSlotID});
 
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toEqual({
@@ -414,7 +414,7 @@ describe('test util functions', () => {
       it('returns TERMINAL_ERROR, if the Weather API returns a bad response', async () => {
         expect.assertions(3);
         const getWeatherRequestStub = jest.spyOn(utils, 'getWeatherRequest').mockImplementation(async () => ({data: undefined, error: utils.TERMINAL_ERROR}));
-        const { forecastData, error } = await utils.getForecastTomorrow(mockResortSlotID);
+        const { forecastData, error } = await utils.getForecastTomorrow({resortID: mockResortSlotID});
   
         expect(getWeatherRequestStub).toHaveBeenCalled();
         expect(forecastData).toBeUndefined();

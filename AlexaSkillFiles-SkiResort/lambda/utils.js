@@ -1,11 +1,12 @@
 const db = require('./AWS_Helpers');
+const Alexa = require('ask-sdk');
 const fetch = require('node-fetch');
 
 const NOT_SUPPORTED = "NOT_SUPPORTED";
 const TERMINAL_ERROR = "TERMINAL_ERROR";
 const INVALID_DAY = "INVALID_DAY";
 const NO_DATA_FOR_DAY = "NO_DATA_FOR_DAY";
-const NO_DATA = "NO_DATA";
+const NO_DATA = "N/A";
 const DB_READ_ERROR = "DB_READ_ERROR";
 
 
@@ -25,13 +26,14 @@ const isValidDayOfTheWeek = (day) => {
  * @returns {object} {resortSlotID, synonymValue}
  */
 const getResortSlotIdAndName = async (resortSlot) => {
-  console.log('Attempting to get resortSlotIdAndName...');
-  let synonymValue = resortSlot.value;
+  console.log('Attempting to get resortSlotIdAndName for:', resortSlot);
+  let synonymValue = resortSlot && resortSlot.value || "Unknown";
   let resortSlotID;
   let resortName;
 
   // Attempt to get resortSlotID
   if (
+    resortSlot &&
     resortSlot.resolutions &&
     resortSlot.resolutions.resolutionsPerAuthority &&
     resortSlot.resolutions.resolutionsPerAuthority[0] &&
@@ -72,7 +74,7 @@ const updateDBUniqueResortCounter = async (resortSlotID, synonymValue) => {
     ReturnValues: "UPDATED_NEW"
   }
 
-  console.log('Updating DB Resort Counter...');
+  console.log('Updating DB Resort Counter for ', resort);
   await db.updateResortCount(params);
 }
 
@@ -178,14 +180,21 @@ const getWeatherRequest = async (resortID) => {
   };
 
   try {
+    console.log('Requesting weather data...');
     const data = await fetch(`https://api.weather.gov${path}`, options);
+    console.log('Weather data retreived...');
     const jsonData = await data.json();
+    console.log('getWeatherRequest response: ', jsonData);
     return { data: jsonData, error: undefined };
   } catch (error) {
-    console.log(`Error fetching Weather info for ${resortID}: ${error}`);
+    console.error(`Error fetching Weather info for ${resortID}: ${error}`);
     return { data: undefined, error: TERMINAL_ERROR };
   }
 };
+
+const isValidForecastData = (forecastData) => {
+  return !!(forecastData && forecastData.properties && forecastData.properties.periods);
+}
 
 /**
  * Gets the weather for today
@@ -194,11 +203,11 @@ const getWeatherRequest = async (resortID) => {
  * Returns the detailedForecast for today on success
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastToday = async (resortID) => {
+const getForecastToday = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
-  
-  if (error) {
-    return { forecastData: undefined, error };
+
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -211,7 +220,8 @@ const getForecastToday = async (resortID) => {
     tempHigh: isFirstPeriodNight ? NO_DATA : forecastPeriods[0].temperature,
     tempLow: isFirstPeriodNight ? forecastPeriods[0].temperature : forecastPeriods[1].temperature,
     shortForecast: forecastPeriods[0].shortForecast,
-    detailedForecast: forecastPeriods[0].detailedForecast
+    detailedForecast: forecastPeriods[0].detailedForecast,
+    iconUrl: forecastPeriods[0].icon
   };
 
   return {
@@ -225,16 +235,16 @@ const getForecastToday = async (resortID) => {
  * @param {string} resortID 
  * @returns {object} Object containing an array of forecast data or an error
  * {
- *   forecastDataArray?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
+ *   forecastData?: [{day, tempHigh, tempLow, shortForecast, detailedForecast}],
  *   error?: string
  * }
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastWeek = async (resortID) => {
+const getForecastWeek = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
-  if (error) {
-    return { forecastDataArray: undefined, error };
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -254,12 +264,13 @@ const getForecastWeek = async (resortID) => {
       tempHigh: forecastPeriods[i].temperature,
       tempLow: forecastPeriods[i + 1].temperature,
       shortForecast: forecastPeriods[i].shortForecast,
-      detailedForecast: forecastPeriods[i].detailedForecast
+      detailedForecast: forecastPeriods[i].detailedForecast,
+      iconUrl: forecastPeriods[i].icon
     });
   }
 
   return {
-    forecastDataArray: forecastData,
+    forecastData,
     error: undefined
   };
 };
@@ -276,8 +287,8 @@ const getForecastWeek = async (resortID) => {
  * Returns any errors that are returned from getWeatherRequest
  * Returns INVALID_DAY if the day passed in does not match a day of the week
  */
-const getForecastWeekDay = async (resortID, day) => {
-  const { forecastDataArray, error } = await exportFunctions.getForecastWeek(resortID);
+const getForecastWeekDay = async ({resortID, daySlotValue: day}) => {
+  const { forecastData, error } = await exportFunctions.getForecastWeek({resortID});
 
   if (error) {
     return { forecastData: undefined, error };
@@ -286,10 +297,11 @@ const getForecastWeekDay = async (resortID, day) => {
   // Make sure user said a valid day
   // Ex: In some cases a holiday name could replace the name of the day in the field
   if (!isValidDayOfTheWeek(day)) {
+    console.warn("Invalid day of the week used: ", day);
     return { forecastData: undefined, error: INVALID_DAY };
   }
 
-  const forecastDataForSpecificDay = forecastDataArray.find(data => data.day.toLowerCase() === day.toLowerCase());
+  const forecastDataForSpecificDay = forecastData.find(data => data.day.toLowerCase() === day.toLowerCase());
   // Make sure we have data for the specified day
   // Ex: If they ask for Friday and today is Friday, we only have up to next Thursday
   const noDataForDayError = !forecastDataForSpecificDay ? NO_DATA_FOR_DAY : undefined;
@@ -307,11 +319,11 @@ const getForecastWeekDay = async (resortID, day) => {
  * Returns the forecastData for tomorrow on success
  * Returns any errors that are returned from getWeatherRequest
  */
-const getForecastTomorrow = async (resortID) => {
+const getForecastTomorrow = async ({resortID}) => {
   const { data, error } = await exportFunctions.getWeatherRequest(resortID);
   
-  if (error) {
-    return { forecastData: undefined, error };
+  if (error || !isValidForecastData(data)) {
+    return { forecastData: undefined, error: error || true };
   }
 
   const forecastPeriods = data.properties.periods;
@@ -325,7 +337,8 @@ const getForecastTomorrow = async (resortID) => {
     tempHigh: forecastPeriods[startIndex].temperature,
     tempLow: forecastPeriods[startIndex + 1].temperature,
     shortForecast: forecastPeriods[startIndex].shortForecast,
-    detailedForecast: forecastPeriods[startIndex].detailedForecast
+    detailedForecast: forecastPeriods[startIndex].detailedForecast,
+    iconUrl: forecastPeriods[startIndex].icon
   };
 
   return {
@@ -366,6 +379,215 @@ const getSnowReportData = async (resortID) => {
   };
 };
 
+/**
+ * Adds the APL directive (visual part) to the response if the users device supports APL
+ */
+const addAPLIfSupported = ({handlerInput, token, document, data = {}}) => {
+  if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
+    handlerInput.responseBuilder
+      .addDirective({
+        "type": "Alexa.Presentation.APL.RenderDocument",
+        "token": token,
+        "document": document,
+        "datasources": {
+          "data": data
+        }
+      });
+  }
+};
+
+/**
+ * Returns the subtitle text based on the handlerName
+ */
+const getSubtitleTextForHandler = ({handlerName, data}) => {
+  let subtitle;
+
+  switch(handlerName) {
+    case 'forecastToday':
+    case 'temperatureToday':
+      subtitle = "Today's Forecast";
+      break;
+    case 'forecastTomorrow':
+      subtitle = "Tomorrow's Forecast";
+      break;
+    case 'forecastWeekDay':
+    case 'temperatureWeekDay':
+      const day = data.daySlotValue;
+      subtitle = `${day}'s Forecast`;
+      break;
+    case 'forecastWeek':
+      subtitle = "7 Day Forecast";
+      break;    
+    case 'snowReportDepth':
+    case 'snowReportOneDay':
+    case 'snowReportOvernight':
+      subtitle = "Snow Report";
+      break;
+    case 'snowReportSeasonTotal':
+      subtitle = "Season Total";
+      break;
+    default:
+      subtitle = "Snow Report";
+      break;
+  };
+
+  return subtitle;
+};
+
+/**
+ * Returns the URL of the correct icon to display based on the weather
+ * Takes the iconUrl from the weather API and maps it to the corresponding icon from my set
+ * Example url: https://api.weather.gov/icons/land/day/rain_showers,20/tsra_sct,40?size=medium
+ * The URL could contain two different types of weather, we check for a match and only return
+ * one result based on order of importance
+ */
+const getIconUrl = ({iconUrlFromWeatherAPI, showAsError}) => {
+  const assetUrl = "https://snowreportskill-assets.s3.amazonaws.com";
+
+  if (showAsError) {
+    return `${assetUrl}/icon-cloud-slash.png`;
+  }
+
+  /**
+   * These are the various weatherTypes returned by Weather API that this app is supporting
+   * The array is sorted in order of importance, the first match will be used
+   * Full set of icons can be found at: https://api.weather.gov/icons
+   */
+  const weatherTypes = [
+    // Snow
+    "snow",
+    "blizzard",
+    "cold",
+    // Sleet (mixed rain/snow)
+    "rain_snow",
+    "rain_sleet",
+    "snow_sleet",
+    "rain_fzra",
+    "snow_fzra",
+    "fzra",
+    "sleet",
+    // Rain-heavy
+    "rain_showers_hi",
+    // Rain-light
+    "rain_showers",
+    "rain",
+    // Thunderstorm
+    "tsra",
+    "tsra_sct",
+    "tsra_hi",
+    // Wind
+    "wind_skc",
+    "wind_few",
+    "wind_sct",
+    "wind_bkn",
+    "wind_ovc",
+    // Sunny
+    "skc",
+    "few",
+    "hot",
+    // Partly-sunny
+    "sct",
+    "bkn",
+    // Cloudy
+    "ovc",
+    // Fog
+    "fog"
+  ];
+
+  // Returns the first matched variable from weatherTypes
+  const firstMatchedWeatherType = weatherTypes.find(type => iconUrlFromWeatherAPI.includes(type));
+
+  // Get the path / png name for the given weatherType
+  const getIconPath = (weatherType) => {
+    let path;
+
+    switch (weatherType) {
+    // Snow
+    case "snow":
+    case "blizzard":
+    case "cold":
+      path = "icon-snow.png";
+      break;
+    // Sleet (mixed rain/snow)
+    case "rain_snow":
+    case "rain_sleet":
+    case "snow_sleet":
+    case "rain_fzra":
+    case "snow_fzra":
+    case "fzra":
+    case "sleet":
+      path = "icon-sleet.png";
+      break;
+    // Rain-heavy
+    case "rain_showers_hi":
+      path = "icon-rain-heavy.png";
+      break;
+    // Rain-light
+    case "rain_showers":
+    case "rain":
+      path = "icon-rain-light.png";
+      break;
+    // Thunderstorm
+    case "tsra":
+    case "tsra_sct":
+    case "tsra_hi":
+      path = "icon-thunderstorm.png";
+      break;
+    // Wind
+    case "wind_skc":
+    case "wind_few":
+    case "wind_sct":
+    case "wind_bkn":
+    case "wind_ovc":
+      path = "icon-wind.png";
+      break;
+    // Sunny
+    case "skc":
+    case "few":
+    case "hot":
+      if (iconUrlFromWeatherAPI.includes("night")) {
+        path = "icon-night.png";
+      } else {
+        path = "icon-sunny.png";
+      }      
+      break;
+    // Partly-sunny
+    case "sct":
+    case "bkn":
+      path = "icon-cloud-sun.png";
+      break;
+    // Cloudy
+    case "ovc":
+      path = "icon-cloud.png";
+      break;
+    // Fog
+    case "fog":
+      path = "icon-fog.png";
+      break;
+    default:
+      path = "icon-cloud.png";
+      break;
+    }
+
+    return path;
+  }
+
+  const path = getIconPath(firstMatchedWeatherType);
+  console.log("Provided IconURL: ", iconUrlFromWeatherAPI);
+  console.log("Generated IconURL: ", `${assetUrl}/${path}`);
+
+  return `${assetUrl}/${path}`;
+};
+
+// Returns true if they have a viewport and it is Round
+// Returns false in all other cases
+const isSmallViewport = (handlerInput) => {
+  return handlerInput &&
+  handlerInput.requestEnvelope &&
+  handlerInput.requestEnvelope.context &&
+  handlerInput.requestEnvelope.context.Viewport &&
+  handlerInput.requestEnvelope.context.Viewport.shape === "ROUND"
+};
 
 // For testing
 // getWeatherRequest("Stevens_Pass");
@@ -395,7 +617,11 @@ const exportFunctions = {
   getSnowReportData: getSnowReportData,
   // Exported for unit tests only
   updateDBUniqueResortCounter: updateDBUniqueResortCounter,
-  getWeatherRequest: getWeatherRequest
+  getWeatherRequest: getWeatherRequest,
+  addAPLIfSupported: addAPLIfSupported,
+  getIconUrl: getIconUrl,
+  getSubtitleTextForHandler: getSubtitleTextForHandler,
+  isSmallViewport: isSmallViewport
 };
 
 module.exports = exportFunctions;

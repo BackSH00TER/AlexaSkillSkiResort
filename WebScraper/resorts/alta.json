@@ -1,6 +1,7 @@
 {
     "name": "Alta",
     "id": "Alta",
+    "onTheSnowResortId": 10,
     "url": "https://www.onthesnow.com/utah/alta-ski-area/historical-snowfall.html",
     "tags": [
       "Utah",

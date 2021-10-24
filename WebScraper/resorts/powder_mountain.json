@@ -1,6 +1,7 @@
 {
     "name": "Powder Mountain",
     "id": "Powder_Mountain",
+    "onTheSnowResortId": 325,
     "url": "https://www.onthesnow.com/utah/powder-mountain/historical-snowfall.html",
     "tags": [
       "Utah",
