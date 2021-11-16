@@ -12,7 +12,7 @@
   "author": "Tyler",
   "contributors": [],
   "dependencies": {
-    "aws-sdk": "^2.145.0",
+    "aws-sdk": "^2.814.0",
     "node-fetch": "2.6.1"
   }
 }
